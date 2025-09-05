@@ -1,4 +1,6 @@
-namespace Locator.Domain.Reviews;
+using Locator.Domain.Reviews;
+
+namespace Locator.Domain.Vacancies;
 
 public class Vacancy
 {

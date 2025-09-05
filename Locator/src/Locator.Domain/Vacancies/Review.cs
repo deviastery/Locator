@@ -1,3 +1,5 @@
+using Locator.Domain.Vacancies;
+
 namespace Locator.Domain.Reviews;
 
 public class Review
@@ -8,7 +10,6 @@ public class Review
         UserId = userId;
         Vacancy = vacancy;
     }
-    
     public Guid Id { get; set; }
     public double Rating { get; set; }
     public string? Comment { get; set; } = string.Empty;
