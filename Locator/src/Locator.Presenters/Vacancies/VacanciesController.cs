@@ -1,12 +1,20 @@
-using Locator.Contracts;
+using Locator.Application.Vacancies;
+using Locator.Contracts.Vacancies;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Locator.Presenters;
+namespace Locator.Presenters.Vacancies;
 
 [ApiController]
 [Route("[controller]")]
 public class VacanciesController : ControllerBase
 {
+    private readonly IVacanciesService _vacanciesService;
+
+    public VacanciesController(IVacanciesService vacanciesService)
+    {
+        _vacanciesService = vacanciesService;
+    }
+    
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromQuery] GetVacanciesDto request,
@@ -27,7 +35,8 @@ public class VacanciesController : ControllerBase
         [FromBody] AddReviewDto request,
         CancellationToken cancellationToken)
     {
-        return Ok("Review created");
+        var reviewId = await _vacanciesService.AddReview(vacancyId, request, cancellationToken);
+        return Ok(reviewId);
     }
     [HttpGet("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> GetReviewsByVacancyId(

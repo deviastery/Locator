@@ -7,14 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Locator.Application\Locator.Application.csproj" />
       <ProjectReference Include="..\Locator.Contracts\Locator.Contracts.csproj" />
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.4" />
+      <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+        <HintPath>..\..\..\..\..\dotnet\shared\Microsoft.AspNetCore.App\9.0.8\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     </ItemGroup>
 
 </Project>
