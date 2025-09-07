@@ -1,18 +1,24 @@
-using Locator.Domain.Vacancies;
-
-namespace Locator.Domain.Reviews;
+namespace Locator.Domain.Vacancies;
 
 public class Review
 {
-    public Review(double rating, Guid userId, Vacancy vacancy)
+    public Review(double mark, string? comment, Guid userId, Guid vacancyId)
     {
-        Rating = rating;
+        Mark = mark;
+        Comment = comment;
         UserId = userId;
-        Vacancy = vacancy;
+        VacancyId = vacancyId;
     }
-    public Guid Id { get; set; }
-    public double Rating { get; set; }
-    public string? Comment { get; set; } = string.Empty;
-    public Guid UserId { get; set; }
-    public Vacancy Vacancy { get; set; }
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public double Mark { get; init; }
+    public string? Comment { get; set; }
+    public Guid UserId { get; init; }
+    public Guid VacancyId { get; init; }
+    public static double CalculateAverageMark(List<Review> reviews)
+    {
+        if (reviews.Count == 0)
+            return 0.0;
+
+        return reviews.Average(review => review.Mark);
+    }
 }

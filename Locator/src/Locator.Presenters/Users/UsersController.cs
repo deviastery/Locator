@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Locator.Presenters;
+namespace Locator.Presenters.Users;
 
 [ApiController]
 [Route("[controller]")]

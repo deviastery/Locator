@@ -2,6 +2,13 @@ namespace Locator.Domain.Users;
 
 public enum RoleType
 {
-    Admin,
-    User
+    /// <summary>
+    /// Роль Админа
+    /// </summary>
+    ADMIN,
+
+    /// <summary>
+    /// Роль пользователя
+    /// </summary>
+    USER,
 }
