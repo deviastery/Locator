@@ -1,11 +1,19 @@
 ﻿using FluentValidation;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Rating;
+using Locator.Domain.Vacancies;
 
-namespace Locator.Application.Vacancies;
+namespace Locator.Application.Rating;
 
-public class AddReviewDtoValidator : AbstractValidator<AddReviewDto>
+public class CreateVacancyRatingDtoValidator : AbstractValidator<CreateVacancyRatingDto>
 {
-    public AddReviewDtoValidator()
+    public CreateVacancyRatingDtoValidator()
+    {
+        RuleForEach(x => x.Reviews).SetValidator(new ReviewValidator());
+    }
+}
+public class ReviewValidator : AbstractValidator<Review>
+{
+    public ReviewValidator()
     {
         RuleFor(x => x.Mark).NotEmpty().WithMessage("Поле оценки не может быть пустым")
             .GreaterThanOrEqualTo(0.0).WithMessage("Оценка должна быть в пределах от 0.0 до 5.0")

@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
+      <ProjectReference Include="..\..\src\Locator.Application\Locator.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
 </Project>

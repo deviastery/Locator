@@ -1,0 +1,26 @@
+﻿using FluentValidation;
+using Locator.Application.Rating;
+using Locator.Application.Vacancies;
+using Locator.Infrastructure.Postgresql.Rating;
+using Locator.Infrastructure.Postgresql.Vacancies;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Locator.Infrastructure.Postgresql;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
+        services.AddDbContext<DbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
+
+        services.AddScoped<IVacanciesRepository, VacanciesEfCoreRepository>();
+        services.AddScoped<IRatingRepository, RatingEfCoreRepository>();
+
+        return services;
+    }
+}

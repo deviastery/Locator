@@ -29,13 +29,13 @@ public class VacanciesController : ControllerBase
     {
         return Ok("Vacancy get");
     }
-    [HttpPut("{vacancyId:guid}/reviews")]
-    public async Task<IActionResult> AddReview(
+    [HttpPost("{vacancyId:guid}/reviews")]
+    public async Task<IActionResult> CreateReview(
         [FromRoute] Guid vacancyId,
-        [FromBody] AddReviewDto request,
+        [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
-        var reviewId = await _vacanciesService.AddReview(vacancyId, request, cancellationToken);
+        var reviewId = await _vacanciesService.CreateReview(vacancyId, request, cancellationToken);
         return Ok(reviewId);
     }
     [HttpGet("{vacancyId:guid}/reviews")]
