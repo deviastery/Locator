@@ -3,9 +3,9 @@ using Locator.Contracts.Vacancies;
 
 namespace Locator.Application.Vacancies;
 
-public class AddReviewDtoValidator : AbstractValidator<AddReviewDto>
+public class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto>
 {
-    public AddReviewDtoValidator()
+    public CreateReviewDtoValidator()
     {
         RuleFor(x => x.Mark).NotEmpty().WithMessage("Поле оценки не может быть пустым")
             .GreaterThanOrEqualTo(0.0).WithMessage("Оценка должна быть в пределах от 0.0 до 5.0")

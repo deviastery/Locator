@@ -1,12 +1,11 @@
 ﻿using Locator.Contracts.Vacancies;
-using Locator.Domain.Vacancies;
 
 namespace Locator.Application.Vacancies;
 
 public interface IVacanciesService
 {
-    Task<Guid> AddReview(
+    Task<Guid> CreateReview(
         Guid vacancyId,
-        AddReviewDto reviewDto,
+        CreateReviewDto reviewDto,
         CancellationToken cancellationToken);
 }

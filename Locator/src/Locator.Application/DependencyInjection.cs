@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Locator.Application.Rating;
 using Locator.Application.Vacancies;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<IVacanciesService, VacanciesService>();
+        services.AddScoped<IRatingService, RatingService>();
 
         return services;
     }

@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\scr\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj" />
       <ProjectReference Include="..\Locator.Application\Locator.Application.csproj" />
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
       <ProjectReference Include="..\Locator.Presenters\Locator.Presenters.csproj" />

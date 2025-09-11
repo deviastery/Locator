@@ -10,11 +10,11 @@ public class VacanciesService: IVacanciesService
 {
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ILogger<VacanciesService> _logger;
-    private readonly IValidator<AddReviewDto> _validator;
+    private readonly IValidator<CreateReviewDto> _validator;
 
     public VacanciesService(
         IVacanciesRepository vacanciesRepository, 
-        IValidator<AddReviewDto> validator,
+        IValidator<CreateReviewDto> validator,
         ILogger<VacanciesService> logger)
     {
         _vacanciesRepository = vacanciesRepository;
@@ -22,9 +22,9 @@ public class VacanciesService: IVacanciesService
         _logger = logger;
     }
 
-    public async Task<Guid> AddReview(
+    public async Task<Guid> CreateReview(
         Guid vacancyId,
-        AddReviewDto reviewDto,
+        CreateReviewDto reviewDto,
         CancellationToken cancellationToken)
     {
         // Валидация входных данных
@@ -37,20 +37,21 @@ public class VacanciesService: IVacanciesService
         // Валидация бизнес логики
         int countOfDaysAfterApplying =
             await _vacanciesRepository.GetDaysAfterApplyingAsync(vacancyId, reviewDto.UserId, cancellationToken);
-        if (countOfDaysAfterApplying >= 5)
+        if (countOfDaysAfterApplying < 5)
         {
             throw new Exception("Можно оставить отзыв только спустя 5 дней после отклика.");
         }
         
         var review = new Review(reviewDto.Mark, reviewDto?.Comment, reviewDto.UserId, vacancyId);
-        await _vacanciesRepository.AddReviewAsync(review, cancellationToken);
+        await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         var reviewsVacancyId = await _vacanciesRepository.GetReviewsByVacancyIdAsync(vacancyId, cancellationToken);
-        var rating = new VacancyRating(Review.CalculateAverageMark(reviewsVacancyId), vacancyId);
-        await _vacanciesRepository.SaveRatingAsync(rating, cancellationToken);
+        double averageMark = Review.CalculateAverageMark(reviewsVacancyId);
+        
+        // TODO: Отправить запрос на создание рейтинга (Сервис Rating)
         
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", review.Id, vacancyId);
 
-        // TODO: Отправить notification тем users, у которых есть в откликах вакансия с VacancyId
+        // TODO: Отправить notification тем users, у которых есть в откликах вакансия с VacancyId (Сервис Notifications)
 
         return review.Id;
     }
