@@ -8,7 +8,7 @@ public static class DependencyInjection
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
     services.AddWebDependencies()
             .AddApplication()
-            .AddInfrastructure(configuration);
+            .AddPostgresInfrastructure(configuration);
 
     private static IServiceCollection AddWebDependencies(this IServiceCollection services)
     {

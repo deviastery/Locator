@@ -5,17 +5,17 @@ namespace Locator.Infrastructure.Postgresql.Rating;
 
 public class RatingEfCoreRepository : IRatingRepository
 {
-    private readonly DbContext _dbContext;
+    private readonly LocatorDbContext _locatorDbContext;
 
-    public RatingEfCoreRepository(DbContext dbContext)
+    public RatingEfCoreRepository(LocatorDbContext locatorDbContext)
     {
-        _dbContext = dbContext;
+        _locatorDbContext = locatorDbContext;
     }
 
     public async Task<Guid> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
     {
-        await _dbContext.Rating.AddAsync(rating, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _locatorDbContext.VacancyRatings.AddAsync(rating, cancellationToken);
+        await _locatorDbContext.SaveChangesAsync(cancellationToken);
         return rating.Id;
     }
 }

@@ -11,11 +11,11 @@ namespace Locator.Infrastructure.Postgresql;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPostgresInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-        services.AddDbContext<DbContext>(options =>
+        services.AddDbContext<LocatorDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
 
         services.AddScoped<IVacanciesRepository, VacanciesEfCoreRepository>();

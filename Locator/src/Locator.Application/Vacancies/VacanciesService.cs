@@ -37,7 +37,7 @@ public class VacanciesService: IVacanciesService
         // Валидация бизнес логики
         int countOfDaysAfterApplying =
             await _vacanciesRepository.GetDaysAfterApplyingAsync(vacancyId, reviewDto.UserId, cancellationToken);
-        if (countOfDaysAfterApplying >= 5)
+        if (countOfDaysAfterApplying < 5)
         {
             throw new Exception("Можно оставить отзыв только спустя 5 дней после отклика.");
         }
@@ -45,6 +45,7 @@ public class VacanciesService: IVacanciesService
         var review = new Review(reviewDto.Mark, reviewDto?.Comment, reviewDto.UserId, vacancyId);
         await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         var reviewsVacancyId = await _vacanciesRepository.GetReviewsByVacancyIdAsync(vacancyId, cancellationToken);
+        double averageMark = Review.CalculateAverageMark(reviewsVacancyId);
         
         // TODO: Отправить запрос на создание рейтинга (Сервис Rating)
         

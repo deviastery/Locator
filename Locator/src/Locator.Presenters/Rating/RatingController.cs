@@ -1,5 +1,4 @@
 using Locator.Application.Rating;
-using Locator.Contracts.Rating;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locator.Presenters.Rating;
@@ -26,10 +25,10 @@ public class RatingController : ControllerBase
     [HttpPost("{vacancyId:guid}/rating")]
     public async Task<IActionResult> Create(
         [FromRoute] Guid vacancyId,
-        [FromBody] CreateVacancyRatingDto reviews,
+        [FromBody] double averageMark,
         CancellationToken cancellationToken)
     {
-        var reviewId = await _ratingService.CreateVacancyRating(vacancyId, reviews, cancellationToken);
+        var reviewId = await _ratingService.CreateVacancyRating(vacancyId, averageMark, cancellationToken);
         return Ok(reviewId);
     }
 }
