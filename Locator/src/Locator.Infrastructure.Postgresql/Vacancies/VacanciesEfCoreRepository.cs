@@ -27,10 +27,14 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
             .ToListAsync(cancellationToken);
         return reviews;
     }
-
-    public async Task<int> GetDaysAfterApplyingAsync(Guid vacancyId, Guid userId, CancellationToken cancellationToken)
+    public async Task<int> GetDaysAfterApplyingAsync(Guid vacancyId, string userName, CancellationToken cancellationToken)
     {
         // TODO: Соответствующий запрос на HH Api + бизнес логика
         return 5;
+    }
+    public async Task<Vacancy> GetVacancyByIdAsync(Guid vacancyId, CancellationToken cancellationToken)
+    {
+        // TODO: Соответствующий запрос на HH Api + бизнес логика
+        return new Vacancy("Lorem", "Lorem ipsum");
     }
 }

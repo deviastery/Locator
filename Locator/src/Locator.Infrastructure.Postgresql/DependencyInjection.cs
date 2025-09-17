@@ -19,7 +19,7 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
 
         services.AddScoped<IVacanciesRepository, VacanciesEfCoreRepository>();
-        services.AddScoped<IRatingRepository, RatingEfCoreRepository>();
+        services.AddScoped<IRatingsRepository, RatingsEfCoreRepository>();
 
         return services;
     }

@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Contracts", "src\Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Application", "src\Locator.Application\Locator.Application.csproj", "{AA684ACC-9020-4313-87E3-C056FD89DDCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Infrastructure.Postgresql", "scr\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj", "{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Infrastructure.Postgresql", "src\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj", "{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,10 @@ Global
 		{AA684ACC-9020-4313-87E3-C056FD89DDCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA684ACC-9020-4313-87E3-C056FD89DDCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA684ACC-9020-4313-87E3-C056FD89DDCB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DD4DA241-8492-4626-9A04-954CF6DD1B3D} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
@@ -57,6 +57,6 @@ Global
 		{2AE8EAFC-D087-4D8C-B22E-2797403EA39D} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 		{26D55C6F-C96F-4A9B-AD06-1BCA7F7A51A0} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 		{AA684ACC-9020-4313-87E3-C056FD89DDCB} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
-		{21285BC2-6A2B-4E19-85AD-5295CF3CEDE9} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
+		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 	EndGlobalSection
 EndGlobal

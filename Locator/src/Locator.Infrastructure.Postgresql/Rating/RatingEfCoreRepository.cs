@@ -3,11 +3,11 @@ using Locator.Domain.Rating;
 
 namespace Locator.Infrastructure.Postgresql.Rating;
 
-public class RatingEfCoreRepository : IRatingRepository
+public class RatingsEfCoreRepository : IRatingsRepository
 {
     private readonly LocatorDbContext _locatorDbContext;
 
-    public RatingEfCoreRepository(LocatorDbContext locatorDbContext)
+    public RatingsEfCoreRepository(LocatorDbContext locatorDbContext)
     {
         _locatorDbContext = locatorDbContext;
     }
