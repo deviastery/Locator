@@ -271,6 +271,8 @@ ServiceFabricBackup/
 *.mdf
 *.ldf
 *.ndf
+# Custom SQL scripts
+sql_create_tables.txt
 
 # Business Intelligence projects
 *.rdl.data

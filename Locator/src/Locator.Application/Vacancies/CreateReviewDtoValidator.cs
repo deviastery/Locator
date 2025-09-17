@@ -12,6 +12,7 @@ public class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto>
             .LessThanOrEqualTo(5.0).WithMessage("Оценка должна быть в пределах от 0.0 до 5.0");
         RuleFor(x => x.Comment)
             .MaximumLength(250).WithMessage("Комментарий не может превышать длину 250 символов");
-        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.UserName)
+            .MaximumLength(15).WithMessage("Имя не может превышать длину 15 символов").NotEmpty();
     }
 }
