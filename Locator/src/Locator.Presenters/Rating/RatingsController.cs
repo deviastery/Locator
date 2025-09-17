@@ -5,13 +5,13 @@ namespace Locator.Presenters.Rating;
 
 [ApiController]
 [Route("[controller]")]
-public class RatingController : ControllerBase
+public class RatingsController : ControllerBase
 {
-    private readonly IRatingService _ratingService;
+    private readonly IRatingsService _ratingsService;
 
-    public RatingController(IRatingService ratingService)
+    public RatingsController(IRatingsService ratingsService)
     {
-        _ratingService = ratingService;
+        _ratingsService = ratingsService;
     }
 
     [HttpGet("{vacancyId:guid}/rating")]
@@ -28,7 +28,7 @@ public class RatingController : ControllerBase
         [FromBody] double averageMark,
         CancellationToken cancellationToken)
     {
-        var reviewId = await _ratingService.CreateVacancyRating(vacancyId, averageMark, cancellationToken);
+        var reviewId = await _ratingsService.CreateVacancyRating(vacancyId, averageMark, cancellationToken);
         return Ok(reviewId);
     }
 }

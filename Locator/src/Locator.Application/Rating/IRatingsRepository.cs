@@ -2,7 +2,7 @@
 
 namespace Locator.Application.Rating;
 
-public interface IRatingRepository
+public interface IRatingsRepository
 {
     Task<Guid> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
 }

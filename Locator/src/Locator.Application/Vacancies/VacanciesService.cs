@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Locator.Contracts.Vacancies;
-using Locator.Domain.Rating;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 
@@ -36,13 +35,13 @@ public class VacanciesService: IVacanciesService
         
         // Валидация бизнес логики
         int countOfDaysAfterApplying =
-            await _vacanciesRepository.GetDaysAfterApplyingAsync(vacancyId, reviewDto.UserId, cancellationToken);
+            await _vacanciesRepository.GetDaysAfterApplyingAsync(vacancyId, reviewDto.UserName, cancellationToken);
         if (countOfDaysAfterApplying < 5)
         {
             throw new Exception("Можно оставить отзыв только спустя 5 дней после отклика.");
         }
         
-        var review = new Review(reviewDto.Mark, reviewDto?.Comment, reviewDto.UserId, vacancyId);
+        var review = new Review(reviewDto.Mark, reviewDto?.Comment, reviewDto.UserName, vacancyId);
         await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         var reviewsVacancyId = await _vacanciesRepository.GetReviewsByVacancyIdAsync(vacancyId, cancellationToken);
         double averageMark = Review.CalculateAverageMark(reviewsVacancyId);

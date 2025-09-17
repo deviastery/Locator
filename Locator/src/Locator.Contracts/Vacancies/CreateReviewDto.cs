@@ -1,3 +1,3 @@
 ﻿namespace Locator.Contracts.Vacancies;
 
-public record CreateReviewDto(double Mark, string? Comment, Guid UserId);
+public record CreateReviewDto(double Mark, string? Comment, string UserName);

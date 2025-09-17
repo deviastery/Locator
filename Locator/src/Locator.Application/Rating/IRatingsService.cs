@@ -1,6 +1,6 @@
 ﻿namespace Locator.Application.Rating;
 
-public interface IRatingService
+public interface IRatingsService
 {
     Task<Guid> CreateVacancyRating(
         Guid vacancyId,

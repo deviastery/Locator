@@ -3,16 +3,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Locator.Application.Rating;
 
-public class RatingService : IRatingService
+public class RatingsService : IRatingsService
 {
-    private readonly IRatingRepository _ratingRepository;
-    private readonly ILogger<RatingService> _logger;
+    private readonly IRatingsRepository _ratingsRepository;
+    private readonly ILogger<RatingsService> _logger;
 
-    public RatingService(
-        IRatingRepository ratingRepository, 
-        ILogger<RatingService> logger)
+    public RatingsService(
+        IRatingsRepository ratingsRepository, 
+        ILogger<RatingsService> logger)
     {
-        _ratingRepository = ratingRepository;
+        _ratingsRepository = ratingsRepository;
         _logger = logger;
     }
 
@@ -26,7 +26,7 @@ public class RatingService : IRatingService
         }
         
         var rating = new VacancyRating(averageMark, vacancyId);
-        await _ratingRepository.CreateVacancyRatingAsync(rating, cancellationToken);
+        await _ratingsRepository.CreateVacancyRatingAsync(rating, cancellationToken);
         _logger.LogInformation("Rating created with id={ReviewId} on vacancy with id={VacancyId}", rating.Id, vacancyId);
 
         return rating.Id;

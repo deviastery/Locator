@@ -12,7 +12,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<IVacanciesService, VacanciesService>();
-        services.AddScoped<IRatingService, RatingService>();
+        services.AddScoped<IRatingsService, RatingsService>();
 
         return services;
     }
