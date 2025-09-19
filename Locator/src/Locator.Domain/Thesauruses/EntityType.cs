@@ -1,4 +1,4 @@
-namespace Locator.Domain.Rating;
+namespace Locator.Domain.Thesauruses;
 
 public enum EntityType
 {

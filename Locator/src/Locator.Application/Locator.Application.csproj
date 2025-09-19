@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Locator.Contracts\Locator.Contracts.csproj" />
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

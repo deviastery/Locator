@@ -1,4 +1,4 @@
-﻿using Locator.Domain.Rating;
+﻿using Locator.Domain.Ratings;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

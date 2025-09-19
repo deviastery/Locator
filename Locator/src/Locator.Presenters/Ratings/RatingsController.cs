@@ -1,7 +1,8 @@
-using Locator.Application.Rating;
+using Locator.Application.Ratings;
+using Locator.Contracts.Ratings;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Locator.Presenters.Rating;
+namespace Locator.Presenters.Ratings;
 
 [ApiController]
 [Route("[controller]")]
@@ -14,7 +15,7 @@ public class RatingsController : ControllerBase
         _ratingsService = ratingsService;
     }
 
-    [HttpGet("{vacancyId:guid}/rating")]
+    [HttpGet("/vacancies/{vacancyId:guid}")]
     public async Task<IActionResult> GetByVacancyId(
         [FromRoute] Guid vacancyId,
         CancellationToken cancellationToken)
@@ -22,13 +23,14 @@ public class RatingsController : ControllerBase
         return Ok("Rating get");
     }
     
-    [HttpPost("{vacancyId:guid}/rating")]
+    [HttpPost("/vacancies/{vacancyId:guid}")]
     public async Task<IActionResult> Create(
         [FromRoute] Guid vacancyId,
         [FromBody] double averageMark,
         CancellationToken cancellationToken)
     {
-        var reviewId = await _ratingsService.CreateVacancyRating(vacancyId, averageMark, cancellationToken);
+        var vacancyRatingDto = new CreateVacancyRatingDto(vacancyId, averageMark);
+        var reviewId = await _ratingsService.CreateVacancyRating(vacancyRatingDto, cancellationToken);
         return Ok(reviewId);
     }
 }

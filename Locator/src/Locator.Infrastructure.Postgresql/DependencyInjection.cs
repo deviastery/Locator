@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using Locator.Application.Rating;
+using Locator.Application.Ratings;
 using Locator.Application.Vacancies;
-using Locator.Infrastructure.Postgresql.Rating;
+using Locator.Infrastructure.Postgresql.Ratings;
 using Locator.Infrastructure.Postgresql.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

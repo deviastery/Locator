@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Application", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator.Infrastructure.Postgresql", "src\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj", "{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Shared\Shared.csproj", "{86919ED8-14CD-4112-B263-04FF9CB4D090}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86919ED8-14CD-4112-B263-04FF9CB4D090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86919ED8-14CD-4112-B263-04FF9CB4D090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86919ED8-14CD-4112-B263-04FF9CB4D090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86919ED8-14CD-4112-B263-04FF9CB4D090}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DD4DA241-8492-4626-9A04-954CF6DD1B3D} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
@@ -58,5 +64,6 @@ Global
 		{26D55C6F-C96F-4A9B-AD06-1BCA7F7A51A0} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 		{AA684ACC-9020-4313-87E3-C056FD89DDCB} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 		{4E04CA08-2EBE-442E-9BFF-CF97CB103DBE} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
+		{86919ED8-14CD-4112-B263-04FF9CB4D090} = {76752CF8-CF9D-42E5-9285-CE4E8EC63612}
 	EndGlobalSection
 EndGlobal
