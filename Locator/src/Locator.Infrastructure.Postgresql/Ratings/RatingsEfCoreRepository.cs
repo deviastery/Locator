@@ -1,7 +1,7 @@
-﻿using Locator.Application.Rating;
-using Locator.Domain.Rating;
+﻿using Locator.Application.Ratings;
+using Locator.Domain.Ratings;
 
-namespace Locator.Infrastructure.Postgresql.Rating;
+namespace Locator.Infrastructure.Postgresql.Ratings;
 
 public class RatingsEfCoreRepository : IRatingsRepository
 {

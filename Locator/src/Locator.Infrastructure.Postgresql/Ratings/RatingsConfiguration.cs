@@ -1,12 +1,12 @@
-﻿using Locator.Domain.Rating;
+﻿using Locator.Domain.Thesauruses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Locator.Infrastructure.Postgresql.Rating;
+namespace Locator.Infrastructure.Postgresql.Ratings;
 
-public class RatingsConfiguration : IEntityTypeConfiguration<Domain.Rating.Rating>
+public class RatingsConfiguration : IEntityTypeConfiguration<Domain.Ratings.Rating>
 {
-    public void Configure(EntityTypeBuilder<Domain.Rating.Rating> builder)
+    public void Configure(EntityTypeBuilder<Domain.Ratings.Rating> builder)
     {
         var ratingEntityTypes = string.Join(", ", Enum.GetNames<EntityType>().Select(name => $"'{name}'"));
         

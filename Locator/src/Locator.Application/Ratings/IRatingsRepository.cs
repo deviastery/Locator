@@ -1,6 +1,6 @@
-﻿using Locator.Domain.Rating;
+﻿using Locator.Domain.Ratings;
 
-namespace Locator.Application.Rating;
+namespace Locator.Application.Ratings;
 
 public interface IRatingsRepository
 {

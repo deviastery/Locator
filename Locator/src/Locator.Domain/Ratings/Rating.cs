@@ -1,4 +1,6 @@
-﻿namespace Locator.Domain.Rating;
+﻿using Locator.Domain.Thesauruses;
+
+namespace Locator.Domain.Ratings;
 
 public abstract class Rating
 {

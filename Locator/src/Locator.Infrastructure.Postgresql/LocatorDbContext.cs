@@ -1,6 +1,6 @@
-﻿using Locator.Domain.Rating;
+﻿using Locator.Domain.Ratings;
 using Locator.Domain.Vacancies;
-using Locator.Infrastructure.Postgresql.Rating;
+using Locator.Infrastructure.Postgresql.Ratings;
 using Locator.Infrastructure.Postgresql.Vacancies;
 using Microsoft.EntityFrameworkCore;
 

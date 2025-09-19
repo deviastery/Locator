@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Locator.Application.Rating;
+using Locator.Application.Ratings;
 using Locator.Application.Vacancies;
 using Microsoft.Extensions.DependencyInjection;
 

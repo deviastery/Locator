@@ -1,6 +1,8 @@
-namespace Locator.Domain.Rating;
+using Locator.Domain.Thesauruses;
 
-public class VacancyRating: Rating
+namespace Locator.Domain.Ratings;
+
+public class VacancyRating: Ratings.Rating
 {
     public VacancyRating(double value, Guid entityId)
         : base(value, entityId, EntityType.Vacancy)

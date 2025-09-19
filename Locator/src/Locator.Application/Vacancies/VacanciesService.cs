@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Locator.Application.Extensions;
+using Locator.Application.Vacancies.Fails.Exceptions;
 using Locator.Contracts.Vacancies;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ public class VacanciesService: IVacanciesService
         var validationResult = await _validator.ValidateAsync(reviewDto, cancellationToken);
         if (!validationResult.IsValid)
         {
-            throw new ValidationException(validationResult.Errors);
+            throw new VacancyValidationException(validationResult.ToErrors());
         }
         
         // Валидация бизнес логики
@@ -38,7 +40,7 @@ public class VacanciesService: IVacanciesService
             await _vacanciesRepository.GetDaysAfterApplyingAsync(vacancyId, reviewDto.UserName, cancellationToken);
         if (countOfDaysAfterApplying < 5)
         {
-            throw new Exception("Можно оставить отзыв только спустя 5 дней после отклика.");
+            throw new TooEarlyReviewException();
         }
         
         var review = new Review(reviewDto.Mark, reviewDto?.Comment, reviewDto.UserName, vacancyId);
