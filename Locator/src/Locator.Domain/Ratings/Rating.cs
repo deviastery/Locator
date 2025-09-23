@@ -11,7 +11,7 @@ public abstract class Rating
         EntityType = entityType;
     }
     public Guid Id { get; init; } = Guid.NewGuid();
-    public double Value { get; private set; }
+    public double Value { get; set; }
     public Guid EntityId { get; private set; }
     public EntityType EntityType { get; private set; }
 }

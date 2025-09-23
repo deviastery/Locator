@@ -21,7 +21,7 @@ public record Error
     public static Error NotFound(string? code, string message, Guid? id) => 
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
     
-    public static Error Validation(string? code, string message, string? invalidField) => 
+    public static Error Validation(string? code, string message, string? invalidField = null) => 
         new(code ?? "value.is.invalid", message, ErrorType.VALIDATION, invalidField);
     
     public static Error Conflict(string? code, string message) => 
@@ -29,6 +29,13 @@ public record Error
     
     public static Error Failure(string? code, string message) => 
         new(code ?? "failure", message, ErrorType.FAILURE);
+    
+    public Failure ToFailure() => this;
+}
+
+public static class ErrorExtensions
+{
+    public static Failure ToFailure(this IEnumerable<Error> errors) => new(errors.ToArray());
 }
 
 public enum ErrorType

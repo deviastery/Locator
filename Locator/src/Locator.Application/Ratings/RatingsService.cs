@@ -1,9 +1,10 @@
-﻿using FluentValidation;
+﻿using CSharpFunctionalExtensions;
+using FluentValidation;
 using Locator.Application.Extensions;
-using Locator.Application.Ratings.Fails.Exceptions;
 using Locator.Contracts.Ratings;
 using Locator.Domain.Ratings;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace Locator.Application.Ratings;
 
@@ -23,7 +24,7 @@ public class RatingsService : IRatingsService
         _logger = logger;
     }
 
-    public async Task<Guid> CreateVacancyRating(
+    public async Task<Result<Guid, Failure>> CreateVacancyRating(
         CreateVacancyRatingDto vacancyRatingDto,
         CancellationToken cancellationToken)
     {
@@ -31,7 +32,7 @@ public class RatingsService : IRatingsService
         var validationResult = await _validator.ValidateAsync(vacancyRatingDto, cancellationToken);
         if (!validationResult.IsValid)
         {
-            throw new RatingValidationException(validationResult.ToErrors());
+            return validationResult.ToErrors().ToFailure();
         }
         
         (double averageMark, Guid vacancyId) = (vacancyRatingDto.AverageMark, vacancyRatingDto.VacancyId);
