@@ -1,3 +1,6 @@
+using CSharpFunctionalExtensions;
+using Shared;
+
 namespace Locator.Domain.Vacancies;
 
 public class Review
@@ -16,11 +19,16 @@ public class Review
     public Guid VacancyId { get; init; }
     public Vacancy? Vacancy { get; private set; } 
     public DateTime CreatedAt { get; init; }
-    public static double CalculateAverageMark(List<Review> reviews)
+    public static Result<double, Error> CalculateAverageMark(List<Review> reviews)
     {
-        if (reviews.Count == 0)
-            return 0.0;
-
-        return reviews.Average(review => review.Mark);
+        try
+        {
+            double average = reviews.Average(review => review.Mark);
+            return average;
+        }
+        catch (Exception ex)
+        {
+            return Error.Failure("calculation.failed", $"Failed to calculate average: {ex.Message}");
+        }
     }
 }

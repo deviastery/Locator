@@ -1,5 +1,6 @@
 using Locator.Application.Vacancies;
 using Locator.Contracts.Vacancies;
+using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locator.Presenters.Vacancies;
@@ -35,8 +36,8 @@ public class VacanciesController : ControllerBase
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
-        var reviewId = await _vacanciesService.CreateReview(vacancyId, request, cancellationToken);
-        return Ok(reviewId);
+        var result = await _vacanciesService.CreateReview(vacancyId, request, cancellationToken);
+        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
     [HttpGet("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> GetReviewsByVacancyId(

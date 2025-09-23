@@ -1,6 +1,8 @@
-﻿using Locator.Application.Vacancies;
+﻿using CSharpFunctionalExtensions;
+using Locator.Application.Vacancies;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Locator.Infrastructure.Postgresql.Vacancies;
 
@@ -30,7 +32,15 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
     public async Task<int> GetDaysAfterApplyingAsync(Guid vacancyId, string userName, CancellationToken cancellationToken)
     {
         // TODO: Соответствующий запрос на HH Api + бизнес логика
-        return 5;
+        return 6;
+    }
+    public Result<bool, Error> IsVacancyReadyForReview(int daysAfterApplying)
+    {
+        if (daysAfterApplying > 5)
+        {
+            return true;
+        }
+        return Error.Validation("not.ready.for.review", "Failed to leave review vacancy.");
     }
     public async Task<Vacancy> GetVacancyByIdAsync(Guid vacancyId, CancellationToken cancellationToken)
     {
