@@ -41,22 +41,22 @@ public static class ErrorExtensions
 public enum ErrorType
 {
     /// <summary>
-    /// Ошибка валидации
+    /// Error validation
     /// </summary>
     VALIDATION,
 
     /// <summary>
-    /// Ошибка ресурс не найден
+    /// Error not found
     /// </summary>
     NOT_FOUND,
 
     /// <summary>
-    /// Ошибка сервера
+    /// Error failure
     /// </summary>
     FAILURE,
 
     /// <summary>
-    /// Ошибка конфликт
+    /// Error conflict
     /// </summary>
     CONFLICT,
 }

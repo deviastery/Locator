@@ -8,7 +8,7 @@ public class ReviewsConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        // Связь Vacancy -> Reviews (один ко многим)
+        // Vacancy -> Reviews (one-to-many) connection
         builder
             .HasOne(r => r.Vacancy)
             .WithMany(v => v.Reviews)

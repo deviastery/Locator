@@ -3,7 +3,7 @@ namespace Locator.Domain.Thesauruses;
 public enum EntityType
 {
     /// <summary>
-    /// Тип Вакансии
+    /// Type Vacancy
     /// </summary>
     Vacancy,
 }
