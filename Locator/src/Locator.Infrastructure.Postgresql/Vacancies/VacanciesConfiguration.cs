@@ -9,7 +9,7 @@ public class VacanciesConfiguration : IEntityTypeConfiguration<Vacancy>
 {
     public void Configure(EntityTypeBuilder<Vacancy> builder)
     {
-        // Связь Vacancy -> Rating (один к одному)
+        // Vacancy -> Rating (one-to-one) connection
         builder
             .HasOne<VacancyRating>()
             .WithOne()

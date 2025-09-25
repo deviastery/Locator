@@ -6,6 +6,10 @@ namespace Locator.Presenters.Users;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
+    public UsersController()
+    {
+    }
+    
     [HttpGet("{vacancyId:guid}")]
     public async Task<IActionResult> GetUsersRespondedToVacancyById(
         [FromRoute] Guid vacancyId,

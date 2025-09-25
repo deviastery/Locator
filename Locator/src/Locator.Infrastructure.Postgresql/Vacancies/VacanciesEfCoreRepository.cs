@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Vacancies;
+using Locator.Application.Vacancies.Fails;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -34,17 +35,23 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
         // TODO: Соответствующий запрос на HH Api + бизнес логика
         return 6;
     }
-    public Result<bool, Error> IsVacancyReadyForReview(int daysAfterApplying)
+    public async Task<Result<Vacancy, Error>> GetVacancyByIdAsync(Guid vacancyId, CancellationToken cancellationToken)
     {
-        if (daysAfterApplying > 5)
+        try
         {
-            return true;
+            var vacancy = await _locatorDbContext.Vacancies
+                .Include(v => v.Reviews)
+                .FirstOrDefaultAsync(v => v.Id == vacancyId, cancellationToken);
+            if (vacancy is null)
+            {
+                return Errors.General.NotFound(vacancyId);
+            }
+
+            return vacancy;
         }
-        return Error.Validation("not.ready.for.review", "Failed to leave review vacancy.");
-    }
-    public async Task<Vacancy> GetVacancyByIdAsync(Guid vacancyId, CancellationToken cancellationToken)
-    {
-        // TODO: Соответствующий запрос на HH Api + бизнес логика
-        return new Vacancy("Lorem", "Lorem ipsum");
+        catch (Exception e)
+        {
+            return Errors.FailGetVacancy();
+        }
     }
 }

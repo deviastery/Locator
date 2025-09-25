@@ -1,4 +1,6 @@
+using Locator.Application.Abstractions;
 using Locator.Application.Vacancies;
+using Locator.Application.Vacancies.CreateReview;
 using Locator.Contracts.Vacancies;
 using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +11,8 @@ namespace Locator.Presenters.Vacancies;
 [Route("[controller]")]
 public class VacanciesController : ControllerBase
 {
-    private readonly IVacanciesService _vacanciesService;
-
-    public VacanciesController(IVacanciesService vacanciesService)
+    public VacanciesController()
     {
-        _vacanciesService = vacanciesService;
     }
     
     [HttpGet]
@@ -32,11 +31,13 @@ public class VacanciesController : ControllerBase
     }
     [HttpPost("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> CreateReview(
+        [FromServices] ICommandHandler<Guid, CreateReviewCommand> handler,
         [FromRoute] Guid vacancyId,
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
-        var result = await _vacanciesService.CreateReview(vacancyId, request, cancellationToken);
+        var command = new CreateReviewCommand(vacancyId, request);
+        var result = await handler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
     [HttpGet("{vacancyId:guid}/reviews")]
