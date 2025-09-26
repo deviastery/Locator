@@ -9,7 +9,7 @@ using Shared;
 
 namespace Locator.Application.Ratings.UpdateVacancyRating;
 
-public class UpdateVacancyRatingHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
+public class UpdateVacancyRatingHandler : IHandler<Guid, UpdateVacancyRatingCommand>
 {
     private readonly IRatingsRepository _ratingsRepository;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
@@ -39,7 +39,7 @@ public class UpdateVacancyRatingHandler : ICommandHandler<Guid, UpdateVacancyRat
         // Create VacancyRating
         (double averageMark, Guid vacancyId) = (command.vacancyRatingDto.AverageMark, command.vacancyRatingDto.VacancyId);
         var rating = new VacancyRating(averageMark, vacancyId);
-        var ratingId = await _ratingsRepository.CreateVacancyRatingAsync(rating, cancellationToken);
+        var ratingId = await _ratingsRepository.UpdateVacancyRatingAsync(rating, cancellationToken);
         _logger.LogInformation("Rating created or updated with id={RatingId} on vacancy with id={VacancyId}", ratingId, vacancyId);
 
         return rating.Id;

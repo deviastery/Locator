@@ -12,21 +12,21 @@ using Shared;
 
 namespace Locator.Application.Vacancies.CreateReview;
 
-public class CreateReviewHandler : ICommandHandler<Guid, CreateReviewCommand>
+public class CreateReviewHandler : IHandler<Guid, CreateReviewCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
+    private readonly IHandler<PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingHandler;
     private readonly IValidator<CreateReviewDto> _validator;
     private readonly ILogger<CreateReviewHandler> _logger;
     
     public CreateReviewHandler(
         IVacanciesRepository vacanciesRepository,
-        ICommandHandler<PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
+        IHandler<PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingHandler,
         IValidator<CreateReviewDto> validator, 
         ILogger<CreateReviewHandler> logger)
     {
         _vacanciesRepository = vacanciesRepository;
-        _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
+        _prepareToUpdateVacancyRatingHandler = prepareToUpdateVacancyRatingHandler;
         _validator = validator;
         _logger = logger;
     }
@@ -74,7 +74,7 @@ public class CreateReviewHandler : ICommandHandler<Guid, CreateReviewCommand>
         
         // Updating after create review
         var updateVacancyRatingCommand = new PrepareToUpdateVacancyRatingCommand(command.vacancyId);
-        var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
+        var updateRatingResult = await _prepareToUpdateVacancyRatingHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (updateRatingResult.IsFailure)
         {

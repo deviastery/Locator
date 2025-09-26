@@ -31,7 +31,7 @@ public class VacanciesController : ControllerBase
     }
     [HttpPost("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> CreateReview(
-        [FromServices] ICommandHandler<Guid, CreateReviewCommand> handler,
+        [FromServices] IHandler<Guid, CreateReviewCommand> handler,
         [FromRoute] Guid vacancyId,
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
