@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.Fails;
+using Locator.Application.Vacancies.GetVacanciesWithFilters;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -51,7 +52,28 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
         }
         catch (Exception e)
         {
-            return Errors.FailGetVacancy();
+            return Errors.General.NotFound(vacancyId);
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<Vacancy>, Error>> GetVacanciesWithFiltersAsync(
+        GetVacanciesWithFiltersCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var vacancies = await _locatorDbContext.Vacancies
+                .Include(v => v.Reviews)
+                .ToListAsync(cancellationToken);
+            if (vacancies.Count == 0)
+            {
+                return Errors.FailGetVacancies();
+            }
+
+            return vacancies;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
         }
     }
 }

@@ -15,9 +15,9 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-        services.AddScoped<ICommandHandler<PrepareToUpdateVacancyRatingCommand>, PrepareToUpdateVacancyRatingHandler>();
-        services.AddScoped<ICommandHandler<Guid, CreateReviewCommand>, CreateReviewHandler>();
-        services.AddScoped<ICommandHandler<Guid, UpdateVacancyRatingCommand>, UpdateVacancyRatingHandler>();
+        services.AddScoped<IHandler<PrepareToUpdateVacancyRatingCommand>, PrepareToUpdateVacancyRatingHandler>();
+        services.AddScoped<IHandler<Guid, CreateReviewCommand>, CreateReviewHandler>();
+        services.AddScoped<IHandler<Guid, UpdateVacancyRatingCommand>, UpdateVacancyRatingHandler>();
 
         return services;
     }

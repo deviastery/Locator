@@ -10,21 +10,21 @@ using Shared;
 
 namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRating;
 
-public class PrepareToUpdateVacancyRatingHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
+public class PrepareToUpdateVacancyRatingHandler : IHandler<PrepareToUpdateVacancyRatingCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
+    private readonly IHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingHandler;
     private readonly ILogger<PrepareToUpdateVacancyRatingHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
     public PrepareToUpdateVacancyRatingHandler(
         IVacanciesRepository vacanciesRepository,
-        ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
+        IHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingHandler, 
         ILogger<PrepareToUpdateVacancyRatingHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
         _vacanciesRepository = vacanciesRepository;
-        _updateVacancyRatingCommandHandler = updateVacancyRatingCommandHandler;
+        _updateVacancyRatingHandler = updateVacancyRatingHandler;
         _logger = logger;
         _validator = validator;
     }
@@ -55,7 +55,7 @@ public class PrepareToUpdateVacancyRatingHandler : ICommandHandler<PrepareToUpda
         // Create VacancyRating
         var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
         var updateVacancyRatingCommand = new UpdateVacancyRatingCommand(updateVacancyRatingDto);
-        var createVacancyRatingResult = await _updateVacancyRatingCommandHandler
+        var createVacancyRatingResult = await _updateVacancyRatingHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (createVacancyRatingResult.IsFailure)
         {
