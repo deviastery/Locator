@@ -7,16 +7,16 @@ using Locator.Domain.Ratings;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Ratings.UpdateVacancyRating;
+namespace Locator.Application.Ratings.UpdateVacancyRatingCommand;
 
-public class UpdateVacancyRatingHandler : IHandler<Guid, UpdateVacancyRatingCommand>
+public class UpdateVacancyRatingCommandHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
 {
     private readonly IRatingsRepository _ratingsRepository;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
-    private readonly ILogger<UpdateVacancyRatingHandler> _logger;
+    private readonly ILogger<UpdateVacancyRatingCommandHandler> _logger;
     
-    public UpdateVacancyRatingHandler(
-        ILogger<UpdateVacancyRatingHandler> logger, 
+    public UpdateVacancyRatingCommandHandler(
+        ILogger<UpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator, 
         IRatingsRepository ratingsRepository)
     {

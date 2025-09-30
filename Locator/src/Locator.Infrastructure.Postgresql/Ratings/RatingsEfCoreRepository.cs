@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Ratings;
-using Locator.Application.Vacancies.Fails;
+using Locator.Application.Ratings.Fails;
 using Locator.Domain.Ratings;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -9,21 +9,21 @@ namespace Locator.Infrastructure.Postgresql.Ratings;
 
 public class RatingsEfCoreRepository : IRatingsRepository
 {
-    private readonly LocatorDbContext _locatorDbContext;
+    private readonly RatingsDbContext _ratingsDbContext;
 
-    public RatingsEfCoreRepository(LocatorDbContext locatorDbContext)
+    public RatingsEfCoreRepository(RatingsDbContext ratingsDbContext)
     {
-        _locatorDbContext = locatorDbContext;
+        _ratingsDbContext = ratingsDbContext;
     }
 
     public async Task<Guid> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
     {
-        var vacancyRating = await _locatorDbContext.VacancyRatings
+        var vacancyRating = await _ratingsDbContext.VacancyRatings
             .SingleOrDefaultAsync(r => r.EntityId == rating.EntityId, cancellationToken);
         if (vacancyRating != null)
         {
             vacancyRating.Value = rating.Value;
-            await _locatorDbContext.SaveChangesAsync(cancellationToken);
+            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
             return rating.Id;
         }
         
@@ -32,8 +32,8 @@ public class RatingsEfCoreRepository : IRatingsRepository
     }
     public async Task<Guid> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
     {
-        await _locatorDbContext.VacancyRatings.AddAsync(rating, cancellationToken);
-        await _locatorDbContext.SaveChangesAsync(cancellationToken);
+        await _ratingsDbContext.VacancyRatings.AddAsync(rating, cancellationToken);
+        await _ratingsDbContext.SaveChangesAsync(cancellationToken);
         return rating.Id;
     }
     
@@ -41,7 +41,7 @@ public class RatingsEfCoreRepository : IRatingsRepository
     {
         try
         {
-            var vacancyRating = await _locatorDbContext.VacancyRatings
+            var vacancyRating = await _ratingsDbContext.VacancyRatings
                 .SingleOrDefaultAsync(r => r.Id == ratingId, cancellationToken);
 
             if (vacancyRating == null)
@@ -49,38 +49,6 @@ public class RatingsEfCoreRepository : IRatingsRepository
                 return Errors.General.NotFound(ratingId);
             }
             return vacancyRating;
-        }
-        catch (Exception e)
-        {
-            return Errors.General.Failure(e.Message);
-        }
-    }
-
-    public async Task<Result<Dictionary<Guid, double?>, Error>> GetVacancyRatingsByIdsAsync(IEnumerable<Guid> ratingIds,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var vacancyRatings = await _locatorDbContext.VacancyRatings
-                .ToListAsync(cancellationToken);
-
-            if (vacancyRatings.Count == 0)
-            {
-                return Errors.FailGetVacancyRatings();
-            }
-            
-            var ratingValuesDict = new Dictionary<Guid, double?>();
-            
-            foreach (var id in ratingIds)
-            {
-                ratingValuesDict[id] = null;
-            }
-            foreach (var rating in vacancyRatings)
-            {
-                ratingValuesDict[rating.Id] = rating.Value;
-            }
-
-            return ratingValuesDict;
         }
         catch (Exception e)
         {

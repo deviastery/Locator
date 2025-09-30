@@ -8,6 +8,8 @@ public class ReviewsConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
+        builder.ToTable("Reviews"); 
+        
         // Vacancy -> Reviews (one-to-many) connection
         builder
             .HasOne(r => r.Vacancy)

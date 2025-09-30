@@ -1,26 +1,30 @@
-﻿using Locator.Domain.Ratings;
+﻿using Locator.Application.Vacancies;
+using Locator.Domain.Ratings;
 using Locator.Domain.Vacancies;
 using Locator.Infrastructure.Postgresql.Ratings;
-using Locator.Infrastructure.Postgresql.Vacancies;
 using Microsoft.EntityFrameworkCore;
+using Guid = System.Guid;
 
-namespace Locator.Infrastructure.Postgresql;
+namespace Locator.Infrastructure.Postgresql.Vacancies;
 
-public class LocatorDbContext : DbContext
+public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
 {
-    public LocatorDbContext(DbContextOptions<LocatorDbContext> options)
+    public VacanciesDbContext(DbContextOptions<VacanciesDbContext> options)
         : base(options)
     {
         Database.EnsureDeleted();
         Database.EnsureCreated();
     }
     public DbSet<Vacancy> Vacancies { get; set; }
+    public IQueryable<Vacancy> ReadVacancies => Vacancies.AsNoTracking().AsQueryable();
     public DbSet<Review> Reviews { get; set; }
+    public IQueryable<Review> ReadReviews => Reviews.AsNoTracking().AsQueryable();
+    
     public DbSet<VacancyRating> VacancyRatings { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        
         modelBuilder.ApplyConfiguration(new VacanciesConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewsConfiguration());
         modelBuilder.ApplyConfiguration(new RatingsConfiguration());

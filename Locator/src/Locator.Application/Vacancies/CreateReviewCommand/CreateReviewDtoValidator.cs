@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Locator.Contracts.Vacancies;
 
-namespace Locator.Application.Vacancies.CreateReview;
+namespace Locator.Application.Vacancies.CreateReviewCommand;
 
 public class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto>
 {

@@ -12,6 +12,6 @@ public class Vacancy
     public string Description { get; set; }
     public int? Salary { get; set; }
     public int? Experience { get; set; }
-    public Guid RatingId { get; set; }
+    public Guid? RatingId { get; set; }
     public List<Review>? Reviews { get; set; } = [];
 }
