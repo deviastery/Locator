@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.Fails;
+using Locator.Application.Vacancies.GetVacanciesWithFilters;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Shared;

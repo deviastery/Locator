@@ -24,7 +24,7 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         IValidator<UpdateVacancyRatingDto> validator)
     {
         _vacanciesRepository = vacanciesRepository;
-        _updateVacancyRatingCommandHandler = updateVacancyRatingCommandHandler;
+        _updateVacancyRatingHandler = updateVacancyRatingHandler;
         _logger = logger;
         _validator = validator;
     }
@@ -55,7 +55,7 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         // Create VacancyRating
         var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
         var updateVacancyRatingCommand = new UpdateVacancyRatingCommand(updateVacancyRatingDto);
-        var createVacancyRatingResult = await _updateVacancyRatingCommandHandler
+        var createVacancyRatingResult = await _updateVacancyRatingHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (createVacancyRatingResult.IsFailure)
         {
