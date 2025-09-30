@@ -24,7 +24,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
         ILogger<CreateReviewCommandHandler> logger)
     {
         _vacanciesRepository = vacanciesRepository;
-        _prepareToUpdateVacancyRatingHandler = prepareToUpdateVacancyRatingHandler;
+        _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
         _validator = validator;
         _logger = logger;
     }
