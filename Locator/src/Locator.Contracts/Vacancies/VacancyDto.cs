@@ -1,4 +1,4 @@
-﻿namespace Locator.Application.Vacancies.GetVacanciesWithFilters;
+﻿namespace Locator.Contracts.Vacancies;
 
 public record VacancyDto(
     Guid Id,

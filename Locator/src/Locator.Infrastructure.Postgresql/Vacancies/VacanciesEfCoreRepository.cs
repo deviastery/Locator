@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.Fails;
-using Locator.Application.Vacancies.GetVacanciesWithFilters;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -10,23 +9,23 @@ namespace Locator.Infrastructure.Postgresql.Vacancies;
 
 public class VacanciesEfCoreRepository : IVacanciesRepository
 {
-    private readonly LocatorDbContext _locatorDbContext;
+    private readonly VacanciesDbContext _vacanciesDbContext;
 
-    public VacanciesEfCoreRepository(LocatorDbContext locatorDbContext)
+    public VacanciesEfCoreRepository(VacanciesDbContext vacanciesDbContext)
     {
-        _locatorDbContext = locatorDbContext;
+        _vacanciesDbContext = vacanciesDbContext;
     }
 
     public async Task<Guid> CreateReviewAsync(Review review, CancellationToken cancellationToken)
     {
-        await _locatorDbContext.Reviews.AddAsync(review, cancellationToken);
-        await _locatorDbContext.SaveChangesAsync(cancellationToken);
+        await _vacanciesDbContext.Reviews.AddAsync(review, cancellationToken);
+        await _vacanciesDbContext.SaveChangesAsync(cancellationToken);
         return review.Id;
     }
 
     public async Task<List<Review>> GetReviewsByVacancyIdAsync(Guid vacancyId, CancellationToken cancellationToken)
     {
-        var reviews = await _locatorDbContext.Reviews
+        var reviews = await _vacanciesDbContext.Reviews
             .Where(r => r.VacancyId == vacancyId)
             .ToListAsync(cancellationToken);
         return reviews;
@@ -40,7 +39,7 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
     {
         try
         {
-            var vacancy = await _locatorDbContext.Vacancies
+            var vacancy = await _vacanciesDbContext.Vacancies
                 .Include(v => v.Reviews)
                 .FirstOrDefaultAsync(v => v.Id == vacancyId, cancellationToken);
             if (vacancy is null)
@@ -53,27 +52,6 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
         catch (Exception e)
         {
             return Errors.General.NotFound(vacancyId);
-        }
-    }
-
-    public async Task<Result<IReadOnlyList<Vacancy>, Error>> GetVacanciesWithFiltersAsync(
-        GetVacanciesWithFiltersCommand command, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var vacancies = await _locatorDbContext.Vacancies
-                .Include(v => v.Reviews)
-                .ToListAsync(cancellationToken);
-            if (vacancies.Count == 0)
-            {
-                return Errors.FailGetVacancies();
-            }
-
-            return vacancies;
-        }
-        catch (Exception e)
-        {
-            return Errors.General.Failure(e.Message);
         }
     }
 }

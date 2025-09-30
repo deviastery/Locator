@@ -2,29 +2,29 @@
 using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
-using Locator.Application.Ratings.UpdateVacancyRating;
+using Locator.Application.Ratings.UpdateVacancyRatingCommand;
 using Locator.Contracts.Ratings;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRating;
+namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 
-public class PrepareToUpdateVacancyRatingHandler : IHandler<PrepareToUpdateVacancyRatingCommand>
+public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly IHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingHandler;
-    private readonly ILogger<PrepareToUpdateVacancyRatingHandler> _logger;
+    private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
+    private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
-    public PrepareToUpdateVacancyRatingHandler(
+    public PrepareToUpdateVacancyRatingCommandHandler(
         IVacanciesRepository vacanciesRepository,
-        IHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingHandler, 
-        ILogger<PrepareToUpdateVacancyRatingHandler> logger, 
+        ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
+        ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
         _vacanciesRepository = vacanciesRepository;
-        _updateVacancyRatingHandler = updateVacancyRatingHandler;
+        _updateVacancyRatingCommandHandler = updateVacancyRatingCommandHandler;
         _logger = logger;
         _validator = validator;
     }
@@ -55,7 +55,7 @@ public class PrepareToUpdateVacancyRatingHandler : IHandler<PrepareToUpdateVacan
         // Create VacancyRating
         var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
         var updateVacancyRatingCommand = new UpdateVacancyRatingCommand(updateVacancyRatingDto);
-        var createVacancyRatingResult = await _updateVacancyRatingHandler
+        var createVacancyRatingResult = await _updateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (createVacancyRatingResult.IsFailure)
         {

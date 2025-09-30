@@ -9,6 +9,8 @@ public class VacanciesConfiguration : IEntityTypeConfiguration<Vacancy>
 {
     public void Configure(EntityTypeBuilder<Vacancy> builder)
     {
+        builder.ToTable("Vacancies"); 
+        
         // Vacancy -> Rating (one-to-one) connection
         builder
             .HasOne<VacancyRating>()
