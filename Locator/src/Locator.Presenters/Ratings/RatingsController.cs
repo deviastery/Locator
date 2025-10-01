@@ -1,5 +1,7 @@
-using Locator.Application.Ratings;
+using Locator.Application.Abstractions;
+using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 using Locator.Contracts.Ratings;
+using Locator.Contracts.Vacancies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locator.Presenters.Ratings;
@@ -8,15 +10,16 @@ namespace Locator.Presenters.Ratings;
 [Route("[controller]")]
 public class RatingsController : ControllerBase
 {
-    public RatingsController()
-    {
-    }
 
-    [HttpGet("/vacancies/{vacancyId:guid}")]
+    [HttpGet("vacancies/{vacancyId:guid}")]
     public async Task<IActionResult> GetByVacancyId(
+        [FromServices] IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> queryHandler,
         [FromRoute] Guid vacancyId,
         CancellationToken cancellationToken)
     {
-        return Ok("Rating get");
+        var dto = new GetVacancyIdDto(vacancyId);
+        var query = new GetRatingByVacancyIdQuery(dto);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        return Ok(result);
     }
 }

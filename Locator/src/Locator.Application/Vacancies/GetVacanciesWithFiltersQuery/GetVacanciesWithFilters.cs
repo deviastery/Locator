@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 
-public class GetVacanciesWithFilters : IQueryHandler<VacancyResponse, GetVacanciesWithFiltersQuery>
+public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery>
 {
     private readonly IRatingsReadDbContext _ratingsDbContext;
     private readonly IVacanciesReadDbContext _vacanciesDbContext;
@@ -18,7 +18,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacancyResponse, GetVacanci
         _vacanciesDbContext = vacanciesDbContext;
     }  
 
-    public async Task<VacancyResponse> Handle(
+    public async Task<VacanciesResponse> Handle(
         GetVacanciesWithFiltersQuery query,
         CancellationToken cancellationToken)
     {
@@ -40,6 +40,6 @@ public class GetVacanciesWithFilters : IQueryHandler<VacancyResponse, GetVacanci
             v.RatingId != null && ratingsDict.TryGetValue(v.RatingId.Value, out var r) ? r : null
         ));
 
-        return new VacancyResponse(vacanciesDto, count);
+        return new VacanciesResponse(vacanciesDto, count);
     }
 }
