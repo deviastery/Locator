@@ -1,7 +1,8 @@
 using Locator.Application.Abstractions;
-using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.CreateReviewCommand;
+using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 using Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
+using Locator.Application.Vacancies.GetVacancyByIdQuery;
 using Locator.Contracts.Vacancies;
 using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,26 +13,26 @@ namespace Locator.Presenters.Vacancies;
 [Route("[controller]")]
 public class VacanciesController : ControllerBase
 {
-    public VacanciesController()
-    {
-    }
-    
     [HttpGet]
     public async Task<IActionResult> Get(
-        [FromServices] IQueryHandler<VacancyResponse, GetVacanciesWithFiltersQuery> commandHandler,
+        [FromServices] IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery> queryHandler,
         [FromQuery] GetVacanciesDto request,
         CancellationToken cancellationToken)
     {
         var query = new GetVacanciesWithFiltersQuery(request);
-        var result = await commandHandler.Handle(query, cancellationToken);
+        var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
     [HttpGet("{vacancyId:guid}")]
     public async Task<IActionResult> GetById(
+        [FromServices] IQueryHandler<VacancyResponse, GetVacancyByIdQuery> queryHandler,
         [FromRoute] Guid vacancyId,
         CancellationToken cancellationToken)
     {
-        return Ok("Vacancy get");
+        var dto = new GetVacancyIdDto(vacancyId);
+        var query = new GetVacancyByIdQuery(dto);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        return Ok(result);
     }
     [HttpPost("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> CreateReview(
@@ -46,9 +47,13 @@ public class VacanciesController : ControllerBase
     }
     [HttpGet("{vacancyId:guid}/reviews")]
     public async Task<IActionResult> GetReviewsByVacancyId(
+        [FromServices] IQueryHandler<ReviewsByVacancyIdResponse, GetReviewsByVacancyIdQuery> queryHandler,
         [FromRoute] Guid vacancyId,
         CancellationToken cancellationToken)
     {
-        return Ok("Reviews get");
+        var dto = new GetVacancyIdDto(vacancyId);
+        var query = new GetReviewsByVacancyIdQuery(dto);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        return Ok(result);
     }
 }

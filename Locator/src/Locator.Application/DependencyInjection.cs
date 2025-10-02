@@ -1,11 +1,15 @@
 ﻿using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Ratings;
+using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 using Locator.Application.Ratings.UpdateVacancyRatingCommand;
 using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.CreateReviewCommand;
+using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 using Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
+using Locator.Application.Vacancies.GetVacancyByIdQuery;
 using Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
+using Locator.Contracts.Ratings;
 using Locator.Contracts.Vacancies;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +25,11 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<Guid, CreateReviewCommand>, CreateReviewCommandHandler>();
         services.AddScoped<ICommandHandler<Guid, UpdateVacancyRatingCommand>, UpdateVacancyRatingCommandHandler>();
         
-        services.AddScoped<IQueryHandler<VacancyResponse, GetVacanciesWithFiltersQuery>, GetVacanciesWithFilters>();
+        services.AddScoped<IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery>, GetVacanciesWithFilters>();
+        services.AddScoped<IQueryHandler<VacancyResponse, GetVacancyByIdQuery>, GetVacancyById>();
+        services.AddScoped<IQueryHandler<ReviewsByVacancyIdResponse, GetReviewsByVacancyIdQuery>, GetReviewsByVacancyId>();
+        
+        services.AddScoped<IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery>, GetRatingByVacancyId>();
         
         return services;
     }
