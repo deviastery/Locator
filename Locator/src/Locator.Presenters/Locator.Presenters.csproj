@@ -10,6 +10,7 @@
       <ProjectReference Include="..\Locator.Application\Locator.Application.csproj" />
       <ProjectReference Include="..\Locator.Contracts\Locator.Contracts.csproj" />
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
+      <ProjectReference Include="..\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj" />
     </ItemGroup>
 
     <ItemGroup>

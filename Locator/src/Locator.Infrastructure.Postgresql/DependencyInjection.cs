@@ -11,15 +11,22 @@ namespace Locator.Infrastructure.Postgresql;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPostgresInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPostgresInfrastructure(
+        this IServiceCollection services, 
+        IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-        services.AddDbContext<LocatorDbContext>(options =>
+        services.AddDbContext<VacanciesDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
+        services.AddDbContext<RatingsDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
 
         services.AddScoped<IVacanciesRepository, VacanciesEfCoreRepository>();
         services.AddScoped<IRatingsRepository, RatingsEfCoreRepository>();
+        
+        services.AddScoped<IVacanciesReadDbContext>(sp => sp.GetRequiredService<VacanciesDbContext>());
+        services.AddScoped<IRatingsReadDbContext>(sp => sp.GetRequiredService<RatingsDbContext>());
 
         return services;
     }

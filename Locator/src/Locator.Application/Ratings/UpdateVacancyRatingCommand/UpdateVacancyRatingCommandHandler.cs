@@ -7,16 +7,16 @@ using Locator.Domain.Ratings;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Ratings.UpdateVacancyRating;
+namespace Locator.Application.Ratings.UpdateVacancyRatingCommand;
 
-public class UpdateVacancyRatingHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
+public class UpdateVacancyRatingCommandHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
 {
     private readonly IRatingsRepository _ratingsRepository;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
-    private readonly ILogger<UpdateVacancyRatingHandler> _logger;
+    private readonly ILogger<UpdateVacancyRatingCommandHandler> _logger;
     
-    public UpdateVacancyRatingHandler(
-        ILogger<UpdateVacancyRatingHandler> logger, 
+    public UpdateVacancyRatingCommandHandler(
+        ILogger<UpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator, 
         IRatingsRepository ratingsRepository)
     {
@@ -39,7 +39,7 @@ public class UpdateVacancyRatingHandler : ICommandHandler<Guid, UpdateVacancyRat
         // Create VacancyRating
         (double averageMark, Guid vacancyId) = (command.vacancyRatingDto.AverageMark, command.vacancyRatingDto.VacancyId);
         var rating = new VacancyRating(averageMark, vacancyId);
-        var ratingId = await _ratingsRepository.CreateVacancyRatingAsync(rating, cancellationToken);
+        var ratingId = await _ratingsRepository.UpdateVacancyRatingAsync(rating, cancellationToken);
         _logger.LogInformation("Rating created or updated with id={RatingId} on vacancy with id={VacancyId}", ratingId, vacancyId);
 
         return rating.Id;

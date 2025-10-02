@@ -2,25 +2,25 @@
 using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
-using Locator.Application.Ratings.UpdateVacancyRating;
+using Locator.Application.Ratings.UpdateVacancyRatingCommand;
 using Locator.Contracts.Ratings;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRating;
+namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 
-public class PrepareToUpdateVacancyRatingHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
+public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
-    private readonly ILogger<PrepareToUpdateVacancyRatingHandler> _logger;
+    private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
-    public PrepareToUpdateVacancyRatingHandler(
+    public PrepareToUpdateVacancyRatingCommandHandler(
         IVacanciesRepository vacanciesRepository,
         ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
-        ILogger<PrepareToUpdateVacancyRatingHandler> logger, 
+        ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
         _vacanciesRepository = vacanciesRepository;
