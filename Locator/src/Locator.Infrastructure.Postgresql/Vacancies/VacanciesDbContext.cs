@@ -1,7 +1,9 @@
 ﻿using Locator.Application.Vacancies;
 using Locator.Domain.Ratings;
+using Locator.Domain.Users;
 using Locator.Domain.Vacancies;
 using Locator.Infrastructure.Postgresql.Ratings;
+using Locator.Infrastructure.Postgresql.Users;
 using Microsoft.EntityFrameworkCore;
 using Guid = System.Guid;
 
@@ -21,6 +23,8 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
     public IQueryable<Review> ReadReviews => Reviews.AsNoTracking().AsQueryable();
     
     public DbSet<VacancyRating> VacancyRatings { get; set; }
+    public DbSet<User> Users { get; set; }
+    public IQueryable<User> ReadUsers => Users.AsNoTracking().AsQueryable();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -28,6 +32,7 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         modelBuilder.ApplyConfiguration(new VacanciesConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewsConfiguration());
         modelBuilder.ApplyConfiguration(new RatingsConfiguration());
+        modelBuilder.ApplyConfiguration(new UsersConfiguration());
         
         // определяем вакансии
         Vacancy developer = new Vacancy("Разработчик .Net", "Разрабатывать сервисы на .Net");
@@ -42,10 +47,13 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         developer.RatingId = developerRating.Id;
         VacancyRating testerRating = new VacancyRating(3.5, tester.Id);
         tester.RatingId = testerRating.Id;
+        // определяем пользователей
+        User user = new User(1,"Паша", "pasha@gmail.com");
         
         // добавляем данные для обеих сущностей
         modelBuilder.Entity<Vacancy>().HasData(developer, tester);
         modelBuilder.Entity<Review>().HasData(developerReview, testerReview);
         modelBuilder.Entity<VacancyRating>().HasData(developerRating, testerRating);
+        modelBuilder.Entity<User>().HasData(user);
     }
 }

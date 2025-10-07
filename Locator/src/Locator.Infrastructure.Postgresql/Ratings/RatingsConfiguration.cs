@@ -16,14 +16,14 @@ public class RatingsConfiguration : IEntityTypeConfiguration<Domain.Ratings.Rati
             .Property(r => r.Id)
             .ValueGeneratedNever();
         builder
-            .Property(u => u.Value)
+            .Property(r => r.Value)
             .IsRequired();
         builder
             .HasCheckConstraint("CK_Rating_Value_Range", "\"Value\" >= 0 AND \"Value\" <= 5");
         builder
-            .Property(u => u.EntityId)
+            .Property(r => r.EntityId)
             .IsRequired();
-        builder.Property(u => u.EntityType)
+        builder.Property(r => r.EntityType)
             .HasConversion<string>()
             .IsRequired();
         builder.HasCheckConstraint(

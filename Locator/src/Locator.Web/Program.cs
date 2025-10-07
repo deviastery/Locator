@@ -7,6 +7,7 @@ builder.Services.AddProgramDependencies(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 app.UseExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
