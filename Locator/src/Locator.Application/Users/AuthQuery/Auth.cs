@@ -8,18 +8,18 @@ namespace Locator.Application.Users.AuthQuery;
 
 public class Auth: IQueryHandler<AuthResponse, AuthQuery>
 {
-    private readonly IAuthService _auth;
+    private readonly IAuthService _authService;
     private readonly ITokenService _tokenService;
     private readonly IUsersRepository _usersRepository;
     private readonly IUsersReadDbContext _usersDbContext;
 
     public Auth(
-        IAuthService auth, 
+        IAuthService authService, 
         ITokenService tokenService, 
         IUsersRepository usersRepository, 
         IUsersReadDbContext usersDbContext)
     {
-        _auth = auth;
+        _authService = authService;
         _tokenService = tokenService;
         _usersRepository = usersRepository;
         _usersDbContext = usersDbContext;
@@ -34,14 +34,14 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         }
 
         // Get Token from another API
-        var tokenResult = await _auth.ExchangeCodeForTokenAsync(query.Dto.Code, cancellationToken);
+        var tokenResult = await _authService.ExchangeCodeForTokenAsync(query.Dto.Code, cancellationToken);
         if (tokenResult.IsFailure)
         {
             throw new ExchangeCodeForTokenFailureException();
         }
 
         // Get info about user
-        var userAuthResult = await _auth.GetUserInfoAsync(tokenResult.Value.AccessToken, cancellationToken);
+        var userAuthResult = await _authService.GetUserInfoAsync(tokenResult.Value.AccessToken, cancellationToken);
         if (userAuthResult.IsFailure)
         {
             throw new GetUserInfoFailureException();

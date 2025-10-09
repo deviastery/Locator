@@ -16,7 +16,7 @@ public class UsersEfCoreRepository : IUsersRepository
         _usersDbContext = usersDbContext;
     }
 
-    public async Task<Result<User?, Error>> GetByHhIdAsync(long hhId, CancellationToken cancellationToken)
+    public async Task<Result<User?, Error>> GetByEmployeeIdAsync(long hhId, CancellationToken cancellationToken)
     {
         try
         {
@@ -40,5 +40,29 @@ public class UsersEfCoreRepository : IUsersRepository
         await _usersDbContext.Users.AddAsync(user, cancellationToken);
         await _usersDbContext.SaveChangesAsync(cancellationToken);
         return user.Id;
+    }
+
+    public async Task<Result<Guid, Error>> UpdateEmployeeTokenUserSessionAsync(
+        Guid sessionId,
+        Token employeeToken, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var session = await _usersDbContext.UserSessions
+                .SingleOrDefaultAsync(s => s.Id == sessionId, cancellationToken);
+
+            if (session == null)
+            {
+                return Errors.General.NotFound(sessionId);
+            }
+            session.EmployeeToken = employeeToken;
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return session.Id;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
     }
 }
