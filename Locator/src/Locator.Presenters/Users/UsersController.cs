@@ -1,13 +1,15 @@
 using Locator.Application.Abstractions;
 using Locator.Application.Users.AuthQuery;
+using Locator.Application.Users.RefreshTokenQuery;
 using Locator.Contracts.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Locator.Presenters.Users;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
     private readonly IConfiguration _configuration;
@@ -36,11 +38,27 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Callback(
         [FromServices] IQueryHandler<AuthResponse, AuthQuery> queryHandler,
         [FromQuery] AuthorizationCodeDto request,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
         var query = new AuthQuery(request);
         var result = await queryHandler.Handle(query, cancellationToken);
-        return Ok(result);
+        
+        context.Response.Cookies.Append("tasty-cookie", result.AccessToken);
+        
+        return Ok();
+    }    
+    
+    [HttpGet("auth/refresh")]
+    public async Task<IActionResult> Refresh(
+        [FromServices] IQueryHandler<RefreshTokenResponse, RefreshTokenQuery> queryHandler,
+        [FromBody] RefreshTokenDto request,
+        CancellationToken cancellationToken)
+    {
+        var query = new RefreshTokenQuery(request.Token);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        
+        return Ok();
     }
     
     [HttpGet("{vacancyId:guid}")]

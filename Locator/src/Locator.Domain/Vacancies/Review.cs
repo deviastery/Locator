@@ -28,7 +28,7 @@ public class Review
         }
         catch (Exception ex)
         {
-            return Error.Failure("calculation.failed", $"Failed to calculate average: {ex.Message}");
+            return Error.Failure($"Failed to calculate average: {ex.Message}", "calculation.failed");
         }
     }
 }

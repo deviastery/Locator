@@ -9,18 +9,18 @@ namespace Locator.Application.Users.AuthQuery;
 public class Auth: IQueryHandler<AuthResponse, AuthQuery>
 {
     private readonly IAuthService _authService;
-    private readonly ITokenService _tokenService;
+    private readonly IJwtProvider _jwtProvider;
     private readonly IUsersRepository _usersRepository;
     private readonly IUsersReadDbContext _usersDbContext;
 
     public Auth(
         IAuthService authService, 
-        ITokenService tokenService, 
+        IJwtProvider jwtProvider, 
         IUsersRepository usersRepository, 
         IUsersReadDbContext usersDbContext)
     {
         _authService = authService;
-        _tokenService = tokenService;
+        _jwtProvider = jwtProvider;
         _usersRepository = usersRepository;
         _usersDbContext = usersDbContext;
     }
@@ -67,7 +67,14 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         }
 
         // Generate JWT-token 
-        var jwtToken = _tokenService.GenerateToken(user.Id, user.Email);
-        return new AuthResponse(jwtToken);
+        (var jwtToken, var tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
+        // Generate JWT-token 
+        var refreshToken = await _jwtProvider.GenerateRefreshToken(user.Id, cancellationToken);
+        
+        // Create Session
+        
+        
+        
+        return new AuthResponse(user.Name, jwtToken, tokenExpiry, refreshToken);
     } 
 }

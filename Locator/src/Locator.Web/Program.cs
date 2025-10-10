@@ -1,5 +1,6 @@
 using Locator.Web;
 using Locator.Web.Middlewares;
+using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,17 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 app.UseExceptionMiddleware();
+
+app.UseCookiePolicy(new CookiePolicyOptions
+    {
+        MinimumSameSitePolicy = SameSiteMode.Strict,
+        HttpOnly = HttpOnlyPolicy.Always,
+        Secure = CookieSecurePolicy.Always
+    }
+);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {

@@ -18,16 +18,16 @@ public record Error
         InvalidField = invalidField;
     }
 
-    public static Error NotFound<T>(string? code, string message, T id) => 
+    public static Error NotFound<T>(string message, T id, string code = null) => 
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
     
-    public static Error Validation(string? code, string message, string? invalidField = null) => 
+    public static Error Validation(string message, string? invalidField = null, string? code = null) => 
         new(code ?? "value.is.invalid", message, ErrorType.VALIDATION, invalidField);
     
-    public static Error Conflict(string? code, string message) => 
+    public static Error Conflict(string message, string? code = null) => 
         new(code ?? "value.is.conflict", message, ErrorType.CONFLICT);
     
-    public static Error Failure(string? code, string message) => 
+    public static Error Failure(string message, string? code = null) => 
         new(code ?? "failure", message, ErrorType.FAILURE);
     
     public Failure ToFailure() => this;

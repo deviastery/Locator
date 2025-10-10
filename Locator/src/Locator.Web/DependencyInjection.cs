@@ -9,7 +9,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
     services.AddWebDependencies()
-            .AddApplication()
+            .AddApplication(configuration)
             .AddPostgresInfrastructure(configuration)
             .AddHhApiInfrastructure(configuration);
 

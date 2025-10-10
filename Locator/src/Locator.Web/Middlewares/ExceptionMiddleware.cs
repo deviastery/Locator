@@ -42,7 +42,7 @@ public class ExceptionMiddleware
                     JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
 
             _ => (StatusCodes.Status500InternalServerError,
-                [Error.Failure(null, "Something went wrong")]),
+                [Error.Failure("Something went wrong")]),
         };
 
         context.Response.ContentType = "application/json";

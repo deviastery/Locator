@@ -12,9 +12,6 @@ public static class DependencyInjection
         services.AddHttpClient<IAuthService, HhAuthService>();
         services.Configure<HhApiConfiguration>(configuration
             .GetSection(HhApiConfiguration.SectionName));
-        services.Configure<JwtTokenConfiguration>(configuration
-            .GetSection(JwtTokenConfiguration.SectionName));
-        services.AddScoped<ITokenService, JwtTokenService>();
         
         return services;
     }

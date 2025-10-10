@@ -2,17 +2,19 @@
 
 public record Token
 {
-    public Token(string accessToken, string refreshToken, DateTime expiresAt, string tokenType = "bearer")
+    public Token(string accessToken, string refreshToken, DateTime createdAt, long expiresIn, string tokenType = "bearer")
     {
         AccessToken = accessToken;
         TokenType = refreshToken;
         RefreshToken = tokenType;
-        ExpiresAt = expiresAt;
+        CreatedAt = createdAt;
+        ExpiresIn = expiresIn;
         
     }
 
     public string AccessToken { get; set; }
     public string TokenType { get; set; }
     public string RefreshToken { get; set; }
-    public DateTime ExpiresAt { get; set; } 
+    public DateTime CreatedAt { get; set; } 
+    public long ExpiresIn { get; set; } 
 }

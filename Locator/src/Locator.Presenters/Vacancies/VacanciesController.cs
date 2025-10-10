@@ -5,12 +5,14 @@ using Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 using Locator.Application.Vacancies.GetVacancyByIdQuery;
 using Locator.Contracts.Vacancies;
 using Locator.Presenters.ResponseExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locator.Presenters.Vacancies;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/vacancies")]
+[Authorize]
 public class VacanciesController : ControllerBase
 {
     [HttpGet]

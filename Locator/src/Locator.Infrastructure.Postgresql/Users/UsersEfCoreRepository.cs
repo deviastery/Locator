@@ -42,27 +42,38 @@ public class UsersEfCoreRepository : IUsersRepository
         return user.Id;
     }
 
-    public async Task<Result<Guid, Error>> UpdateEmployeeTokenUserSessionAsync(
-        Guid sessionId,
-        Token employeeToken, 
+    public async Task<Result<Guid, Error>> UpdateEmployeeSessionAsync(
+        EmployeeToken token,
         CancellationToken cancellationToken)
     {
         try
         {
-            var session = await _usersDbContext.UserSessions
-                .SingleOrDefaultAsync(s => s.Id == sessionId, cancellationToken);
+            var newToken = await _usersDbContext.EmployeeTokens
+                .SingleOrDefaultAsync(s => s.Id == token.Id, cancellationToken);
 
-            if (session == null)
+            if (newToken == null)
             {
-                return Errors.General.NotFound(sessionId);
+                return Errors.General.NotFound(token.Id);
             }
-            session.EmployeeToken = employeeToken;
+            
+            newToken.RefreshToken = token.RefreshToken;
+            newToken.AccessToken = token.AccessToken;
+            newToken.CreatedAt = DateTime.UtcNow;
+            newToken.ExpiresIn = token.ExpiresIn;
+            
             await _usersDbContext.SaveChangesAsync(cancellationToken);
-            return session.Id;
+            return newToken.Id;
         }
         catch (Exception e)
         {
             return Errors.General.Failure(e.Message);
         }
     }
+
+    public Task<Result<Guid, Error>> CreateRefreshTokenAsync(RefreshToken? token, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public Task DeleteRefreshTokenAsync(RefreshToken refreshToken) => throw new NotImplementedException();
+
+    public Task<RefreshToken> GetRefreshTokenAsync(string token) => throw new NotImplementedException();
+
+    public User GetUserAsync(Guid userId) => throw new NotImplementedException();
 }

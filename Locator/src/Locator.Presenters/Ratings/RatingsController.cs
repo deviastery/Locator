@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Locator.Presenters.Ratings;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/ratings")]
 public class RatingsController : ControllerBase
 {
 

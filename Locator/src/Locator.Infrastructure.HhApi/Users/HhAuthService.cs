@@ -82,39 +82,39 @@ public class HhAuthService : IAuthService
         Guid userId, 
         CancellationToken cancellationToken)
     {
-        var userSessionRecord = await _usersDbContext.UserSessions
-            .Include(s => s.EmployeeToken)
+        var tokenRecord = await _usersDbContext.ReadEmployeeTokens
             .FirstOrDefaultAsync(t => t.UserId == userId, cancellationToken);
 
-        if (userSessionRecord == null)
+        if (tokenRecord == null)
             throw new InvalidOperationException("Пользователь не авторизован в HH");
 
-        if (userSessionRecord.EmployeeToken.ExpiresAt > DateTime.UtcNow.AddMinutes(5))
-            return userSessionRecord.EmployeeToken.AccessToken;
+        DateTime createdDateTime = tokenRecord.CreatedAt;
+        DateTime expiredDateTime = createdDateTime.AddSeconds(tokenRecord.ExpiresIn);
+        
+        if (expiredDateTime > DateTime.UtcNow)
+            return tokenRecord.AccessToken;
 
         var newEmployeeTokenResult = 
-            await RefreshTokenAsync(userSessionRecord.EmployeeToken, cancellationToken);
+            await RefreshTokenAsync(tokenRecord, cancellationToken);
         if (newEmployeeTokenResult.IsFailure)
         {
             throw new Exception();
         }
         var newEmployeeToken = newEmployeeTokenResult.Value;
         
-        var newSessionIdResult = await _usersRepository.UpdateEmployeeTokenUserSessionAsync(
-            userSessionRecord.Id,
+        var newSessionIdResult = await _usersRepository.UpdateEmployeeSessionAsync(
             newEmployeeToken, 
             cancellationToken);
         if (newSessionIdResult.IsFailure)
         {
             throw new Exception();
         }
-        var newSessionId = newSessionIdResult.Value;
         
         return newEmployeeToken.AccessToken;
     }
     
-    private async Task<Result<Token, Error>> RefreshTokenAsync(
-        Token tokenRecord, 
+    private async Task<Result<EmployeeToken, Error>> RefreshTokenAsync(
+        EmployeeToken tokenRecord, 
         CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "https://api.hh.ru/token");
@@ -138,14 +138,11 @@ public class HhAuthService : IAuthService
         {
             return Errors.InvalidTokenResponse();
         }
-        // return token;
-
-        var expiresAt = token.ExpiresAt;
-        var newExpiresAt = DateTime.UtcNow.AddSeconds(expiresAt);
 
         tokenRecord.RefreshToken = token.RefreshToken;
         tokenRecord.AccessToken = token.AccessToken;
-        tokenRecord.ExpiresAt = newExpiresAt;
+        tokenRecord.CreatedAt = DateTime.UtcNow;
+        tokenRecord.ExpiresIn = token.ExpiresIn;
         
         return tokenRecord;
     }

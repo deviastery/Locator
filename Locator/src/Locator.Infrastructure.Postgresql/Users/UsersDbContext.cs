@@ -12,8 +12,14 @@ public class UsersDbContext : DbContext, IUsersReadDbContext
     }
     public DbSet<User> Users { get; set; }
     public IQueryable<User> ReadUsers => Users.AsNoTracking().AsQueryable();
-    public DbSet<UserSession> UserSessions { get; set; }
-    public IQueryable<UserSession> ReadUserSessions => UserSessions.AsNoTracking().AsQueryable();
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    
+    
+    
+    public DbSet<RefreshSession> RefreshSessions { get; set; }
+    public IQueryable<RefreshSession> ReadRefreshSessions => RefreshSessions.AsNoTracking().AsQueryable();    
+    public DbSet<EmployeeToken> EmployeeTokens { get; set; }
+    public IQueryable<EmployeeToken> ReadEmployeeTokens => EmployeeTokens.AsNoTracking().AsQueryable();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

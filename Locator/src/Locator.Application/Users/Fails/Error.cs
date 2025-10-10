@@ -7,16 +7,16 @@ public partial class Errors
     public static class General
     {
         public static Error NotFound<T>(T id) =>
-            Error.NotFound("record.not.found", "Record not found.", id);
+            Error.NotFound("Record not found.", id, "record.not.found");
         public static Error Failure(string message) =>
-            Error.Failure("server.failure", $"Something went wrong: {message}");
+            Error.Failure($"Something went wrong: {message}", "server.failure");
     }
     public static Error TokenExchangeFailed() =>
-        Error.Validation("token.exchange.fail", "Failed to exchange a token.");
+        Error.Validation("Failed to exchange a token.", "token.exchange.fail");
     public static Error InvalidTokenResponse() =>
-        Error.Failure("invalid.token.response", "Invalid token response.");        
+        Error.Failure("Invalid token response.", "invalid.token.response");        
     public static Error UserInfoFailed() =>
-        Error.Validation("user.info.fail", "Failed to get user info.");
+        Error.Validation("Failed to get user info.", "user.info.fail");
     public static Error MissingEmail() =>
-        Error.Failure("missing.email", "Missing email address.");
+        Error.Failure("Missing email address.", "missing.email");
 }

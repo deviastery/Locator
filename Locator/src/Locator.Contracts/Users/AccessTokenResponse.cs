@@ -14,5 +14,5 @@ public record AccessTokenResponse
     public string RefreshToken { get; init; } = default!;
 
     [JsonPropertyName("expires_in")]
-    public int ExpiresAt { get; init; }
+    public int ExpiresIn { get; init; }
 }

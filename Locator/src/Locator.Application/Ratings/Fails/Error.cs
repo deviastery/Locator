@@ -7,11 +7,11 @@ public partial class Errors
     public static class General
     {
         public static Error NotFound<T>(T id) => 
-            Error.NotFound("record.not.found", $"Record not found.", id);
+            Error.NotFound($"Record not found.", id, "record.not.found");
         public static Error Failure(string message) =>
-            Error.Failure("server.failure", $"Something went wrong: {message}");
+            Error.Failure($"Something went wrong: {message}", "server.failure");
     }
     
     public static Error FailGetVacancyRatings() =>
-        Error.Failure("fail.get.ratings", "Failed to get vacancy ratings.");
+        Error.Failure("Failed to get vacancy ratings.", "fail.get.ratings");
 }
