@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Locator.Application.Users.Fails.Exceptions;
 using Locator.Application.Users.JwtTokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -14,9 +15,14 @@ public static class AuthExtension
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+        var jwtOptions = configuration.GetSection(JwtOptions.SECTION_NAME).Get<JwtOptions>();
+        if (jwtOptions == null)
+        {
+            throw new GetJwtOptionsFailureException();
+        }
+        
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(o =>
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -24,8 +30,10 @@ public static class AuthExtension
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
                 };
                 o.Events = new JwtBearerEvents
                 {
@@ -34,7 +42,7 @@ public static class AuthExtension
                         context.Token = context.Request.Cookies["tasty-cookie"];
                         
                         return Task.CompletedTask;
-                    }
+                    },
                 };
             });
         services.AddAuthorization();

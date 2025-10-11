@@ -1,3 +1,3 @@
 ﻿namespace Locator.Domain.Users;
 
-public record RefreshToken(string? Token, DateTime ExpiresIn, Guid UserId);
+public record RefreshToken(Guid Token, DateTime ExpiresIn, Guid UserId);

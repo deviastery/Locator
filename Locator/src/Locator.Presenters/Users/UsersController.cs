@@ -5,6 +5,7 @@ using Locator.Contracts.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Shared;
 
 namespace Locator.Presenters.Users;
 
@@ -21,15 +22,19 @@ public class UsersController : ControllerBase
     [HttpGet("auth")]
     public IActionResult Auth()
     {
-        var redirectUri = _configuration["HhApi:RedirectUri"];
-        var clientId = _configuration["HhApi:ClientId"];
-        var scope = "user:read";
-
-        var url = $"https://hh.ru/oauth/authorize?" +
-                  $"response_type=code&" +
-                  $"client_id={Uri.EscapeDataString(clientId)}&" +
-                  $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
-                  $"scope={Uri.EscapeDataString(scope)}";
+        string? redirectUri = _configuration["HhApi:RedirectUri"];
+        string? clientId = _configuration["HhApi:ClientId"];
+        string scope = "user:read";
+        if (redirectUri == null || clientId == null)
+        {
+            return BadRequest();
+        }
+        
+        string url = $"https://hh.ru/oauth/authorize?" +
+                     $"response_type=code&" +
+                     $"client_id={Uri.EscapeDataString(clientId)}&" +
+                     $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+                     $"scope={Uri.EscapeDataString(scope)}";
         
         return Redirect(url);
     }
@@ -38,12 +43,16 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Callback(
         [FromServices] IQueryHandler<AuthResponse, AuthQuery> queryHandler,
         [FromQuery] AuthorizationCodeDto request,
-        HttpContext context,
         CancellationToken cancellationToken)
     {
+        var context = HttpContext;
+        Console.WriteLine($"Получен code: {request.Code}");
         var query = new AuthQuery(request);
         var result = await queryHandler.Handle(query, cancellationToken);
-        
+        if (result?.AccessToken == null)
+        {
+            return StatusCode(500);
+        }
         context.Response.Cookies.Append("tasty-cookie", result.AccessToken);
         
         return Ok();
@@ -58,7 +67,7 @@ public class UsersController : ControllerBase
         var query = new RefreshTokenQuery(request.Token);
         var result = await queryHandler.Handle(query, cancellationToken);
         
-        return Ok();
+        return (result == null) ? Ok() : Unauthorized();
     }
     
     [HttpGet("{vacancyId:guid}")]

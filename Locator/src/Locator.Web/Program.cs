@@ -15,17 +15,20 @@ app.UseCookiePolicy(new CookiePolicyOptions
     {
         MinimumSameSitePolicy = SameSiteMode.Strict,
         HttpOnly = HttpOnlyPolicy.Always,
-        Secure = CookieSecurePolicy.Always
-    }
-);
+        Secure = CookieSecurePolicy.Always,
+    });
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Locator"));
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Locator v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.MapControllers();

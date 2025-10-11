@@ -14,8 +14,8 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
     public VacanciesDbContext(DbContextOptions<VacanciesDbContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
-        Database.EnsureCreated();
+        // Database.EnsureDeleted();
+        // Database.EnsureCreated();
     }
     public DbSet<Vacancy> Vacancies { get; set; }
     public IQueryable<Vacancy> ReadVacancies => Vacancies.AsNoTracking().AsQueryable();
@@ -48,12 +48,19 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         VacancyRating testerRating = new VacancyRating(3.5, tester.Id);
         tester.RatingId = testerRating.Id;
         // определяем пользователей
-        User user = new User(1,"Паша", "pasha@gmail.com");
+        User user = new User(1,"Паша", "pasha@gmail.com");                    
+        RefreshToken token = new RefreshToken(Guid.NewGuid(), DateTime.UtcNow, user.Id);                    
         
         // добавляем данные для обеих сущностей
         modelBuilder.Entity<Vacancy>().HasData(developer, tester);
         modelBuilder.Entity<Review>().HasData(developerReview, testerReview);
         modelBuilder.Entity<VacancyRating>().HasData(developerRating, testerRating);
         modelBuilder.Entity<User>().HasData(user);
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("RefreshTokens");
+            entity.HasKey(rt => rt.Token);
+        });
+        modelBuilder.Entity<RefreshToken>().HasData(token);
     }
 }

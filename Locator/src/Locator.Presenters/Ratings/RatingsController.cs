@@ -2,12 +2,14 @@ using Locator.Application.Abstractions;
 using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 using Locator.Contracts.Ratings;
 using Locator.Contracts.Vacancies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Locator.Presenters.Ratings;
 
 [ApiController]
 [Route("api/ratings")]
+[Authorize]
 public class RatingsController : ControllerBase
 {
 

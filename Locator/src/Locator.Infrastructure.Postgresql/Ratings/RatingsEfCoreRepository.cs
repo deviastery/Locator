@@ -14,29 +14,8 @@ public class RatingsEfCoreRepository : IRatingsRepository
     {
         _ratingsDbContext = ratingsDbContext;
     }
-
-    public async Task<Guid> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
-    {
-        var vacancyRating = await _ratingsDbContext.VacancyRatings
-            .SingleOrDefaultAsync(r => r.EntityId == rating.EntityId, cancellationToken);
-        if (vacancyRating != null)
-        {
-            vacancyRating.Value = rating.Value;
-            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
-            return rating.Id;
-        }
-        
-        var ratingId = await CreateVacancyRatingAsync(rating, cancellationToken);
-        return ratingId;
-    }
-    public async Task<Guid> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
-    {
-        await _ratingsDbContext.VacancyRatings.AddAsync(rating, cancellationToken);
-        await _ratingsDbContext.SaveChangesAsync(cancellationToken);
-        return rating.Id;
-    }
     
-    public async Task<Result<VacancyRating?, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken)
+    public async Task<Result<VacancyRating, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken)
     {
         try
         {
@@ -48,6 +27,45 @@ public class RatingsEfCoreRepository : IRatingsRepository
                 return Errors.General.NotFound(ratingId);
             }
             return vacancyRating;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+
+    public async Task<Result<Guid, Error>> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var ratingRecord = await _ratingsDbContext.VacancyRatings
+                .SingleOrDefaultAsync(r => r.EntityId == rating.EntityId, cancellationToken);
+
+            if (ratingRecord == null)
+            {
+                return Errors.General.NotFound(rating.Id);
+            }
+            
+            ratingRecord.Value = rating.Value;
+            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
+            return rating.Id;
+            
+            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
+            return ratingRecord.Id;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+
+    public async Task<Result<Guid, Error>> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var newVacancyRating = await _ratingsDbContext.VacancyRatings.AddAsync(rating, cancellationToken);
+            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
+            return newVacancyRating.Entity.Id;
         }
         catch (Exception e)
         {

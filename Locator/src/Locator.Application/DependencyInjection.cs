@@ -40,7 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery>, GetRatingByVacancyId>();
         
         services.AddScoped<IQueryHandler<AuthResponse, AuthQuery>, Auth>();
-        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SECTION_NAME));
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddAuth(configuration);
         

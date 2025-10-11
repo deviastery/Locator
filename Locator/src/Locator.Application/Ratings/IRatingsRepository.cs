@@ -6,6 +6,7 @@ namespace Locator.Application.Ratings;
 
 public interface IRatingsRepository
 {
-    Task<Guid> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
-    Task<Result<VacancyRating?, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken);
+    Task<Result<Guid, Error>> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
+    Task<Result<Guid, Error>> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
+    Task<Result<VacancyRating, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken);
 }

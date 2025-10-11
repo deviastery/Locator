@@ -9,7 +9,7 @@ namespace Locator.Infrastructure.Postgresql.Users;
 
 public class UsersEfCoreRepository : IUsersRepository
 {
-    private UsersDbContext _usersDbContext;
+    private readonly UsersDbContext _usersDbContext;
 
     public UsersEfCoreRepository(UsersDbContext usersDbContext)
     {
@@ -35,21 +35,47 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
 
-    public async Task<Guid> CreateAsync(User user, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> CreateUserAsync(User user, CancellationToken cancellationToken)
     {
-        await _usersDbContext.Users.AddAsync(user, cancellationToken);
-        await _usersDbContext.SaveChangesAsync(cancellationToken);
-        return user.Id;
+        try
+        {
+            var newUser = await _usersDbContext.Users.AddAsync(user, cancellationToken);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return newUser.Entity.Id;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
     }
 
-    public async Task<Result<Guid, Error>> UpdateEmployeeSessionAsync(
+    public async Task<Result<User, Error>> GetUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var userRecord = await _usersDbContext.Users
+                .SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+            if (userRecord == null)
+            {
+                return Errors.General.NotFound(userId);
+            }
+            return userRecord;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+
+    public async Task<Result<Guid, Error>> UpdateEmployeeTokensAsync(
         EmployeeToken token,
         CancellationToken cancellationToken)
     {
         try
         {
             var newToken = await _usersDbContext.EmployeeTokens
-                .SingleOrDefaultAsync(s => s.Id == token.Id, cancellationToken);
+                .SingleOrDefaultAsync(t => t.Id == token.Id, cancellationToken);
 
             if (newToken == null)
             {
@@ -70,10 +96,62 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
 
-    public Task<Result<Guid, Error>> CreateRefreshTokenAsync(RefreshToken? token, CancellationToken cancellationToken) => throw new NotImplementedException();
-    public Task DeleteRefreshTokenAsync(RefreshToken refreshToken) => throw new NotImplementedException();
+    public async Task<Result<string, Error>> CreateRefreshTokenAsync(RefreshToken? token, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (token is null)
+            {
+                return Errors.General.Failure("Token is empty");
+            }
+            var newToken = await _usersDbContext.RefreshTokens.AddAsync(token, cancellationToken);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return newToken.Entity.Token.ToString();
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
 
-    public Task<RefreshToken> GetRefreshTokenAsync(string token) => throw new NotImplementedException();
+    public async Task<Result<string, Error>> DeleteRefreshTokenAsync(RefreshToken token, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deletedToken = await _usersDbContext.RefreshTokens
+                .SingleOrDefaultAsync(t => t.Token == token.Token, cancellationToken);
 
-    public User GetUserAsync(Guid userId) => throw new NotImplementedException();
+            if (deletedToken == null)
+            {
+                return Errors.General.NotFound(token.Token);
+            }
+
+            _usersDbContext.Remove(deletedToken);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return token.Token.ToString();
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+
+    public async Task<Result<RefreshToken, Error>> GetRefreshTokenAsync(string token, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var tokenRecord = await _usersDbContext.RefreshTokens
+                .SingleOrDefaultAsync(t => t.Token.ToString() == token, cancellationToken);
+
+            if (tokenRecord == null)
+            {
+                return Errors.General.NotFound(token);
+            }
+            return tokenRecord;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
 }

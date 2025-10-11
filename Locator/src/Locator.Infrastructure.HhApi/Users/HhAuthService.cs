@@ -102,7 +102,7 @@ public class HhAuthService : IAuthService
         }
         var newEmployeeToken = newEmployeeTokenResult.Value;
         
-        var newSessionIdResult = await _usersRepository.UpdateEmployeeSessionAsync(
+        var newSessionIdResult = await _usersRepository.UpdateEmployeeTokensAsync(
             newEmployeeToken, 
             cancellationToken);
         if (newSessionIdResult.IsFailure)

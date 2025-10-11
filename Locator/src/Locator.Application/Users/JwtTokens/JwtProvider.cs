@@ -1,11 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using CSharpFunctionalExtensions;
+using Locator.Application.Users.Fails.Exceptions;
 using Locator.Domain.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Shared;
 
 namespace Locator.Application.Users.JwtTokens;
 
@@ -22,22 +21,21 @@ public class JwtProvider : IJwtProvider
         _jwtOptions = jwtOptions.Value;
     }
 
-    public (string, int) GenerateJwtToken(User user)
+    public (string Token, int ExpiresIn) GenerateJwtToken(User user)
     {
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        _ = int.TryParse(_jwtOptions.TokenValidityMins, out var validityMins) ? validityMins : 10;
+        _ = int.TryParse(_jwtOptions.TokenValidityMins, out int validityMins) ? validityMins : 10;
         var tokenExpiryTimeStamp = DateTime.UtcNow.AddMinutes(validityMins);
 
-        // создаем JWT-токен
         var jwt = new JwtSecurityToken(
             issuer: _jwtOptions.Issuer,
             audience: _jwtOptions.Audience,
@@ -49,19 +47,31 @@ public class JwtProvider : IJwtProvider
             (int)tokenExpiryTimeStamp.Subtract(DateTime.UtcNow).TotalSeconds);
     }
 
-    public async Task<(string, int)?> ValidateRefreshToken(string token)
+    public async Task<(string Token, int ExpiresIn)?> ValidateRefreshTokenAsync(string token, CancellationToken cancellationToken)
     {
-        var refreshToken = await _usersRepository.GetRefreshTokenAsync(token);
+        var refreshTokenResult = await _usersRepository.GetRefreshTokenAsync(token, cancellationToken);
+        if (refreshTokenResult.IsFailure)
+        {
+            return null;
+        }
+        
+        var refreshToken = refreshTokenResult.Value;
         if (refreshToken is null || refreshToken.ExpiresIn < DateTime.UtcNow)
         {
             return null;
         }
-        await _usersRepository.DeleteRefreshTokenAsync(refreshToken);
+        await _usersRepository.DeleteRefreshTokenAsync(refreshToken, cancellationToken);
         
-        var user = _usersRepository.GetUserAsync(refreshToken.UserId);
+        var userResult = await _usersRepository.GetUserAsync(refreshToken.UserId, cancellationToken);
+        if (userResult.IsFailure)
+        {
+            throw new GetUserFailureException();
+        }
+        
+        var user = userResult.Value;
         if (user is null)
         {
-            return null;
+            throw new GetUserNotFoundException();
         }
         
         return GenerateJwtToken(user);
@@ -69,14 +79,14 @@ public class JwtProvider : IJwtProvider
 
     public async Task<string?> GenerateRefreshToken(Guid userId, CancellationToken cancellationToken)
     {
-        _ = int.TryParse(_jwtOptions.RefreshTokenValidityMins, out var validityMins) ? validityMins : 30;
+        _ = int.TryParse(_jwtOptions.RefreshTokenValidityMins, out int validityMins) ? validityMins : 30;
         var refreshToken = new RefreshToken(
-            Guid.NewGuid().ToString(),
+            Guid.NewGuid(),
             DateTime.UtcNow.AddMinutes(validityMins),
             userId
             );
         await _usersRepository.CreateRefreshTokenAsync(refreshToken, cancellationToken);
 
-        return refreshToken.Token;
+        return refreshToken.Token.ToString();
     }
 }

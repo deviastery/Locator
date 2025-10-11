@@ -1,4 +1,6 @@
-﻿namespace Locator.Application.Abstractions;
+﻿using Locator.Contracts.Users;
+
+namespace Locator.Application.Abstractions;
 
 public interface IQuery;
 

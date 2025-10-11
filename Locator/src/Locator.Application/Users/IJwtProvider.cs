@@ -6,7 +6,7 @@ namespace Locator.Application.Users;
 
 public interface IJwtProvider
 {
-    (string, int) GenerateJwtToken(User user);
+    (string Token, int ExpiresIn) GenerateJwtToken(User user);
     Task<string?> GenerateRefreshToken(Guid userId, CancellationToken cancellationToken);
-    Task<(string, int)?> ValidateRefreshToken(string token);
+    Task<(string Token, int ExpiresIn)?> ValidateRefreshTokenAsync(string token, CancellationToken cancellationToken);
 }

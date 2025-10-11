@@ -1,4 +1,5 @@
 ﻿using Locator.Application.Abstractions;
+using Locator.Application.Users.Fails.Exceptions;
 using Locator.Contracts.Users;
 
 namespace Locator.Application.Users.RefreshTokenQuery;
@@ -12,15 +13,16 @@ public class RefreshToken: IQueryHandler<RefreshTokenResponse, RefreshTokenQuery
         _jwtProvider = jwtProvider;
     }
 
-    public async Task<RefreshTokenResponse> Handle(RefreshTokenQuery query, CancellationToken cancellationToken)
+    public async Task<RefreshTokenResponse?> Handle(RefreshTokenQuery query, CancellationToken cancellationToken)
     {
-        var validateRefreshTokenResult = _jwtProvider.ValidateRefreshToken(query.RefreshToken);
+        var validateRefreshTokenResult = 
+            await _jwtProvider.ValidateRefreshTokenAsync(query.RefreshToken, cancellationToken);
         if (validateRefreshTokenResult is null)
         {
             return null;
         }
 
-        var jwtToken = validateRefreshTokenResult.Result?.Item1;
+        string jwtToken = validateRefreshTokenResult.Value.Token;
 
         return new RefreshTokenResponse(jwtToken);
     }

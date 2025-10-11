@@ -25,7 +25,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         _usersDbContext = usersDbContext;
     }
 
-    public async Task<AuthResponse> Handle(AuthQuery query, CancellationToken cancellationToken)
+    public async Task<AuthResponse?> Handle(AuthQuery query, CancellationToken cancellationToken)
     {   
         // Validation of input data
         if (string.IsNullOrEmpty(query.Dto.Code))
@@ -46,34 +46,30 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         {
             throw new GetUserInfoFailureException();
         }
-        var EmployeeUser = userAuthResult.Value;
+        var employeeUser = userAuthResult.Value;
 
         // Find user in DB or create new user
         var user = await _usersDbContext.ReadUsers
-            .Where(u => u.EmployeeId.ToString() == EmployeeUser.EmployeeId)
+            .Where(u => u.EmployeeId.ToString() == employeeUser.EmployeeId)
             .FirstOrDefaultAsync(cancellationToken);
         if (user == null)
         {
-            if (!long.TryParse(EmployeeUser.EmployeeId, out long newEmployeeId))
+            if (!long.TryParse(employeeUser.EmployeeId, out long newEmployeeId))
             {
                 throw new EmployeeIdParseFailureException();
             }
             user = new User(
-                email: EmployeeUser.Email ?? "",
-                name: EmployeeUser.FirstName ?? "",
-                employeeId: newEmployeeId
-            );
-            await _usersRepository.CreateAsync(user, cancellationToken);
+                email: employeeUser.Email ?? string.Empty,
+                name: employeeUser.FirstName ?? string.Empty,
+                employeeId: newEmployeeId);
+            await _usersRepository.CreateUserAsync(user, cancellationToken);
         }
 
         // Generate JWT-token 
-        (var jwtToken, var tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
+        (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
+
         // Generate JWT-token 
-        var refreshToken = await _jwtProvider.GenerateRefreshToken(user.Id, cancellationToken);
-        
-        // Create Session
-        
-        
+        string? refreshToken = await _jwtProvider.GenerateRefreshToken(user.Id, cancellationToken);
         
         return new AuthResponse(user.Name, jwtToken, tokenExpiry, refreshToken);
     } 
