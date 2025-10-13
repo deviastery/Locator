@@ -13,16 +13,10 @@ public class RefreshToken: IQueryHandler<RefreshTokenResponse, RefreshTokenQuery
         _jwtProvider = jwtProvider;
     }
 
-    public async Task<RefreshTokenResponse?> Handle(RefreshTokenQuery query, CancellationToken cancellationToken)
+    public async Task<RefreshTokenResponse> Handle(RefreshTokenQuery query, CancellationToken cancellationToken)
     {
-        var validateRefreshTokenResult = 
-            await _jwtProvider.ValidateRefreshTokenAsync(query.RefreshToken, cancellationToken);
-        if (validateRefreshTokenResult is null)
-        {
-            return null;
-        }
-
-        string jwtToken = validateRefreshTokenResult.Value.Token;
+        var jwtToken = 
+            await _jwtProvider.RefreshAccessTokenAsync(query.RefreshToken, cancellationToken);
 
         return new RefreshTokenResponse(jwtToken);
     }

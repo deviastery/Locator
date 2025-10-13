@@ -25,6 +25,9 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
     public DbSet<VacancyRating> VacancyRatings { get; set; }
     public DbSet<User> Users { get; set; }
     public IQueryable<User> ReadUsers => Users.AsNoTracking().AsQueryable();
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<EmployeeToken> EmployeeTokens { get; set; }
+    public IQueryable<EmployeeToken> ReadEmployeeTokens => EmployeeTokens.AsNoTracking().AsQueryable();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -48,19 +51,21 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         VacancyRating testerRating = new VacancyRating(3.5, tester.Id);
         tester.RatingId = testerRating.Id;
         // определяем пользователей
-        User user = new User(1,"Паша", "pasha@gmail.com");                    
+        User user = new User(1, "Паша", "pasha@gmail.com");                    
         RefreshToken token = new RefreshToken(Guid.NewGuid(), DateTime.UtcNow, user.Id);                    
+        EmployeeToken employeeToken = new EmployeeToken(user.Id, "123", "456",
+            DateTime.UtcNow, 1000);                    
         
         // добавляем данные для обеих сущностей
         modelBuilder.Entity<Vacancy>().HasData(developer, tester);
         modelBuilder.Entity<Review>().HasData(developerReview, testerReview);
         modelBuilder.Entity<VacancyRating>().HasData(developerRating, testerRating);
         modelBuilder.Entity<User>().HasData(user);
+        modelBuilder.Entity<EmployeeToken>().HasData(employeeToken);
+        modelBuilder.Entity<RefreshToken>().HasData(token);
         modelBuilder.Entity<RefreshToken>(entity =>
         {
-            entity.ToTable("RefreshTokens");
             entity.HasKey(rt => rt.Token);
         });
-        modelBuilder.Entity<RefreshToken>().HasData(token);
     }
 }

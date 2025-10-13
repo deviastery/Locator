@@ -5,11 +5,10 @@ public record Token
     public Token(string accessToken, string refreshToken, DateTime createdAt, long expiresIn, string tokenType = "bearer")
     {
         AccessToken = accessToken;
-        TokenType = refreshToken;
-        RefreshToken = tokenType;
+        TokenType = tokenType;
+        RefreshToken = refreshToken;
         CreatedAt = createdAt;
         ExpiresIn = expiresIn;
-        
     }
 
     public string AccessToken { get; set; }

@@ -25,7 +25,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         _usersDbContext = usersDbContext;
     }
 
-    public async Task<AuthResponse?> Handle(AuthQuery query, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(AuthQuery query, CancellationToken cancellationToken)
     {   
         // Validation of input data
         if (string.IsNullOrEmpty(query.Dto.Code))
@@ -39,9 +39,10 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         {
             throw new ExchangeCodeForTokenFailureException();
         }
+        var (newEmployeeToken, newCreatedAt) = tokenResult.Value;
 
         // Get info about user
-        var userAuthResult = await _authService.GetUserInfoAsync(tokenResult.Value.AccessToken, cancellationToken);
+        var userAuthResult = await _authService.GetUserInfoAsync(newEmployeeToken.AccessToken, cancellationToken);
         if (userAuthResult.IsFailure)
         {
             throw new GetUserInfoFailureException();
@@ -64,12 +65,21 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
                 employeeId: newEmployeeId);
             await _usersRepository.CreateUserAsync(user, cancellationToken);
         }
+        
+        // Save employee tokens with user data
+        var newEmployeeTokenDto = new EmployeeToken(user.Id, newEmployeeToken.AccessToken, newEmployeeToken.RefreshToken,
+            newCreatedAt, newEmployeeToken.ExpiresIn);
+        var saveTokensResult = await _usersRepository.CreateEmployeeTokenAsync(newEmployeeTokenDto, cancellationToken);
+        if (saveTokensResult.IsFailure)
+        {
+            throw new SaveEmployeeTokenFailureException();
+        }
 
         // Generate JWT-token 
         (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
 
         // Generate JWT-token 
-        string? refreshToken = await _jwtProvider.GenerateRefreshToken(user.Id, cancellationToken);
+        string? refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
         
         return new AuthResponse(user.Name, jwtToken, tokenExpiry, refreshToken);
     } 

@@ -68,7 +68,7 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
 
-    public async Task<Result<Guid, Error>> UpdateEmployeeTokensAsync(
+    public async Task<Result<Guid, Error>> UpdateEmployeeTokenAsync(
         EmployeeToken token,
         CancellationToken cancellationToken)
     {
@@ -89,6 +89,26 @@ public class UsersEfCoreRepository : IUsersRepository
             
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             return newToken.Id;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+    public async Task<Result<Guid, Error>> CreateEmployeeTokenAsync(
+        EmployeeToken? token, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (token is null)
+            {
+                return Errors.General.Failure("Token is empty");
+            }
+            var newToken = await _usersDbContext.EmployeeTokens
+                .AddAsync(token, cancellationToken);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return newToken.Entity.Id;
         }
         catch (Exception e)
         {

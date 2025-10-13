@@ -47,22 +47,24 @@ public class JwtProvider : IJwtProvider
             (int)tokenExpiryTimeStamp.Subtract(DateTime.UtcNow).TotalSeconds);
     }
 
-    public async Task<(string Token, int ExpiresIn)?> ValidateRefreshTokenAsync(string token, CancellationToken cancellationToken)
+    public async Task<string> RefreshAccessTokenAsync(
+        string refreshToken, 
+        CancellationToken cancellationToken)
     {
-        var refreshTokenResult = await _usersRepository.GetRefreshTokenAsync(token, cancellationToken);
-        if (refreshTokenResult.IsFailure)
+        var refreshTokenResult = await _usersRepository.GetRefreshTokenAsync(refreshToken, cancellationToken);
+        if (refreshTokenResult.IsFailure || refreshTokenResult.Value is null)
         {
-            return null;
+            throw new GetRefreshTokenFailureException();
         }
+        var refreshTokenRecord = refreshTokenResult.Value;
         
-        var refreshToken = refreshTokenResult.Value;
-        if (refreshToken is null || refreshToken.ExpiresIn < DateTime.UtcNow)
+        if (refreshTokenRecord.ExpiresIn.ToUniversalTime() < DateTime.UtcNow)
         {
-            return null;
+            throw new RefreshTokenHasExpiredBadRequestException();
         }
-        await _usersRepository.DeleteRefreshTokenAsync(refreshToken, cancellationToken);
+        await _usersRepository.DeleteRefreshTokenAsync(refreshTokenRecord, cancellationToken);
         
-        var userResult = await _usersRepository.GetUserAsync(refreshToken.UserId, cancellationToken);
+        var userResult = await _usersRepository.GetUserAsync(refreshTokenRecord.UserId, cancellationToken);
         if (userResult.IsFailure)
         {
             throw new GetUserFailureException();
@@ -74,19 +76,18 @@ public class JwtProvider : IJwtProvider
             throw new GetUserNotFoundException();
         }
         
-        return GenerateJwtToken(user);
+        return GenerateJwtToken(user).Token;
     }
 
-    public async Task<string?> GenerateRefreshToken(Guid userId, CancellationToken cancellationToken)
+    public async Task<string?> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken)
     {
         _ = int.TryParse(_jwtOptions.RefreshTokenValidityMins, out int validityMins) ? validityMins : 30;
         var refreshToken = new RefreshToken(
             Guid.NewGuid(),
             DateTime.UtcNow.AddMinutes(validityMins),
-            userId
-            );
+            userId);
         await _usersRepository.CreateRefreshTokenAsync(refreshToken, cancellationToken);
 
         return refreshToken.Token.ToString();
-    }
+    }    
 }

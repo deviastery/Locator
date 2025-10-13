@@ -31,7 +31,7 @@ public class HhAuthService : IAuthService
         _usersRepository = usersRepository;
     }
 
-    public async Task<Result<AccessTokenResponse, Error>> ExchangeCodeForTokenAsync(
+    public async Task<Result<(AccessTokenResponse tokenResponse, DateTime createdAt), Error>> ExchangeCodeForTokenAsync(
         string code, 
         CancellationToken cancellationToken)
     {
@@ -48,16 +48,21 @@ public class HhAuthService : IAuthService
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
+        {
             return Errors.TokenExchangeFailed();
+        }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        var createdAt = DateTime.UtcNow;
+
+        string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var token = JsonSerializer.Deserialize<AccessTokenResponse>(json);
 
         if (token == null)
         {
             return Errors.InvalidTokenResponse();
         }
-        return token;
+        
+        return (token, createdAt);
     }
 
     public async Task<Result<UserDto, Error>> GetUserInfoAsync(
@@ -78,6 +83,7 @@ public class HhAuthService : IAuthService
             ? user
             : Errors.MissingEmail();
     }
+
     public async Task<Result<string, Error>> GetValidEmployeeAccessTokenAsync(
         Guid userId, 
         CancellationToken cancellationToken)
@@ -91,21 +97,21 @@ public class HhAuthService : IAuthService
         DateTime createdDateTime = tokenRecord.CreatedAt;
         DateTime expiredDateTime = createdDateTime.AddSeconds(tokenRecord.ExpiresIn);
         
-        if (expiredDateTime > DateTime.UtcNow)
+        if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
             return tokenRecord.AccessToken;
 
         var newEmployeeTokenResult = 
-            await RefreshTokenAsync(tokenRecord, cancellationToken);
+            await GetRefreshTokenAsync(tokenRecord, cancellationToken);
         if (newEmployeeTokenResult.IsFailure)
         {
             throw new Exception();
         }
         var newEmployeeToken = newEmployeeTokenResult.Value;
         
-        var newSessionIdResult = await _usersRepository.UpdateEmployeeTokensAsync(
+        var newEmployeeTokensIdResult = await _usersRepository.UpdateEmployeeTokenAsync(
             newEmployeeToken, 
             cancellationToken);
-        if (newSessionIdResult.IsFailure)
+        if (newEmployeeTokensIdResult.IsFailure)
         {
             throw new Exception();
         }
@@ -113,7 +119,7 @@ public class HhAuthService : IAuthService
         return newEmployeeToken.AccessToken;
     }
     
-    private async Task<Result<EmployeeToken, Error>> RefreshTokenAsync(
+    private async Task<Result<EmployeeToken, Error>> GetRefreshTokenAsync(
         EmployeeToken tokenRecord, 
         CancellationToken cancellationToken)
     {
@@ -124,14 +130,16 @@ public class HhAuthService : IAuthService
             ["grant_type"] = "refresh_token",
             ["refresh_token"] = tokenRecord.RefreshToken,
             ["client_id"] = _config.ClientId,
-            ["client_secret"] = _config.ClientSecret
+            ["client_secret"] = _config.ClientSecret,
         });
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
+        {
             return Errors.TokenExchangeFailed();
+        }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var token = JsonSerializer.Deserialize<AccessTokenResponse>(json);
 
         if (token == null)

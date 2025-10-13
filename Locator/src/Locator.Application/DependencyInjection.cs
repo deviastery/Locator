@@ -7,6 +7,7 @@ using Locator.Application.Users;
 using Locator.Application.Users.AuthQuery;
 using Locator.Application.Users.Extensions;
 using Locator.Application.Users.JwtTokens;
+using Locator.Application.Users.RefreshTokenQuery;
 using Locator.Application.Vacancies;
 using Locator.Application.Vacancies.CreateReviewCommand;
 using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
@@ -40,6 +41,8 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery>, GetRatingByVacancyId>();
         
         services.AddScoped<IQueryHandler<AuthResponse, AuthQuery>, Auth>();
+        services.AddScoped<IQueryHandler<RefreshTokenResponse, RefreshTokenQuery>, RefreshToken>();
+        
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SECTION_NAME));
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddAuth(configuration);

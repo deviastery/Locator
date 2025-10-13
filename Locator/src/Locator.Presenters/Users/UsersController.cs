@@ -46,10 +46,9 @@ public class UsersController : ControllerBase
         CancellationToken cancellationToken)
     {
         var context = HttpContext;
-        Console.WriteLine($"Получен code: {request.Code}");
         var query = new AuthQuery(request);
         var result = await queryHandler.Handle(query, cancellationToken);
-        if (result?.AccessToken == null)
+        if (result.AccessToken == null)
         {
             return StatusCode(500);
         }
@@ -61,13 +60,20 @@ public class UsersController : ControllerBase
     [HttpGet("auth/refresh")]
     public async Task<IActionResult> Refresh(
         [FromServices] IQueryHandler<RefreshTokenResponse, RefreshTokenQuery> queryHandler,
-        [FromBody] RefreshTokenDto request,
+        [FromQuery] string refreshToken,
         CancellationToken cancellationToken)
     {
-        var query = new RefreshTokenQuery(request.Token);
+        var context = HttpContext;
+        var query = new RefreshTokenQuery(refreshToken);
         var result = await queryHandler.Handle(query, cancellationToken);
+
+        if (result.jwtToken == null)
+        {
+            return Unauthorized();
+        }
         
-        return (result == null) ? Ok() : Unauthorized();
+        context.Response.Cookies.Append("tasty-cookie", result.jwtToken);
+        return Ok();
     }
     
     [HttpGet("{vacancyId:guid}")]
