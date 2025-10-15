@@ -16,16 +16,16 @@ public class UsersEfCoreRepository : IUsersRepository
         _usersDbContext = usersDbContext;
     }
 
-    public async Task<Result<User?, Error>> GetByEmployeeIdAsync(long hhId, CancellationToken cancellationToken)
+    public async Task<Result<User?, Error>> GetUserByEmployeeIdAsync(long id, CancellationToken cancellationToken)
     {
         try
         {
             var user = await _usersDbContext.Users
-                .SingleOrDefaultAsync(u => u.EmployeeId == hhId, cancellationToken);
+                .SingleOrDefaultAsync(u => u.EmployeeId == id, cancellationToken);
 
             if (user == null)
             {
-                return Errors.General.NotFound(hhId);
+                return Errors.General.NotFound(id);
             }
             return user;
         }

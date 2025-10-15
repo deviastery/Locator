@@ -5,5 +5,5 @@ namespace Locator.Contracts.Ratings;
 public record VacancyRatingDto(
     Guid Id,
     double Value,
-    Guid EntityId,
+    string EntityId,
     EntityType EntityType);

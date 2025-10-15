@@ -38,17 +38,19 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         modelBuilder.ApplyConfiguration(new UsersConfiguration());
         
         // определяем вакансии
-        Vacancy developer = new Vacancy("Разработчик .Net", "Разрабатывать сервисы на .Net");
-        Vacancy tester = new Vacancy("Тестировщик .Net", "Тестировать сервисы на .Net");
+        Vacancy developer = new Vacancy("Разработчик .Net", 
+            "Разрабатывать сервисы на .Net", "1");
+        Vacancy tester = new Vacancy("Тестировщик .Net", 
+            "Тестировать сервисы на .Net", "2");
         // определяем отзывы
         Review developerReview = new Review(5.0, "Быстро отвечают", "Маша", 
-            developer.Id);
+            developer.Id.ToString());
         Review testerReview = new Review(3.5, "Медленно отвечают", "Петя", 
-            tester.Id);
+            tester.Id.ToString());
         // определяем рейтинги
-        VacancyRating developerRating = new VacancyRating(5.0, developer.Id);
+        VacancyRating developerRating = new VacancyRating(5.0, developer.Id.ToString());
         developer.RatingId = developerRating.Id;
-        VacancyRating testerRating = new VacancyRating(3.5, tester.Id);
+        VacancyRating testerRating = new VacancyRating(3.5, tester.Id.ToString());
         tester.RatingId = testerRating.Id;
         // определяем пользователей
         User user = new User(1, "Паша", "pasha@gmail.com");                    

@@ -17,8 +17,16 @@ public partial class Errors
         Error.Failure("Failed to save a token.", "token.save.fail");
     public static Error InvalidTokenResponse() =>
         Error.Failure("Invalid token response.", "invalid.token.response");        
-    public static Error UserInfoFailed() =>
+    public static Error GetUserInfoFailed() =>
         Error.Failure("Failed to get user info.", "user.info.fail");
     public static Error MissingEmail() =>
-        Error.Validation("Missing email address.", "missing.email");
+        Error.Validation("Missing email address.", code: "missing.email");        
+    public static Error GetResumesFailed() =>
+        Error.Failure("Failed to get resumes.", "resumes.fail");
+    public static Error MissingResumes() =>
+        Error.Validation("Missing resumes.", "missing.resumes");        
+    public static Error GetVacanciesFailed() =>
+        Error.Failure("Failed to get vacancies.", "vacancies.fail");
+    public static Error MissingVacancies() =>
+        Error.Validation("Missing vacancies.", "missing.vacancies");
 }

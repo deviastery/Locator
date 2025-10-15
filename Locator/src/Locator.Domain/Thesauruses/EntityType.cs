@@ -5,5 +5,5 @@ public enum EntityType
     /// <summary>
     /// Type Vacancy
     /// </summary>
-    Vacancy,
+    VACANCY,
 }

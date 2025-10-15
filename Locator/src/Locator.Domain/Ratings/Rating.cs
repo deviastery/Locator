@@ -4,7 +4,7 @@ namespace Locator.Domain.Ratings;
 
 public abstract class Rating
 {
-    public Rating(double value, Guid entityId, EntityType entityType)
+    public Rating(double value, string entityId, EntityType entityType)
     {
         Value = value;
         EntityId = entityId;
@@ -12,6 +12,6 @@ public abstract class Rating
     }
     public Guid Id { get; init; } = Guid.NewGuid();
     public double Value { get; set; }
-    public Guid EntityId { get; set; }
+    public string EntityId { get; set; }
     public EntityType EntityType { get; set; }
 }

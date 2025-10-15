@@ -4,4 +4,4 @@ using Locator.Contracts.Vacancies;
 namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 
 public record GetVacanciesWithFiltersQuery(
-    GetVacanciesDto Dto) : IQuery;
+    GetVacanciesByUserId Dto) : IQuery;

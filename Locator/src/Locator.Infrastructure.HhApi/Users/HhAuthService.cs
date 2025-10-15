@@ -75,7 +75,7 @@ public class HhAuthService : IAuthService
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
-            return Errors.UserInfoFailed();
+            return Errors.GetUserInfoFailed();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
         var user = JsonSerializer.Deserialize<UserDto>(json);

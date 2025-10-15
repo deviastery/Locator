@@ -16,7 +16,7 @@ public class RatingsController : ControllerBase
     [HttpGet("vacancies/{vacancyId:guid}")]
     public async Task<IActionResult> GetByVacancyId(
         [FromServices] IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> queryHandler,
-        [FromRoute] Guid vacancyId,
+        [FromRoute] string vacancyId,
         CancellationToken cancellationToken)
     {
         var dto = new GetVacancyIdDto(vacancyId);

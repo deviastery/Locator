@@ -1,3 +1,10 @@
-﻿namespace Locator.Contracts.Vacancies;
+﻿using System.Text.Json.Serialization;
 
-public record VacanciesResponse(IEnumerable<VacancyDto> Vacancies, long TotalCount);
+namespace Locator.Contracts.Vacancies;
+
+public record VacanciesResponse(
+    long count, 
+    IEnumerable<FullVacancyDto> vacanciesDto, 
+    int page, 
+    int pages, 
+    int perPage);

@@ -5,7 +5,7 @@ namespace Locator.Domain.Vacancies;
 
 public class Review
 {
-    public Review(double mark, string? comment, string userName, Guid vacancyId)
+    public Review(double mark, string? comment, string userName, string vacancyId)
     {
         Mark = mark;
         Comment = comment;
@@ -16,7 +16,7 @@ public class Review
     public double Mark { get; init; }
     public string? Comment { get; init; }
     public string UserName { get; init; }
-    public Guid VacancyId { get; init; }
+    public string VacancyId { get; init; }
     public Vacancy? Vacancy { get; private set; } 
     public DateTime CreatedAt { get; init; }
     public static Result<double, Error> CalculateAverageMark(List<Review> reviews)

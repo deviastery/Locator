@@ -1,3 +1,3 @@
 ﻿namespace Locator.Contracts.Vacancies;
 
-public record GetVacancyIdDto(Guid VacancyId);
+public record GetVacancyIdDto(string VacancyId);

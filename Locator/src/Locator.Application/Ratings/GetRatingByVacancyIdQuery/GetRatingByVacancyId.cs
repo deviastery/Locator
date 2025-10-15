@@ -1,8 +1,6 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 using Locator.Contracts.Ratings;
 using Microsoft.EntityFrameworkCore;
-using VacancyRatingDto = Locator.Contracts.Ratings.VacancyRatingDto;
 
 namespace Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 
