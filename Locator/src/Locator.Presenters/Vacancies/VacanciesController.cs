@@ -19,7 +19,7 @@ public class VacanciesController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get(
-        [FromServices] IQueryHandler<EmployeeVacanciesResponse, GetVacanciesWithFiltersQuery> queryHandler,
+        [FromServices] IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery> queryHandler,
         [FromQuery] GetVacanciesDto request,
         CancellationToken cancellationToken)
     {
@@ -34,10 +34,10 @@ public class VacanciesController : ControllerBase
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
-    [HttpGet("{vacancyId:guid}")]
+    [HttpGet("{vacancyId:long}")]
     public async Task<IActionResult> GetById(
         [FromServices] IQueryHandler<VacancyResponse, GetVacancyByIdQuery> queryHandler,
-        [FromRoute] string vacancyId,
+        [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
         var dto = new GetVacancyIdDto(vacancyId);
@@ -45,10 +45,10 @@ public class VacanciesController : ControllerBase
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
-    [HttpPost("{vacancyId:guid}/reviews")]
+    [HttpPost("{vacancyId:long}/reviews")]
     public async Task<IActionResult> CreateReview(
         [FromServices] ICommandHandler<Guid, CreateReviewCommand> commandHandler,
-        [FromRoute] string vacancyId,
+        [FromRoute] long vacancyId,
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
@@ -56,10 +56,10 @@ public class VacanciesController : ControllerBase
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
-    [HttpGet("{vacancyId:guid}/reviews")]
+    [HttpGet("{vacancyId:long}/reviews")]
     public async Task<IActionResult> GetReviewsByVacancyId(
         [FromServices] IQueryHandler<ReviewsByVacancyIdResponse, GetReviewsByVacancyIdQuery> queryHandler,
-        [FromRoute] string vacancyId,
+        [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
         var dto = new GetVacancyIdDto(vacancyId);

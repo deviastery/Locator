@@ -24,25 +24,25 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
         return review.Id;
     }
 
-    public async Task<List<Review>> GetReviewsByVacancyIdAsync(string vacancyId, CancellationToken cancellationToken)
+    public async Task<List<Review>> GetReviewsByVacancyIdAsync(long vacancyId, CancellationToken cancellationToken)
     {
         var reviews = await _vacanciesDbContext.Reviews
             .Where(r => r.VacancyId == vacancyId)
             .ToListAsync(cancellationToken);
         return reviews;
     }
-    public async Task<int> GetDaysAfterApplyingAsync(string vacancyId, string userName, CancellationToken cancellationToken)
+    public async Task<int> GetDaysAfterApplyingAsync(long vacancyId, string userName, CancellationToken cancellationToken)
     {
         // TODO: Соответствующий запрос на HH Api + бизнес логика
         return 6;
     }
-    public async Task<Result<Vacancy, Error>> GetVacancyByIdAsync(string vacancyId, CancellationToken cancellationToken)
+    public async Task<Result<Vacancy, Error>> GetVacancyByIdAsync(long vacancyId, CancellationToken cancellationToken)
     {
         try
         {
             var vacancy = await _vacanciesDbContext.Vacancies
                 .Include(v => v.Reviews)
-                .FirstOrDefaultAsync(v => v.EmployeeId == vacancyId, cancellationToken);
+                .FirstOrDefaultAsync(v => v.Id == vacancyId, cancellationToken);
             if (vacancy is null)
             {
                 return Errors.General.NotFound(vacancyId);

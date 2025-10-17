@@ -1,3 +1,3 @@
 ﻿namespace Locator.Contracts.Ratings;
 
-public record UpdateVacancyRatingDto(string VacancyId, double AverageMark);
+public record UpdateVacancyRatingDto(long VacancyId, double AverageMark);

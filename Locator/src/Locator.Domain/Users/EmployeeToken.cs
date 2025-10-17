@@ -11,9 +11,10 @@ public record EmployeeToken : Token
         string tokenType = "bearer")
     : base(accessToken, refreshToken, createdAt, expiresIn, tokenType)
     {
+        Id = Guid.NewGuid();
         UserId = userId;
     }
     
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public Guid UserId { get; set; }
 }

@@ -11,12 +11,6 @@ public class VacanciesConfiguration : IEntityTypeConfiguration<Vacancy>
     {
         builder.ToTable("Vacancies"); 
         
-        // Vacancy -> Rating (one-to-one) connection
-        builder
-            .HasOne<VacancyRating>()
-            .WithOne()
-            .HasForeignKey<Vacancy>(v => v.RatingId);
-        
         builder
             .Property(r => r.Id)
             .ValueGeneratedNever();

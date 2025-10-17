@@ -4,7 +4,7 @@ namespace Locator.Domain.Ratings;
 
 public class VacancyRating: Rating
 {
-    public VacancyRating(double value, string entityId)
+    public VacancyRating(double value, long entityId)
         : base(value, entityId, EntityType.VACANCY)
     {
     }

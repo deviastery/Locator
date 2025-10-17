@@ -37,21 +37,25 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         modelBuilder.ApplyConfiguration(new RatingsConfiguration());
         modelBuilder.ApplyConfiguration(new UsersConfiguration());
         
+        // сиды
         // определяем вакансии
-        Vacancy developer = new Vacancy("Разработчик .Net", 
-            "Разрабатывать сервисы на .Net", "1");
-        Vacancy tester = new Vacancy("Тестировщик .Net", 
-            "Тестировать сервисы на .Net", "2");
+        Vacancy developer = new Vacancy(1, "Разработчик .Net", 
+            "Разрабатывать сервисы на .Net");
+        Vacancy tester = new Vacancy(2,"Тестировщик .Net", 
+            "Тестировать сервисы на .Net");
+        
+        // определяем рейтинги
+        VacancyRating developerRating = new VacancyRating(5.0, 1);
+        developer.RatingId = developerRating.Id;
+        VacancyRating testerRating = new VacancyRating(3.5, 2);
+        tester.RatingId = testerRating.Id;
+
         // определяем отзывы
         Review developerReview = new Review(5.0, "Быстро отвечают", "Маша", 
-            developer.Id.ToString());
+            1);
         Review testerReview = new Review(3.5, "Медленно отвечают", "Петя", 
-            tester.Id.ToString());
-        // определяем рейтинги
-        VacancyRating developerRating = new VacancyRating(5.0, developer.Id.ToString());
-        developer.RatingId = developerRating.Id;
-        VacancyRating testerRating = new VacancyRating(3.5, tester.Id.ToString());
-        tester.RatingId = testerRating.Id;
+            2);
+        
         // определяем пользователей
         User user = new User(1, "Паша", "pasha@gmail.com");                    
         RefreshToken token = new RefreshToken(Guid.NewGuid(), DateTime.UtcNow, user.Id);                    

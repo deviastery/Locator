@@ -1,4 +1,5 @@
-﻿using Locator.Application;
+﻿using System.Text.Json.Serialization;
+using Locator.Application;
 using Locator.Infrastructure.HhApi;
 using Locator.Infrastructure.Postgresql;
 using Microsoft.OpenApi.Models;
@@ -17,6 +18,10 @@ public static class DependencyInjection
     {
         services.AddControllers();
         services.AddOpenApi();
+        services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>

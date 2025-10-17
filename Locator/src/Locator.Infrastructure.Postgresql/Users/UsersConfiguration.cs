@@ -18,12 +18,10 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         builder
             .Property(u => u.Name)
-            .HasColumnType("varchar(50)")
             .HasMaxLength(50)
             .IsRequired();
         builder
             .Property(u => u.Email)
-            .HasColumnType("varchar(50)")
             .HasMaxLength(50)
             .IsRequired();
         builder.Property(u => u.Role)

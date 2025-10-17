@@ -41,7 +41,7 @@ public class UpdateVacancyRatingCommandHandler : ICommandHandler<Guid, UpdateVac
         }
         
         // Create VacancyRating
-        (double averageMark, string vacancyId) = (command.vacancyRatingDto.AverageMark, command.vacancyRatingDto.VacancyId);
+        (double averageMark, long vacancyId) = (command.vacancyRatingDto.AverageMark, command.vacancyRatingDto.VacancyId);
         var rating = new VacancyRating(averageMark, vacancyId);
         
         // Search VacancyRating

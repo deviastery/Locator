@@ -23,7 +23,7 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
     {
         var vacancy = await _vacanciesDbContext.ReadVacancies
             .Include(v => v.Reviews)
-            .Where(v => v.EmployeeId == query.Dto.VacancyId)
+            .Where(v => v.Id == query.Dto.VacancyId)
             .FirstOrDefaultAsync(cancellationToken);
 
         var rating = await _ratingsDbContext.ReadVacancyRatings

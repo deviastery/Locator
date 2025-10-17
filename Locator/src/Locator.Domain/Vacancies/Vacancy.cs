@@ -2,14 +2,13 @@ namespace Locator.Domain.Vacancies;
 
 public class Vacancy
 {
-    public Vacancy(string name, string description, string employeeId)
+    public Vacancy(long id, string name, string description)
     {
+        Id = id;
         Name = name;
         Description = description;
-        EmployeeId = employeeId;
     }
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public string EmployeeId { get; init; }
+    public long Id { get; init; }
     public string Name { get; set; }
     public string Description { get; set; }
     public int? Salary { get; set; }

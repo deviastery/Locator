@@ -13,10 +13,10 @@ namespace Locator.Presenters.Ratings;
 public class RatingsController : ControllerBase
 {
 
-    [HttpGet("vacancies/{vacancyId:guid}")]
+    [HttpGet("vacancies/{vacancyId:long}")]
     public async Task<IActionResult> GetByVacancyId(
         [FromServices] IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> queryHandler,
-        [FromRoute] string vacancyId,
+        [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
         var dto = new GetVacancyIdDto(vacancyId);

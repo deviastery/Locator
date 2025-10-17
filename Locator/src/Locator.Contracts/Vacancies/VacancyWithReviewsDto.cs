@@ -3,7 +3,7 @@
 namespace Locator.Contracts.Vacancies;
 
 public record VacancyWithReviewsDto(
-    Guid Id,
+    long Id,
     string Name,
     string Description,
     int? Salary,

@@ -4,32 +4,32 @@ namespace Locator.Contracts.Vacancies;
 
 public record FullVacancyDto
 {
-    public Guid Id = Guid.NewGuid();
-    public string VacancyId;
-    public string Name;
-    public string Description;
-    public string Employer;
-    public Address? Address;
-    public string? Experience;
-    public Salary? Salary;
-    public ScheduleEnum? Schedule;
-    public WorkFormatEnum? WorkFormat;
-    
-    public double? Rating;
-    
-    public FullVacancyDto(VacancyDto dto, double? rating)
+    public FullVacancyDto(long id, VacancyDto dto, double? rating)
     {
-        VacancyId = dto.Id;
+        Id = id;
         Name = dto.Name;
-        Description = dto.Description;
-        Employer = dto.Employer.Id;
+        Description = dto.Description.Responsibility;
+        Employer = dto.Employer.Name;
+        Area = dto.Area;
         Address = dto.Address;
-        Experience = dto.Experience.Id;
+        Experience = dto.Experience;
         Salary = dto.Salary;
-        Schedule = dto.Schedule.UId;
-        WorkFormat = dto.WorkFormat.Id;
+        Schedule = dto.Schedule;
+        WorkFormat = dto.WorkFormat;
         Rating = rating;
     }
+    
+    public long Id { get; init; }
+    public string Name { get; init; }
+    public string Description { get; init; }
+    public string Employer { get; init; }
+    public Area Area { get; init; }
+    public Address? Address { get; init; }
+    public Experience? Experience { get; init; }
+    public Salary? Salary { get; init; }
+    public Schedule? Schedule { get; init; }
+    public List<WorkFormat>? WorkFormat { get; init; }
+    public double? Rating { get; init; }
 }
 
 public record VacancyDto
@@ -40,28 +40,39 @@ public record VacancyDto
     [JsonPropertyName("name")]
     public string Name { get; init; } = default!;
     
-    [JsonPropertyName("description")]
-    public string Description { get; init; } = default!;
+    [JsonPropertyName("snippet")]
+    public Snippet Description { get; init; } = default!;
     
     [JsonPropertyName("employer")]
     public Employer Employer { get; init; } = default!;
+    
+    [JsonPropertyName("area")]
+    public Area Area { get; init; } = default!;
 
     [JsonPropertyName("address")]
-    public Address Address { get; init; } = default!;
+    public Address? Address { get; init; } = default!;
     
     [JsonPropertyName("experience")]
-    public Experience Experience { get; init; } = default!;
+    public Experience? Experience { get; init; } = default!;
     
     [JsonPropertyName("salary")]
-    public Salary Salary { get; init; } = default!;
+    public Salary? Salary { get; init; } = default!;
     
     [JsonPropertyName("schedule")]
-    public Schedule Schedule { get; init; } = default!;
+    public Schedule? Schedule { get; init; } = default!;
     
     [JsonPropertyName("work_format")]
-    public WorkFormat WorkFormat { get; init; } = default!;
+    public List<WorkFormat>? WorkFormat { get; init; } = default!;
 }
 
+public record Snippet
+{
+    [JsonPropertyName("requirement")]
+    public string Requirement { get; init; } = default!;
+
+    [JsonPropertyName("responsibility")]
+    public string Responsibility { get; init; } = default!;
+}
 public record Employer
 {
     [JsonPropertyName("id")]
@@ -69,6 +80,14 @@ public record Employer
 
     [JsonPropertyName("name")]
     public string Name { get; init; } = default!;
+}
+public record Area
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = default!;
+
+    [JsonPropertyName("name")]
+    public string City { get; init; } = default!;
 }
 
 public record Address
@@ -83,18 +102,18 @@ public record Address
 public record MetroStation
 {
     [JsonPropertyName("station_id")]
-    public string? StationId { get; init; }
+    public string StationId { get; init; }
 
     [JsonPropertyName("station_name")]
-    public string? StationName { get; init; }
+    public string StationName { get; init; }
 }
 public record Experience
 {
     [JsonPropertyName("id")]
-    public string? Id { get; init; }
+    public string Id { get; init; }
 
     [JsonPropertyName("name")]
-    public string? Name { get; init; }
+    public string Name { get; init; }
 }
 public record Salary
 {
@@ -102,32 +121,32 @@ public record Salary
     public string? Currency { get; init; }
 
     [JsonPropertyName("from")]
-    public string? From { get; init; }
+    public int? From { get; init; }
     
     [JsonPropertyName("gross")]
-    public string? Gross { get; init; }
+    public bool? Gross { get; init; }
 
     [JsonPropertyName("to")]
-    public string? To { get; init; }
+    public int? To { get; init; }
 }
 public record Schedule
 {
     [JsonPropertyName("id")]
-    public string? Id { get; init; }
+    public string Id { get; init; }
 
     [JsonPropertyName("name")]
-    public string? Name { get; init; }
+    public string Name { get; init; }
 
     [JsonPropertyName("uid")]
-    public ScheduleEnum? UId { get; init; }
+    public string UId { get; init; }
 }
 public record WorkFormat
 {
     [JsonPropertyName("id")]
-    public WorkFormatEnum? Id { get; init; }
+    public string Id { get; init; }
 
     [JsonPropertyName("name")]
-    public string? Name { get; init; }
+    public string Name { get; init; }
 }
 
 public enum ScheduleEnum
