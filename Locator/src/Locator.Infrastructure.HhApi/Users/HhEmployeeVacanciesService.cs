@@ -10,29 +10,21 @@ using Locator.Infrastructure.Postgresql.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared;
+using Errors = Locator.Infrastructure.HhApi.Users.Fails.Errors;
 
 namespace Locator.Infrastructure.HhApi.Users;
 
 public class HhEmployeeVacanciesService : IEmployeeVacanciesService
 {
     private readonly HttpClient _httpClient;
-    private readonly HhApiConfiguration _config;
-    private readonly UsersDbContext _usersDbContext;
-    private readonly IUsersRepository _usersRepository;
 
     public HhEmployeeVacanciesService(
-        HttpClient httpClient, 
-        IOptions<HhApiConfiguration> config, 
-        UsersDbContext usersDbContext,
-        IUsersRepository usersRepository)
+        HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _config = config.Value; 
-        _usersDbContext = usersDbContext;
-        _usersRepository = usersRepository;
     }
     
-    public async Task<Result<ResumesResponse, Error>> GetUserResumeIdsAsync(
+    public async Task<Result<ResumesResponse, Error>> GetResumeIdsAsync(
         string accessToken, 
         CancellationToken cancellationToken)
     {
@@ -42,7 +34,9 @@ public class HhEmployeeVacanciesService : IEmployeeVacanciesService
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
+        {
             return Errors.GetResumesFailed();
+        }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var resumes = JsonSerializer.Deserialize<ResumesResponse>(json);
@@ -51,7 +45,7 @@ public class HhEmployeeVacanciesService : IEmployeeVacanciesService
             : Errors.MissingResumes();
     }
     
-    public async Task<Result<EmployeeVacanciesResponse, Error>> GetUserVacanciesAsync(
+    public async Task<Result<EmployeeVacanciesResponse, Error>> GetVacanciesMatchResumeAsync(
         string resumeId, 
         string accessToken, 
         CancellationToken cancellationToken)
@@ -64,12 +58,35 @@ public class HhEmployeeVacanciesService : IEmployeeVacanciesService
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
+        {
             return Errors.GetVacanciesFailed();
+        }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
         var vacancies = JsonSerializer.Deserialize<EmployeeVacanciesResponse>(json);
         return vacancies?.Count != null
             ? vacancies
+            : Errors.MissingVacancies();
+    }
+
+    public async Task<Result<VacancyDto, Error>> GetVacancyByIdAsync(string vacancyId, string accessToken, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(
+            HttpMethod.Get, 
+            $"https://api.hh.ru/vacancies/{vacancyId}");
+        request.Headers.Add("User-Agent", "Locator/1.0");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            return Errors.GetVacanciesFailed();
+        }
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        var vacancy = JsonSerializer.Deserialize<VacancyDto>(json);
+        return vacancy != null
+            ? vacancy
             : Errors.MissingVacancies();
     }
 }

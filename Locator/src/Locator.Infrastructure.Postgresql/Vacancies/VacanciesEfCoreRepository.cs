@@ -36,23 +36,4 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
         // TODO: Соответствующий запрос на HH Api + бизнес логика
         return 6;
     }
-    public async Task<Result<Vacancy, Error>> GetVacancyByIdAsync(long vacancyId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var vacancy = await _vacanciesDbContext.Vacancies
-                .Include(v => v.Reviews)
-                .FirstOrDefaultAsync(v => v.Id == vacancyId, cancellationToken);
-            if (vacancy is null)
-            {
-                return Errors.General.NotFound(vacancyId);
-            }
-
-            return vacancy;
-        }
-        catch (Exception e)
-        {
-            return Errors.General.NotFound(vacancyId);
-        }
-    }
 }

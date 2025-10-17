@@ -9,12 +9,6 @@ public class RatingsConfiguration : IEntityTypeConfiguration<Domain.Ratings.Rati
 {
     public void Configure(EntityTypeBuilder<Domain.Ratings.Rating> builder)
     {
-        // Vacancy -> Reviews (one-to-many) connection
-        builder.HasOne<Vacancy>()
-            .WithMany()
-            .HasForeignKey(r => r.EntityId)
-            .HasPrincipalKey(v => v.Id);
-        
         var ratingEntityTypes = string.Join(", ", Enum.GetNames<EntityType>().Select(name => $"'{name}'"));
         
         builder.UseTpcMappingStrategy();

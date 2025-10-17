@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 using Locator.Contracts.Ratings;
@@ -19,7 +21,13 @@ public class RatingsController : ControllerBase
         [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
-        var dto = new GetVacancyIdDto(vacancyId);
+        if (!Guid.TryParse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var dto = new GetVacancyIdDto(vacancyId, userId);
         var query = new GetRatingByVacancyIdQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);

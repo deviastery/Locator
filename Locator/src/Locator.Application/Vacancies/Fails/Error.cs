@@ -14,7 +14,4 @@ public partial class Errors
     public static Error NotReadyForReview() =>
         Error.Validation("Failed to leave a review for the vacancy.", "not.ready.for.review");
     
-    public static Error FailGetVacancies() =>
-        Error.Failure("Failed to get vacancies.", "fail.get.vacancies");    
-    
 }

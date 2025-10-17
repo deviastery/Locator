@@ -18,7 +18,7 @@ public class GetReviewsByVacancyId : IQueryHandler<ReviewsByVacancyIdResponse, G
         CancellationToken cancellationToken)
     {
         var reviews = await _vacanciesDbContext.ReadReviews
-            .Where(r => r.VacancyId == query.Dto.VacancyId)
+            .Where(r => r.VacancyId == query.VacancyId)
             .ToListAsync(cancellationToken);
 
         var reviewsDto = reviews?.Select(r => new ReviewDto(

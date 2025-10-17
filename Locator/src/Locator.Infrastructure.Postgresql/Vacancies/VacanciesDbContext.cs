@@ -17,8 +17,6 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
         // Database.EnsureDeleted();
         // Database.EnsureCreated();
     }
-    public DbSet<Vacancy> Vacancies { get; set; }
-    public IQueryable<Vacancy> ReadVacancies => Vacancies.AsNoTracking().AsQueryable();
     public DbSet<Review> Reviews { get; set; }
     public IQueryable<Review> ReadReviews => Reviews.AsNoTracking().AsQueryable();
     
@@ -32,23 +30,16 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.ApplyConfiguration(new VacanciesConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewsConfiguration());
         modelBuilder.ApplyConfiguration(new RatingsConfiguration());
         modelBuilder.ApplyConfiguration(new UsersConfiguration());
         
         // сиды
         // определяем вакансии
-        Vacancy developer = new Vacancy(1, "Разработчик .Net", 
-            "Разрабатывать сервисы на .Net");
-        Vacancy tester = new Vacancy(2,"Тестировщик .Net", 
-            "Тестировать сервисы на .Net");
         
         // определяем рейтинги
         VacancyRating developerRating = new VacancyRating(5.0, 1);
-        developer.RatingId = developerRating.Id;
         VacancyRating testerRating = new VacancyRating(3.5, 2);
-        tester.RatingId = testerRating.Id;
 
         // определяем отзывы
         Review developerReview = new Review(5.0, "Быстро отвечают", "Маша", 
@@ -63,7 +54,6 @@ public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
             DateTime.UtcNow, 1000);                    
         
         // добавляем данные для обеих сущностей
-        modelBuilder.Entity<Vacancy>().HasData(developer, tester);
         modelBuilder.Entity<Review>().HasData(developerReview, testerReview);
         modelBuilder.Entity<VacancyRating>().HasData(developerRating, testerRating);
         modelBuilder.Entity<User>().HasData(user);

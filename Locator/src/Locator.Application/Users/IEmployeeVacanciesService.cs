@@ -7,11 +7,15 @@ namespace Locator.Application.Users;
 
 public interface IEmployeeVacanciesService
 {
-    Task<Result<ResumesResponse, Error>> GetUserResumeIdsAsync(
+    Task<Result<ResumesResponse, Error>> GetResumeIdsAsync(
         string accessToken, 
         CancellationToken cancellationToken);
-    Task<Result<EmployeeVacanciesResponse, Error>> GetUserVacanciesAsync(
+    Task<Result<EmployeeVacanciesResponse, Error>> GetVacanciesMatchResumeAsync(
         string resumeId, 
         string accessToken, 
+        CancellationToken cancellationToken);
+    Task<Result<VacancyDto, Error>> GetVacancyByIdAsync(
+        string vacancyId,
+        string accessToken,
         CancellationToken cancellationToken);
 }

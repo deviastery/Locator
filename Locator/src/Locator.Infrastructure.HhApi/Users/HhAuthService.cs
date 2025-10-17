@@ -3,12 +3,15 @@ using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Locator.Application.Users;
 using Locator.Application.Users.Fails;
+using Locator.Application.Users.Fails.Exceptions;
 using Locator.Contracts.Users;
 using Locator.Domain.Users;
+using Locator.Infrastructure.HhApi.Users.Fails.Exceptions;
 using Locator.Infrastructure.Postgresql.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared;
+using Errors = Locator.Infrastructure.HhApi.Users.Fails.Errors;
 
 namespace Locator.Infrastructure.HhApi.Users;
 
@@ -75,7 +78,9 @@ public class HhAuthService : IAuthService
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
+        {
             return Errors.GetUserInfoFailed();
+        }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
         var user = JsonSerializer.Deserialize<UserDto>(json);
@@ -85,26 +90,29 @@ public class HhAuthService : IAuthService
     }
 
     public async Task<Result<string, Error>> GetValidEmployeeAccessTokenAsync(
-        Guid userId, 
+        Guid userId,
         CancellationToken cancellationToken)
     {
         var tokenRecord = await _usersDbContext.ReadEmployeeTokens
             .FirstOrDefaultAsync(t => t.UserId == userId, cancellationToken);
 
         if (tokenRecord == null)
-            throw new InvalidOperationException("Пользователь не авторизован в HH");
+        {
+            throw new UserUnauthorizedFailureException();
+        }
 
         DateTime createdDateTime = tokenRecord.CreatedAt;
         DateTime expiredDateTime = createdDateTime.AddSeconds(tokenRecord.ExpiresIn);
-        
-        if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
-            return tokenRecord.AccessToken;
 
-        var newEmployeeTokenResult = 
-            await GetRefreshTokenAsync(tokenRecord, cancellationToken);
+        if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
+        {
+            return tokenRecord.AccessToken;
+        }
+
+        var newEmployeeTokenResult =  await GetRefreshTokenAsync(tokenRecord, cancellationToken);
         if (newEmployeeTokenResult.IsFailure)
         {
-            throw new Exception();
+            return newEmployeeTokenResult.Error;
         }
         var newEmployeeToken = newEmployeeTokenResult.Value;
         
@@ -113,7 +121,7 @@ public class HhAuthService : IAuthService
             cancellationToken);
         if (newEmployeeTokensIdResult.IsFailure)
         {
-            throw new Exception();
+            return newEmployeeTokensIdResult.Error;
         }
         
         return newEmployeeToken.AccessToken;

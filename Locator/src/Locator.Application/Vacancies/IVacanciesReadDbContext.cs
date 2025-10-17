@@ -5,6 +5,5 @@ namespace Locator.Application.Vacancies;
 
 public interface IVacanciesReadDbContext
 {
-    IQueryable<Vacancy> ReadVacancies { get; }
     IQueryable<Review> ReadReviews { get; }
 }

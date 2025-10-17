@@ -11,22 +11,4 @@ public partial class Errors
         public static Error Failure(string message) =>
             Error.Failure($"Something went wrong: {message}", "server.failure");
     }
-    public static Error TokenExchangeFailed() =>
-        Error.Failure("Failed to exchange a token.", "token.exchange.fail");
-    public static Error TokenSaveFailed() =>
-        Error.Failure("Failed to save a token.", "token.save.fail");
-    public static Error InvalidTokenResponse() =>
-        Error.Failure("Invalid token response.", "invalid.token.response");        
-    public static Error GetUserInfoFailed() =>
-        Error.Failure("Failed to get user info.", "user.info.fail");
-    public static Error MissingEmail() =>
-        Error.Validation("Missing email address.", code: "missing.email");        
-    public static Error GetResumesFailed() =>
-        Error.Failure("Failed to get resumes.", "resumes.fail");
-    public static Error MissingResumes() =>
-        Error.Validation("Missing resumes.", "missing.resumes");        
-    public static Error GetVacanciesFailed() =>
-        Error.Failure("Failed to get vacancies.", "vacancies.fail");
-    public static Error MissingVacancies() =>
-        Error.Validation("Missing vacancies.", "missing.vacancies");
 }

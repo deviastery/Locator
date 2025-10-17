@@ -40,7 +40,13 @@ public class VacanciesController : ControllerBase
         [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
-        var dto = new GetVacancyIdDto(vacancyId);
+        if (!Guid.TryParse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var dto = new GetVacancyIdDto(vacancyId, userId);
         var query = new GetVacancyByIdQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
@@ -52,7 +58,13 @@ public class VacanciesController : ControllerBase
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateReviewCommand(vacancyId, request);
+        if (!Guid.TryParse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var command = new CreateReviewCommand(vacancyId, userId, request);
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
@@ -62,8 +74,7 @@ public class VacanciesController : ControllerBase
         [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
-        var dto = new GetVacancyIdDto(vacancyId);
-        var query = new GetReviewsByVacancyIdQuery(dto);
+        var query = new GetReviewsByVacancyIdQuery(vacancyId);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }

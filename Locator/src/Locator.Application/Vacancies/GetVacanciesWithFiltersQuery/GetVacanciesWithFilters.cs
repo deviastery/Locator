@@ -1,6 +1,8 @@
 ﻿using Locator.Application.Abstractions;
 using Locator.Application.Ratings;
 using Locator.Application.Users;
+using Locator.Application.Users.Fails.Exceptions;
+using Locator.Application.Vacancies.Fails.Exceptions;
 using Locator.Contracts.Users;
 using Locator.Contracts.Vacancies;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +12,17 @@ namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery>
 {
     private readonly IRatingsReadDbContext _ratingsDbContext;
-    private readonly IVacanciesRepository _vacanciesRepository;
     private readonly IEmployeeVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
     
     public GetVacanciesWithFilters(
         IRatingsReadDbContext ratingsDbContext, 
         IEmployeeVacanciesService vacanciesService, 
-        IAuthService authService, IVacanciesRepository vacanciesRepository)
+        IAuthService authService)
     {
         _ratingsDbContext = ratingsDbContext;
         _vacanciesService = vacanciesService;
         _authService = authService;
-        _vacanciesRepository = vacanciesRepository;
     }  
 
     public async Task<VacanciesResponse> Handle(
@@ -33,25 +33,29 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
         if (tokenResult.IsFailure)
         {
-            throw new Exception();
+            throw new GetValidEmployeeAccessTokenException();
         }
         var token = tokenResult.Value;
         
         var resumesResult = await _vacanciesService
-            .GetUserResumeIdsAsync(token, cancellationToken);
+            .GetResumeIdsAsync(token, cancellationToken);
         if (resumesResult.IsFailure)
         {
-            throw new Exception();
+            throw new GetResumeException();
         }
         
-        var resume = resumesResult.Value.Resumes
-            .FirstOrDefault(r => r.Status.Id == ResumeStatusEnum.PUBLISHED.ToString().ToLower());
+        var resume = resumesResult.Value?.Resumes?
+            .FirstOrDefault(r => r.Status?.Id == ResumeStatusEnum.PUBLISHED.ToString().ToLower());
+        if (resume is null)
+        {
+            throw new GetValidResumeNotFoundException();
+        }
         
         var vacanciesResult = await _vacanciesService
-            .GetUserVacanciesAsync(resume.Id, token, cancellationToken);
+            .GetVacanciesMatchResumeAsync(resume.Id, token, cancellationToken);
         if (vacanciesResult.IsFailure)
         {
-            throw new Exception();
+            throw new GetVacanciesMatchResumeFailureException();
         }
         
         var vacancies = vacanciesResult.Value.Vacancies;
