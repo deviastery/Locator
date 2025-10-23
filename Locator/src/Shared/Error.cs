@@ -18,7 +18,7 @@ public record Error
         InvalidField = invalidField;
     }
 
-    public static Error NotFound<T>(string message, T id, string code = null) => 
+    public static Error NotFound<T>(string message, T id, string? code = null) => 
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
     
     public static Error Validation(string message, string? invalidField = null, string? code = null) => 

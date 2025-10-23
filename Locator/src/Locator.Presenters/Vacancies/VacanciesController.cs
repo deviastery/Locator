@@ -2,10 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Vacancies.CreateReviewCommand;
+using Locator.Application.Vacancies.GetNegotiationByVacancyIdQuery;
+using Locator.Application.Vacancies.GetNegotiationsQuery;
 using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 using Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 using Locator.Application.Vacancies.GetVacancyByIdQuery;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Responses;
 using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +32,7 @@ public class VacanciesController : ControllerBase
         {
             return Unauthorized("User ID not found in token.");
         }
-        var dto = new GetVacanciesByUserId(userId, request);
+        var dto = new GetVacanciesByUserIdDto(userId, request);
         var query = new GetVacanciesWithFiltersQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
@@ -51,10 +54,29 @@ public class VacanciesController : ControllerBase
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
-    [HttpPost("{vacancyId:long}/reviews")]
+    [HttpGet("{vacancyId:long}/negotiations")]
+    public async Task<IActionResult> GetNegotiationByVacancyId(
+        [FromServices] IQueryHandler<NegotiationByVacancyIdResponse, GetNegotiationByVacancyIdQuery> queryHandler,
+        [FromRoute] long vacancyId,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var dto = new GetNegotiationByVacancyIdDto(userId, vacancyId);
+        var query = new GetNegotiationByVacancyIdQuery(dto);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        return Ok(result);
+    }
+    
+    [HttpPost("{vacancyId:long}/reviews/{negotiationId:long}")]
     public async Task<IActionResult> CreateReview(
         [FromServices] ICommandHandler<Guid, CreateReviewCommand> commandHandler,
         [FromRoute] long vacancyId,
+        [FromRoute] long negotiationId,
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
@@ -64,7 +86,7 @@ public class VacanciesController : ControllerBase
         {
             return Unauthorized("User ID not found in token.");
         }
-        var command = new CreateReviewCommand(vacancyId, userId, request);
+        var command = new CreateReviewCommand(vacancyId, negotiationId, userId, request);
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
@@ -75,6 +97,23 @@ public class VacanciesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var query = new GetReviewsByVacancyIdQuery(vacancyId);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        return Ok(result);
+    }
+    [HttpGet("negotiations")]
+    public async Task<IActionResult> GetNegotiations(
+        [FromServices] IQueryHandler<NegotiationsResponse, GetNegotiationsQuery> queryHandler,
+        [FromQuery] GetNegotiationsDto request,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var dto = new GetNegotiationsByUserIdDto(userId, request);
+        var query = new GetNegotiationsQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }

@@ -2,4 +2,4 @@
 
 namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 
-public record PrepareToUpdateVacancyRatingCommand(long vacancyId) : ICommand;
+public record PrepareToUpdateVacancyRatingCommand(long VacancyId) : ICommand;

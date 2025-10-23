@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
-using Locator.Contracts.Ratings;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Ratings.Responses;
+using Locator.Contracts.Vacancies.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +27,7 @@ public class RatingsController : ControllerBase
         {
             return Unauthorized("User ID not found in token.");
         }
+
         var dto = new GetVacancyIdDto(vacancyId, userId);
         var query = new GetRatingByVacancyIdQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);

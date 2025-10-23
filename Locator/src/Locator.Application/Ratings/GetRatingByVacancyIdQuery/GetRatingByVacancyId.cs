@@ -1,5 +1,7 @@
 ﻿using Locator.Application.Abstractions;
 using Locator.Contracts.Ratings;
+using Locator.Contracts.Ratings.Dtos;
+using Locator.Contracts.Ratings.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locator.Application.Ratings.GetRatingByVacancyIdQuery;
@@ -20,6 +22,10 @@ public class GetRatingByVacancyId : IQueryHandler<RatingByVacancyIdResponse, Get
         var rating = await _ratingsDbContext.ReadVacancyRatings
             .Where(r => r.EntityId == query.Dto.VacancyId)
             .FirstOrDefaultAsync(cancellationToken);
+        if (rating == null)
+        {
+            return new RatingByVacancyIdResponse(null);
+        }
 
         var ratingDto = new VacancyRatingDto(
             rating.Id,

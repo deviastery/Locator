@@ -31,9 +31,4 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
             .ToListAsync(cancellationToken);
         return reviews;
     }
-    public async Task<int> GetDaysAfterApplyingAsync(long vacancyId, string userName, CancellationToken cancellationToken)
-    {
-        // TODO: Соответствующий запрос на HH Api + бизнес логика
-        return 6;
-    }
 }

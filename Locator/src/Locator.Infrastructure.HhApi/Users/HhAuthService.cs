@@ -2,9 +2,8 @@
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Locator.Application.Users;
-using Locator.Application.Users.Fails;
-using Locator.Application.Users.Fails.Exceptions;
-using Locator.Contracts.Users;
+using Locator.Contracts.Users.Dtos;
+using Locator.Contracts.Users.Responses;
 using Locator.Domain.Users;
 using Locator.Infrastructure.HhApi.Users.Fails.Exceptions;
 using Locator.Infrastructure.Postgresql.Users;
@@ -106,7 +105,7 @@ public class HhAuthService : IAuthService
 
         if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
         {
-            return tokenRecord.AccessToken;
+            return tokenRecord.Token;
         }
 
         var newEmployeeTokenResult =  await GetRefreshTokenAsync(tokenRecord, cancellationToken);
@@ -124,7 +123,7 @@ public class HhAuthService : IAuthService
             return newEmployeeTokensIdResult.Error;
         }
         
-        return newEmployeeToken.AccessToken;
+        return newEmployeeToken.Token;
     }
     
     private async Task<Result<EmployeeToken, Error>> GetRefreshTokenAsync(
@@ -156,7 +155,7 @@ public class HhAuthService : IAuthService
         }
 
         tokenRecord.RefreshToken = token.RefreshToken;
-        tokenRecord.AccessToken = token.AccessToken;
+        tokenRecord.Token = token.AccessToken;
         tokenRecord.CreatedAt = DateTime.UtcNow;
         tokenRecord.ExpiresIn = token.ExpiresIn;
         

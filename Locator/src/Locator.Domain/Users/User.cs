@@ -1,3 +1,5 @@
+using Locator.Domain.Thesauruses;
+
 namespace Locator.Domain.Users;
 
 public class User
@@ -9,7 +11,6 @@ public class User
         Name = name;
         Email = email;
         Role = role;
-        
     }
     public Guid Id { get; set; }
     public long EmployeeId { get; set; }

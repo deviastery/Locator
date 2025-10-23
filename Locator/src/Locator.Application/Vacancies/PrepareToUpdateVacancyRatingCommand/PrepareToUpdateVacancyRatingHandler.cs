@@ -3,7 +3,7 @@ using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
 using Locator.Application.Ratings.UpdateVacancyRatingCommand;
-using Locator.Contracts.Ratings;
+using Locator.Contracts.Ratings.Dtos;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -35,7 +35,7 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
     {
         // Get all reviews of a vacancy
         var reviewsVacancyId = await _vacanciesRepository.GetReviewsByVacancyIdAsync(
-            command.vacancyId, cancellationToken);
+            command.VacancyId, cancellationToken);
 
         // Calculate average mark
         var averageMarkResult = Review.CalculateAverageMark(reviewsVacancyId);
@@ -45,7 +45,7 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         }
         
         // Input data validation
-        var vacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
+        var vacancyRatingDto = new UpdateVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
         var validationResult = await _validator.ValidateAsync(vacancyRatingDto, cancellationToken);
         if (!validationResult.IsValid)
         {
@@ -53,7 +53,7 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         }
 
         // Create VacancyRating
-        var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
+        var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
         var updateVacancyRatingCommand = new UpdateVacancyRatingCommand(updateVacancyRatingDto);
         var createVacancyRatingResult = await _updateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);

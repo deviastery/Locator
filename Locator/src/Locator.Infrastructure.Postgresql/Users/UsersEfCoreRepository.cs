@@ -16,25 +16,6 @@ public class UsersEfCoreRepository : IUsersRepository
         _usersDbContext = usersDbContext;
     }
 
-    public async Task<Result<User?, Error>> GetUserByEmployeeIdAsync(long id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var user = await _usersDbContext.Users
-                .SingleOrDefaultAsync(u => u.EmployeeId == id, cancellationToken);
-
-            if (user == null)
-            {
-                return Errors.General.NotFound(id);
-            }
-            return user;
-        }
-        catch (Exception e)
-        {
-            return Errors.General.Failure(e.Message);
-        }
-    }
-
     public async Task<Result<Guid, Error>> CreateUserAsync(User user, CancellationToken cancellationToken)
     {
         try
@@ -83,7 +64,7 @@ public class UsersEfCoreRepository : IUsersRepository
             }
             
             newToken.RefreshToken = token.RefreshToken;
-            newToken.AccessToken = token.AccessToken;
+            newToken.Token = token.Token;
             newToken.CreatedAt = DateTime.UtcNow;
             newToken.ExpiresIn = token.ExpiresIn;
             
@@ -126,7 +107,7 @@ public class UsersEfCoreRepository : IUsersRepository
             }
             var newToken = await _usersDbContext.RefreshTokens.AddAsync(token, cancellationToken);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
-            return newToken.Entity.Token.ToString();
+            return newToken.Entity.Token;
         }
         catch (Exception e)
         {
@@ -148,7 +129,7 @@ public class UsersEfCoreRepository : IUsersRepository
 
             _usersDbContext.Remove(deletedToken);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
-            return token.Token.ToString();
+            return token.Token;
         }
         catch (Exception e)
         {

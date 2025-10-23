@@ -13,7 +13,7 @@ public static class DependencyInjection
         services.Configure<HhApiConfiguration>(configuration
             .GetSection(HhApiConfiguration.SectionName));
         
-        services.AddHttpClient<IEmployeeVacanciesService, HhEmployeeVacanciesService>();
+        services.AddHttpClient<IVacanciesService, HhVacanciesService>();
         
         return services;
     }

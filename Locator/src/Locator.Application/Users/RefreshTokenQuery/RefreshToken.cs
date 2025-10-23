@@ -1,6 +1,5 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Application.Users.Fails.Exceptions;
-using Locator.Contracts.Users;
+using Locator.Contracts.Users.Responses;
 
 namespace Locator.Application.Users.RefreshTokenQuery;
 
@@ -15,7 +14,7 @@ public class RefreshToken: IQueryHandler<RefreshTokenResponse, RefreshTokenQuery
 
     public async Task<RefreshTokenResponse> Handle(RefreshTokenQuery query, CancellationToken cancellationToken)
     {
-        var jwtToken = 
+        string jwtToken = 
             await _jwtProvider.RefreshAccessTokenAsync(query.RefreshToken, cancellationToken);
 
         return new RefreshTokenResponse(jwtToken);

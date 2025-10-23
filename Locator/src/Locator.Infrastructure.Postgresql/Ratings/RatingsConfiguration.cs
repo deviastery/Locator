@@ -9,7 +9,7 @@ public class RatingsConfiguration : IEntityTypeConfiguration<Domain.Ratings.Rati
 {
     public void Configure(EntityTypeBuilder<Domain.Ratings.Rating> builder)
     {
-        var ratingEntityTypes = string.Join(", ", Enum.GetNames<EntityType>().Select(name => $"'{name}'"));
+        string ratingEntityTypes = string.Join(", ", Enum.GetNames<EntityType>().Select(name => $"'{name}'"));
         
         builder.UseTpcMappingStrategy();
         

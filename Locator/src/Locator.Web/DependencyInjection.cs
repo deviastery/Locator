@@ -49,7 +49,7 @@ public static class DependencyInjection
                 In = ParameterLocation.Header,
                 Description = "Enter 'Bearer [token]'",
             });
-
+            
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {

@@ -1,20 +1,22 @@
 ﻿namespace Locator.Domain.Users;
 
-public record EmployeeToken : Token
+public class EmployeeToken : BaseToken
 {
     public EmployeeToken(
-        Guid userId, 
-        string accessToken, 
+        string token, 
         string refreshToken, 
         DateTime createdAt, 
         long expiresIn, 
+        Guid userId, 
         string tokenType = "bearer")
-    : base(accessToken, refreshToken, createdAt, expiresIn, tokenType)
+    : base(token, createdAt, expiresIn)
     {
-        Id = Guid.NewGuid();
+        RefreshToken = refreshToken;
         UserId = userId;
+        TokenType = tokenType;
     }
     
-    public Guid Id { get; set; }
+    public string TokenType { get; set; }
+    public string RefreshToken { get; set; }
     public Guid UserId { get; set; }
 }

@@ -1,6 +1,8 @@
-﻿using Locator.Application.Abstractions;
+﻿using CSharpFunctionalExtensions;
+using Locator.Application.Abstractions;
 using Locator.Application.Users.Fails.Exceptions;
-using Locator.Contracts.Users;
+using Locator.Contracts.Users.Dtos;
+using Locator.Contracts.Users.Responses;
 using Locator.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,15 +41,14 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         {
             throw new ExchangeCodeForTokenFailureException();
         }
-        var (newEmployeeToken, newCreatedAt) = tokenResult.Value;
+        (AccessTokenResponse newEmployeeToken, DateTime newCreatedAt) = tokenResult.Value;
 
         // Get info about user
-        var userAuthResult = await _authService.GetUserInfoAsync(newEmployeeToken.AccessToken, cancellationToken);
-        if (userAuthResult.IsFailure)
+        (_, bool isFailure, UserDto? employeeUser) = await _authService.GetUserInfoAsync(newEmployeeToken.AccessToken, cancellationToken);
+        if (isFailure)
         {
             throw new GetUserInfoFailureException();
         }
-        var employeeUser = userAuthResult.Value;
 
         // Find user in DB or create new user
         var user = await _usersDbContext.ReadUsers
@@ -67,8 +68,8 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         }
         
         // Save employee tokens with user data
-        var newEmployeeTokenDto = new EmployeeToken(user.Id, newEmployeeToken.AccessToken, newEmployeeToken.RefreshToken,
-            newCreatedAt, newEmployeeToken.ExpiresIn);
+        var newEmployeeTokenDto = new EmployeeToken(newEmployeeToken.AccessToken, newEmployeeToken.RefreshToken,
+            newCreatedAt, newEmployeeToken.ExpiresIn, user.Id);
         var saveTokensResult = await _usersRepository.CreateEmployeeTokenAsync(newEmployeeTokenDto, cancellationToken);
         if (saveTokensResult.IsFailure)
         {

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Locator.Contracts.Ratings;
+using Locator.Contracts.Ratings.Dtos;
 
 namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 

@@ -14,25 +14,6 @@ public class RatingsEfCoreRepository : IRatingsRepository
     {
         _ratingsDbContext = ratingsDbContext;
     }
-    
-    public async Task<Result<VacancyRating, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var vacancyRating = await _ratingsDbContext.VacancyRatings
-                .SingleOrDefaultAsync(r => r.Id == ratingId, cancellationToken);
-
-            if (vacancyRating == null)
-            {
-                return Errors.General.NotFound(ratingId);
-            }
-            return vacancyRating;
-        }
-        catch (Exception e)
-        {
-            return Errors.General.Failure(e.Message);
-        }
-    }
 
     public async Task<Result<Guid, Error>> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken)
     {
@@ -47,9 +28,6 @@ public class RatingsEfCoreRepository : IRatingsRepository
             }
             
             ratingRecord.Value = rating.Value;
-            await _ratingsDbContext.SaveChangesAsync(cancellationToken);
-            return rating.Id;
-            
             await _ratingsDbContext.SaveChangesAsync(cancellationToken);
             return ratingRecord.Id;
         }

@@ -1,10 +1,11 @@
-﻿using Locator.Application.Abstractions;
+﻿using CSharpFunctionalExtensions;
+using Locator.Application.Abstractions;
 using Locator.Application.Ratings;
 using Locator.Application.Users;
-using Locator.Application.Users.Fails.Exceptions;
 using Locator.Application.Vacancies.Fails.Exceptions;
-using Locator.Contracts.Users;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Responses;
+using Locator.Domain.Thesauruses;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
@@ -12,12 +13,12 @@ namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery>
 {
     private readonly IRatingsReadDbContext _ratingsDbContext;
-    private readonly IEmployeeVacanciesService _vacanciesService;
+    private readonly IVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
     
     public GetVacanciesWithFilters(
         IRatingsReadDbContext ratingsDbContext, 
-        IEmployeeVacanciesService vacanciesService, 
+        IVacanciesService vacanciesService, 
         IAuthService authService)
     {
         _ratingsDbContext = ratingsDbContext;
@@ -29,14 +30,13 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         GetVacanciesWithFiltersQuery query,
         CancellationToken cancellationToken)
     {
-        var tokenResult = await _authService
+        (_, bool isFailure, string? token) = await _authService
             .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
-        if (tokenResult.IsFailure)
+        if (isFailure)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
-        var token = tokenResult.Value;
-        
+
         var resumesResult = await _vacanciesService
             .GetResumeIdsAsync(token, cancellationToken);
         if (resumesResult.IsFailure)
@@ -52,17 +52,17 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         }
         
         var vacanciesResult = await _vacanciesService
-            .GetVacanciesMatchResumeAsync(resume.Id, token, cancellationToken);
-        if (vacanciesResult.IsFailure)
+            .GetVacanciesMatchResumeAsync(resume.Id, query.Dto.Query, token, cancellationToken);
+        if (vacanciesResult.IsFailure || vacanciesResult.Value.Vacancies == null)
         {
             throw new GetVacanciesMatchResumeFailureException();
         }
         
         var vacancies = vacanciesResult.Value.Vacancies;
         long count = vacanciesResult.Value.Count;
-        var page = vacanciesResult.Value.Page;
-        var pages = vacanciesResult.Value.Pages;
-        var perPage = vacanciesResult.Value.PerPage;
+        int page = vacanciesResult.Value.Page;
+        int pages = vacanciesResult.Value.Pages;
+        int perPage = vacanciesResult.Value.PerPage;
         
         var vacancyIds = vacancies
             .Select(v => long.Parse(v.Id)).ToList();
@@ -74,7 +74,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         var vacanciesDto = vacancies.Select(v => new FullVacancyDto(
             long.Parse(v.Id),
             v,
-            ratingsDict.TryGetValue(long.Parse(v.Id), out var rating) ? rating : null
+            ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null
         ));
         
         return new VacanciesResponse(count, vacanciesDto, page, pages, perPage);

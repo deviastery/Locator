@@ -27,4 +27,10 @@ public partial class Errors
         Error.Failure("Failed to get vacancies.", "vacancies.fail");
     public static Error MissingVacancies() =>
         Error.Validation("Missing vacancies.", "missing.vacancies");
+    public static Error MissingNegotiations() =>
+        Error.Validation("Missing negotiations.", "missing.negotiations");        
+    public static Error GetNegotiationsFailed() =>
+        Error.Failure("Failed to get negotiation.", "negotiation.fail");       
+    public static Error EnumQueryValidationFailed() =>
+        Error.Validation("Enum query is not valid.", code: "Enum.query.invalid");
 }

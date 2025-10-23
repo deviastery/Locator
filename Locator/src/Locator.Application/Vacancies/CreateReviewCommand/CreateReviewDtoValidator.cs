@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dtos;
 
 namespace Locator.Application.Vacancies.CreateReviewCommand;
 

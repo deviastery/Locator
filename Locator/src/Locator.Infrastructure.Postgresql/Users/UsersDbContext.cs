@@ -20,9 +20,6 @@ public class UsersDbContext : DbContext, IUsersReadDbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new UsersConfiguration());
-        modelBuilder.Entity<RefreshToken>(entity =>
-        {
-            entity.HasKey(rt => rt.Token);
-        });
+        modelBuilder.ApplyConfiguration(new TokensConfiguration());
     }
 }

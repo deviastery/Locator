@@ -4,7 +4,7 @@ using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
 using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dtos;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -15,7 +15,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
 {
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
-    private readonly IEmployeeVacanciesService _vacanciesService;
+    private readonly IVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
     private readonly IValidator<CreateReviewDto> _validator;
     private readonly ILogger<CreateReviewCommandHandler> _logger;
@@ -23,7 +23,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
     public CreateReviewCommandHandler(
         IVacanciesRepository vacanciesRepository,
         ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
-        IEmployeeVacanciesService vacanciesService, 
+        IVacanciesService vacanciesService, 
         IAuthService authService,
         IValidator<CreateReviewDto> validator, 
         ILogger<CreateReviewCommandHandler> logger)
@@ -56,26 +56,31 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
         }
         
         // Get Token
-        var tokenResult = await _authService
+        (_, bool isFailure, string? token, Error? error) = await _authService
             .GetValidEmployeeAccessTokenAsync(command.UserId, cancellationToken);
-        if (tokenResult.IsFailure)
+        if (isFailure)
         {
-            return tokenResult.Error.ToFailure();
+            return error.ToFailure();
         }
-        var token = tokenResult.Value;
-        
+
         // Validation of business logic
-        // Existing vacancy
-        var vacancyResult = await _vacanciesService
-            .GetVacancyByIdAsync(command.VacancyId.ToString(), token, cancellationToken);
-        if (vacancyResult.IsFailure)
+        // Existing negotiation
+        var negotiationResult = await _vacanciesService
+            .GetNegotiationByVacancyIdAsync(command.VacancyId, token, cancellationToken);
+        if (negotiationResult.IsFailure)
         {
-            return vacancyResult.Error.ToFailure();
+            return negotiationResult.Error.ToFailure();
         }
         
         // Possible to leave a review
-        int daysAfterApplying =
-            await _vacanciesRepository.GetDaysAfterApplyingAsync(command.VacancyId, command.ReviewDto.UserName, cancellationToken);
+        var daysAfterApplyingResult =
+            await _vacanciesService.GetDaysAfterApplyingAsync(command.NegotiationId, token, cancellationToken);
+        if (daysAfterApplyingResult.IsFailure)
+        {
+            return daysAfterApplyingResult.Error.ToFailure();
+        }
+        int daysAfterApplying = daysAfterApplyingResult.Value;
+        
         var isReadyForReviewResult = IsVacancyReadyForReview(daysAfterApplying);
         if (isReadyForReviewResult.IsFailure)
         {
@@ -83,7 +88,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
         }
         
         // Create Review
-        var review = new Review(command.ReviewDto.Mark, command.ReviewDto?.Comment, command.ReviewDto.UserName, command.VacancyId);
+        var review = new Review(command.ReviewDto.Mark, command.ReviewDto.Comment, command.ReviewDto.UserName, command.VacancyId);
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);
         

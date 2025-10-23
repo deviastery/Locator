@@ -1,19 +1,17 @@
 ﻿namespace Locator.Domain.Users;
 
-public record Token
+public abstract class BaseToken
 {
-    public Token(string accessToken, string refreshToken, DateTime createdAt, long expiresIn, string tokenType = "bearer")
+    public BaseToken(string token, DateTime createdAt, long expiresIn)
     {
-        AccessToken = accessToken;
-        TokenType = tokenType;
-        RefreshToken = refreshToken;
+        Id = Guid.NewGuid();
+        Token = token;
         CreatedAt = createdAt;
         ExpiresIn = expiresIn;
     }
-
-    public string AccessToken { get; set; }
-    public string TokenType { get; set; }
-    public string RefreshToken { get; set; }
+    
+    public Guid Id { get; init; }
+    public string Token { get; set; }
     public DateTime CreatedAt { get; set; } 
     public long ExpiresIn { get; set; } 
 }

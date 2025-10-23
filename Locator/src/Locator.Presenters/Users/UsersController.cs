@@ -1,11 +1,10 @@
 using Locator.Application.Abstractions;
 using Locator.Application.Users.AuthQuery;
 using Locator.Application.Users.RefreshTokenQuery;
-using Locator.Contracts.Users;
-using Microsoft.AspNetCore.Http;
+using Locator.Contracts.Users.Dtos;
+using Locator.Contracts.Users.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Shared;
 
 namespace Locator.Presenters.Users;
 
@@ -67,20 +66,12 @@ public class UsersController : ControllerBase
         var query = new RefreshTokenQuery(refreshToken);
         var result = await queryHandler.Handle(query, cancellationToken);
 
-        if (result.jwtToken == null)
+        if (result.JwtToken == null)
         {
             return Unauthorized();
         }
         
-        context.Response.Cookies.Append("tasty-cookie", result.jwtToken);
+        context.Response.Cookies.Append("tasty-cookie", result.JwtToken);
         return Ok();
-    }
-    
-    [HttpGet("{vacancyId:guid}")]
-    public async Task<IActionResult> GetUsersRespondedToVacancyById(
-        [FromRoute] Guid vacancyId,
-        CancellationToken cancellationToken)
-    {
-        return Ok("Users get");
     }
 }

@@ -1,3 +1,16 @@
 ﻿namespace Locator.Domain.Users;
 
-public record RefreshToken(Guid Token, DateTime ExpiresIn, Guid UserId);
+public class RefreshToken : BaseToken
+{
+    public RefreshToken(
+        string token, 
+        DateTime createdAt, 
+        long expiresIn,
+        Guid userId)
+        : base(token, createdAt, expiresIn)
+    {
+        UserId = userId;
+    }
+    
+    public Guid UserId { get; set; }
+}

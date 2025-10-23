@@ -1,5 +1,6 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
@@ -21,13 +22,13 @@ public class GetReviewsByVacancyId : IQueryHandler<ReviewsByVacancyIdResponse, G
             .Where(r => r.VacancyId == query.VacancyId)
             .ToListAsync(cancellationToken);
 
-        var reviewsDto = reviews?.Select(r => new ReviewDto(
+        var reviewsDto = reviews.Select(r => new ReviewDto(
             r.Id,
             r.Mark,
             r.Comment,
             r.UserName
         ));
 
-        return new ReviewsByVacancyIdResponse(reviewsDto ?? new List<ReviewDto>());
+        return new ReviewsByVacancyIdResponse(reviewsDto);
     }
 }

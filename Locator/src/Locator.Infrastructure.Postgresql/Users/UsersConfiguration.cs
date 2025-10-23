@@ -1,4 +1,5 @@
-﻿using Locator.Domain.Users;
+﻿using Locator.Domain.Thesauruses;
+using Locator.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,7 +9,7 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        var userTypes = string.Join(", ", Enum.GetNames<RoleType>().Select(name => $"'{name}'"));
+        string userTypes = string.Join(", ", Enum.GetNames<RoleType>().Select(name => $"'{name}'"));
         
         builder
             .Property(u => u.Id)

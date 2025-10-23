@@ -58,7 +58,8 @@ public class JwtProvider : IJwtProvider
         }
         var refreshTokenRecord = refreshTokenResult.Value;
         
-        if (refreshTokenRecord.ExpiresIn.ToUniversalTime() < DateTime.UtcNow)
+        var expiresAt = DateTimeOffset.FromUnixTimeSeconds(refreshTokenRecord.ExpiresIn).UtcDateTime;
+        if (expiresAt < DateTime.UtcNow)
         {
             throw new RefreshTokenHasExpiredBadRequestException();
         }
@@ -79,15 +80,16 @@ public class JwtProvider : IJwtProvider
         return GenerateJwtToken(user).Token;
     }
 
-    public async Task<string?> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken)
     {
         _ = int.TryParse(_jwtOptions.RefreshTokenValidityMins, out int validityMins) ? validityMins : 30;
         var refreshToken = new RefreshToken(
-            Guid.NewGuid(),
-            DateTime.UtcNow.AddMinutes(validityMins),
+            Guid.NewGuid().ToString(),
+            DateTime.UtcNow,
+            validityMins,
             userId);
         await _usersRepository.CreateRefreshTokenAsync(refreshToken, cancellationToken);
 
-        return refreshToken.Token.ToString();
+        return refreshToken.Token;
     }    
 }
