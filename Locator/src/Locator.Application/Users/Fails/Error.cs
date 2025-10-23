@@ -6,6 +6,8 @@ public partial class Errors
 {
     public static class General
     {
+        public static Error Unauthorized() =>
+            Error.Unauthorized("The user is not authorized.");
         public static Error NotFound<T>(T id) =>
             Error.NotFound("Record not found.", id, "record.not.found");
         public static Error Failure(string message) =>

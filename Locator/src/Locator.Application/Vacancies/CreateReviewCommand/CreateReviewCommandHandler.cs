@@ -74,7 +74,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
         
         // Possible to leave a review
         var daysAfterApplyingResult =
-            await _vacanciesService.GetDaysAfterApplyingAsync(command.NegotiationId, token, cancellationToken);
+            await _vacanciesService.GetDaysAfterApplyingAsync(command.ReviewDto.NegotiationId, token, cancellationToken);
         if (daysAfterApplyingResult.IsFailure)
         {
             return daysAfterApplyingResult.Error.ToFailure();

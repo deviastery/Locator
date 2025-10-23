@@ -2,7 +2,6 @@
 using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
-using Locator.Contracts.Ratings;
 using Locator.Contracts.Ratings.Dtos;
 using Locator.Domain.Ratings;
 using Microsoft.EntityFrameworkCore;

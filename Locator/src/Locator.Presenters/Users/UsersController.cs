@@ -1,10 +1,13 @@
 using Locator.Application.Abstractions;
 using Locator.Application.Users.AuthQuery;
+using Locator.Application.Users.Cookies;
 using Locator.Application.Users.RefreshTokenQuery;
 using Locator.Contracts.Users.Dtos;
 using Locator.Contracts.Users.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Shared.Fails.Exceptions;
+using Shared.Options;
 
 namespace Locator.Presenters.Users;
 
@@ -21,19 +24,17 @@ public class UsersController : ControllerBase
     [HttpGet("auth")]
     public IActionResult Auth()
     {
-        string? redirectUri = _configuration["HhApi:RedirectUri"];
-        string? clientId = _configuration["HhApi:ClientId"];
-        string scope = "user:read";
-        if (redirectUri == null || clientId == null)
+        var hhApiOptions = _configuration.GetSection(HhApiOptions.SECTION_NAME).Get<HhApiOptions>();
+        if (hhApiOptions == null)
         {
-            return BadRequest();
+            throw new ConfigurationFailureException("Failed to get hh api options.");
         }
         
         string url = $"https://hh.ru/oauth/authorize?" +
                      $"response_type=code&" +
-                     $"client_id={Uri.EscapeDataString(clientId)}&" +
-                     $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
-                     $"scope={Uri.EscapeDataString(scope)}";
+                     $"client_id={Uri.EscapeDataString(hhApiOptions.ClientId)}&" +
+                     $"redirect_uri={Uri.EscapeDataString(hhApiOptions.RedirectUri)}&" +
+                     $"scope={Uri.EscapeDataString(hhApiOptions.Scope)}";
         
         return Redirect(url);
     }
@@ -44,6 +45,12 @@ public class UsersController : ControllerBase
         [FromQuery] AuthorizationCodeDto request,
         CancellationToken cancellationToken)
     {
+        var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
+        }
+        
         var context = HttpContext;
         var query = new AuthQuery(request);
         var result = await queryHandler.Handle(query, cancellationToken);
@@ -51,7 +58,7 @@ public class UsersController : ControllerBase
         {
             return StatusCode(500);
         }
-        context.Response.Cookies.Append("tasty-cookie", result.AccessToken);
+        context.Response.Cookies.Append(cookiesOptions.JwtName, result.AccessToken);
         
         return Ok();
     }    
@@ -62,6 +69,13 @@ public class UsersController : ControllerBase
         [FromQuery] string refreshToken,
         CancellationToken cancellationToken)
     {
+        
+        var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
+        }
+        
         var context = HttpContext;
         var query = new RefreshTokenQuery(refreshToken);
         var result = await queryHandler.Handle(query, cancellationToken);
@@ -71,7 +85,7 @@ public class UsersController : ControllerBase
             return Unauthorized();
         }
         
-        context.Response.Cookies.Append("tasty-cookie", result.JwtToken);
+        context.Response.Cookies.Append(cookiesOptions.JwtName, result.JwtToken);
         return Ok();
     }
 }

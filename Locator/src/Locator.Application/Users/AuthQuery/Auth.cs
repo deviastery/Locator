@@ -80,7 +80,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
 
         // Generate JWT-token 
-        string? refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
+        string refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
         
         return new AuthResponse(user.Name, jwtToken, tokenExpiry, refreshToken);
     } 

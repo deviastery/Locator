@@ -1,11 +1,14 @@
 ﻿using System.Text;
-using Locator.Application.Users.Fails.Exceptions;
+using System.Text.Json;
+using Locator.Application.Users.Cookies;
+using Locator.Application.Users.Fails;
 using Locator.Application.Users.JwtTokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Fails.Exceptions;
 
 namespace Locator.Application.Users.Extensions;
 
@@ -18,7 +21,12 @@ public static class AuthExtension
         var jwtOptions = configuration.GetSection(JwtOptions.SECTION_NAME).Get<JwtOptions>();
         if (jwtOptions == null)
         {
-            throw new GetJwtOptionsFailureException();
+            throw new ConfigurationFailureException("Failed to get jwt options.");
+        }
+        var cookiesOptions = configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
         }
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -39,9 +47,19 @@ public static class AuthExtension
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["tasty-cookie"];
+                        context.Token = context.Request.Cookies[cookiesOptions.JwtName];
                         
                         return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse(); 
+
+                        var result = Errors.General.Unauthorized();
+
+                        context.Response.StatusCode = 401;
+                        context.Response.ContentType = "application/json; charset=utf-8";
+                        return context.Response.WriteAsync(JsonSerializer.Serialize(result));
                     },
                 };
             });

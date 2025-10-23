@@ -1,10 +1,6 @@
-﻿using CSharpFunctionalExtensions;
-using Locator.Application.Vacancies;
-using Locator.Application.Vacancies.Fails;
+﻿using Locator.Application.Vacancies;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using Errors = Locator.Application.Users.Fails.Errors;
 
 namespace Locator.Infrastructure.Postgresql.Vacancies;
 

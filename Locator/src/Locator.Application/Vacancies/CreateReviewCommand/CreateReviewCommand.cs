@@ -4,4 +4,4 @@ using Locator.Contracts.Vacancies.Dtos;
 
 namespace Locator.Application.Vacancies.CreateReviewCommand;
 
-public record CreateReviewCommand(long VacancyId, long NegotiationId, Guid UserId, CreateReviewDto ReviewDto) : ICommand;
+public record CreateReviewCommand(long VacancyId, Guid UserId, CreateReviewDto ReviewDto) : ICommand;

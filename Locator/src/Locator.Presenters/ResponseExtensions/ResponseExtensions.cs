@@ -32,6 +32,7 @@ public static class ResponseExtensions
         {
             ErrorType.VALIDATION => StatusCodes.Status400BadRequest,
             ErrorType.NOT_FOUND => StatusCodes.Status404NotFound,
+            ErrorType.UNAUTHORIZED => StatusCodes.Status401Unauthorized,
             ErrorType.FAILURE => StatusCodes.Status500InternalServerError,
             ErrorType.CONFLICT => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError

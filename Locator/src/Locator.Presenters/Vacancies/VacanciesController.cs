@@ -72,11 +72,10 @@ public class VacanciesController : ControllerBase
         return Ok(result);
     }
     
-    [HttpPost("{vacancyId:long}/reviews/{negotiationId:long}")]
+    [HttpPost("{vacancyId:long}/reviews")]
     public async Task<IActionResult> CreateReview(
         [FromServices] ICommandHandler<Guid, CreateReviewCommand> commandHandler,
         [FromRoute] long vacancyId,
-        [FromRoute] long negotiationId,
         [FromBody] CreateReviewDto request,
         CancellationToken cancellationToken)
     {
@@ -86,7 +85,7 @@ public class VacanciesController : ControllerBase
         {
             return Unauthorized("User ID not found in token.");
         }
-        var command = new CreateReviewCommand(vacancyId, negotiationId, userId, request);
+        var command = new CreateReviewCommand(vacancyId, userId, request);
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }

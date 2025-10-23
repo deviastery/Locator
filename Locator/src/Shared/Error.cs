@@ -18,6 +18,8 @@ public record Error
         InvalidField = invalidField;
     }
 
+    public static Error Unauthorized(string message, string? code = null) => 
+        new(code ?? "user.unauthorized", message, ErrorType.UNAUTHORIZED);
     public static Error NotFound<T>(string message, T id, string? code = null) => 
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
     
@@ -45,6 +47,11 @@ public enum ErrorType
     /// </summary>
     VALIDATION,
 
+    /// <summary>
+    /// Error not found
+    /// </summary>
+    UNAUTHORIZED,
+    
     /// <summary>
     /// Error not found
     /// </summary>
