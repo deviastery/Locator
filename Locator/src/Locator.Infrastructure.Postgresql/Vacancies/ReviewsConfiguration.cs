@@ -8,8 +8,7 @@ public class ReviewsConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        builder.ToTable("Reviews"); 
-        
+            builder.ToTable("Reviews"); 
         builder.Property(r => r.Id)
             .ValueGeneratedNever();
         builder.Property(r => r.Mark)

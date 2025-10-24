@@ -8,16 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Ratings.UpdateVacancyRatingCommand;
+    namespace Locator.Application.Ratings.UpdateVacancyRatingCommand;
 
-public class UpdateVacancyRatingCommandHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
+    public class UpdateVacancyRatingCommandHandler : ICommandHandler<Guid, UpdateVacancyRatingCommand>
 {
     private readonly IRatingsRepository _ratingsRepository;
     private readonly IRatingsReadDbContext _ratingsDbContext;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
-    private readonly ILogger<UpdateVacancyRatingCommandHandler> _logger;
+        private readonly ILogger<UpdateVacancyRatingCommandHandler> _logger;
     
-    public UpdateVacancyRatingCommandHandler(
+        public UpdateVacancyRatingCommandHandler(
         IRatingsRepository ratingsRepository,
         IRatingsReadDbContext ratingsDbContext,
         IValidator<UpdateVacancyRatingDto> validator,

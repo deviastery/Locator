@@ -31,8 +31,7 @@ public class GetRatingByVacancyId : IQueryHandler<RatingByVacancyIdResponse, Get
             rating.Id,
             rating.Value,
             rating.EntityId,
-            rating.EntityType
-        );
+            rating.EntityType);
 
         return new RatingByVacancyIdResponse(ratingDto);
     }

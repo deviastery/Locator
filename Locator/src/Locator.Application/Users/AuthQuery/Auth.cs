@@ -68,8 +68,12 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         }
         
         // Save employee tokens with user data
-        var newEmployeeTokenDto = new EmployeeToken(newEmployeeToken.AccessToken, newEmployeeToken.RefreshToken,
-            newCreatedAt, newEmployeeToken.ExpiresIn, user.Id);
+        var newEmployeeTokenDto = new EmployeeToken(
+            newEmployeeToken.AccessToken, 
+            newEmployeeToken.RefreshToken,
+            newCreatedAt, 
+            newEmployeeToken.ExpiresIn, 
+            user.Id);
         var saveTokensResult = await _usersRepository.CreateEmployeeTokenAsync(newEmployeeTokenDto, cancellationToken);
         if (saveTokensResult.IsFailure)
         {

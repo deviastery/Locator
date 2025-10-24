@@ -8,19 +8,19 @@ using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
+    namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 
-public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
+    public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
-    private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
+        private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
+        private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
-    public PrepareToUpdateVacancyRatingCommandHandler(
+        public PrepareToUpdateVacancyRatingCommandHandler(
         IVacanciesRepository vacanciesRepository,
-        ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
-        ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
+            ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
+            ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
         _vacanciesRepository = vacanciesRepository;

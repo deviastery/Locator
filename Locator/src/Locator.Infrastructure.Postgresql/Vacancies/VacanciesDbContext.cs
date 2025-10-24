@@ -1,20 +1,19 @@
-﻿using Locator.Application.Vacancies;
+﻿    using Locator.Application.Vacancies;
 using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 
-namespace Locator.Infrastructure.Postgresql.Vacancies;
+    namespace Locator.Infrastructure.Postgresql.Vacancies;
 
-public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
+    public class VacanciesDbContext : DbContext, IVacanciesReadDbContext
 {
-    public VacanciesDbContext(DbContextOptions<VacanciesDbContext> options)
+        public VacanciesDbContext(DbContextOptions<VacanciesDbContext> options)
         : base(options)
     {
         // Database.EnsureDeleted();
         // Database.EnsureCreated();
     }
     public DbSet<Review> Reviews { get; set; }
-    public IQueryable<Review> ReadReviews => Reviews.AsNoTracking().AsQueryable();
-    
+        public IQueryable<Review> ReadReviews => Reviews.AsNoTracking().AsQueryable();
     
     
     // public DbSet<VacancyRating> VacancyRatings { get; set; }

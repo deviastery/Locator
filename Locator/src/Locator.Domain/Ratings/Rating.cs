@@ -12,7 +12,7 @@ public abstract class Rating
         EntityType = entityType;
     }
     public Guid Id { get; init; }
-    public double Value { get; set; }
+        public double Value { get; set; }
     public long EntityId { get; set; }
-    public EntityType EntityType { get; set; }
+        public EntityType EntityType { get; set; }
 }

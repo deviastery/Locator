@@ -9,24 +9,24 @@ using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace Locator.Application.Vacancies.CreateReviewCommand;
+    namespace Locator.Application.Vacancies.CreateReviewCommand;
 
-public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewCommand>
+    public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
+        private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
     private readonly IVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
     private readonly IValidator<CreateReviewDto> _validator;
-    private readonly ILogger<CreateReviewCommandHandler> _logger;
+        private readonly ILogger<CreateReviewCommandHandler> _logger;
     
-    public CreateReviewCommandHandler(
+        public CreateReviewCommandHandler(
         IVacanciesRepository vacanciesRepository,
-        ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
+            ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
         IVacanciesService vacanciesService, 
         IAuthService authService,
         IValidator<CreateReviewDto> validator, 
-        ILogger<CreateReviewCommandHandler> logger)
+            ILogger<CreateReviewCommandHandler> logger)
     {
         _vacanciesRepository = vacanciesRepository;
         _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
@@ -94,7 +94,7 @@ public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewComm
         
         // Updating after create review
         var updateVacancyRatingCommand = new PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand(command.VacancyId);
-        var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
+            var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (updateRatingResult.IsFailure)
         {
