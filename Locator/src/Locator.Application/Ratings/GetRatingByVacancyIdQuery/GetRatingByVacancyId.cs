@@ -1,6 +1,5 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Contracts.Ratings;
-using Locator.Contracts.Ratings.Dtos;
+using Locator.Contracts.Ratings.Dto;
 using Locator.Contracts.Ratings.Responses;
 using Microsoft.EntityFrameworkCore;
 

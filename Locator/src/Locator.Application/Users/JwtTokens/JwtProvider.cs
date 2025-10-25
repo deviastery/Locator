@@ -1,10 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Locator.Application.Users.Fails.Exceptions;
+using CSharpFunctionalExtensions;
+using Locator.Application.Users.Fails;
 using Locator.Domain.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 
 namespace Locator.Application.Users.JwtTokens;
 
@@ -47,34 +49,37 @@ public class JwtProvider : IJwtProvider
             (int)tokenExpiryTimeStamp.Subtract(DateTime.UtcNow).TotalSeconds);
     }
 
-    public async Task<string> RefreshAccessTokenAsync(
-        string refreshToken, 
+    public async Task<Result<string, Error>> RefreshAccessTokenAsync(
+        Guid userId, 
         CancellationToken cancellationToken)
     {
-        var refreshTokenResult = await _usersRepository.GetRefreshTokenAsync(refreshToken, cancellationToken);
-        if (refreshTokenResult.IsFailure || refreshTokenResult.Value is null)
+        // Get Refresh token
+        (_, bool isTokenFailure, RefreshToken? refreshTokenRecord, Error? error) =
+            await _usersRepository.GetRefreshTokenByUserIdAsync(userId, cancellationToken);
+        if (isTokenFailure)
         {
-            throw new GetRefreshTokenFailureException();
+            return error;
         }
-        var refreshTokenRecord = refreshTokenResult.Value;
-        
-        var expiresAt = DateTimeOffset.FromUnixTimeSeconds(refreshTokenRecord.ExpiresIn).UtcDateTime;
-        if (expiresAt < DateTime.UtcNow)
+
+        // Check expired time of a Refresh token
+        DateTime createdDateTime = refreshTokenRecord.CreatedAt;
+        DateTime expiredDateTime = createdDateTime.AddSeconds(refreshTokenRecord.ExpiresAt);
+        if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
         {
-            throw new RefreshTokenHasExpiredBadRequestException();
+            return Errors.RefreshTokenHasExpired();
         }
         await _usersRepository.DeleteRefreshTokenAsync(refreshTokenRecord, cancellationToken);
         
-        var userResult = await _usersRepository.GetUserAsync(refreshTokenRecord.UserId, cancellationToken);
-        if (userResult.IsFailure)
+        // Get User
+        (_, bool isFailure, User? user) = await _usersRepository.GetUserAsync(refreshTokenRecord.UserId, cancellationToken);
+        if (isFailure)
         {
-            throw new GetUserFailureException();
+            return Errors.General.Failure("Error get user.");
         }
-        
-        var user = userResult.Value;
+
         if (user is null)
         {
-            throw new GetUserNotFoundException();
+            return Errors.General.NotFound(refreshTokenRecord.UserId);
         }
         
         return GenerateJwtToken(user).Token;

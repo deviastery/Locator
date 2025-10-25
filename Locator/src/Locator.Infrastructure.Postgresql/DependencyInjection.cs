@@ -19,9 +19,9 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-            services.AddDbContext<VacanciesDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
-            services.AddDbContext<RatingsDbContext>(options =>
+        services.AddDbContext<VacanciesDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
+        services.AddDbContext<RatingsDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
         services.AddDbContext<UsersDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("VacanciesDb")));
@@ -30,8 +30,8 @@ public static class DependencyInjection
         services.AddScoped<IRatingsRepository, RatingsEfCoreRepository>();
         services.AddScoped<IUsersRepository, UsersEfCoreRepository>();
         
-            services.AddScoped<IVacanciesReadDbContext>(sp => sp.GetRequiredService<VacanciesDbContext>());
-            services.AddScoped<IRatingsReadDbContext>(sp => sp.GetRequiredService<RatingsDbContext>());
+        services.AddScoped<IVacanciesReadDbContext>(sp => sp.GetRequiredService<VacanciesDbContext>());
+        services.AddScoped<IRatingsReadDbContext>(sp => sp.GetRequiredService<RatingsDbContext>());
         services.AddScoped<IUsersReadDbContext>(sp => sp.GetRequiredService<UsersDbContext>());
         return services;
     }

@@ -23,6 +23,7 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
         GetNegotiationsQuery query, 
         CancellationToken cancellationToken)
     {
+        // Get Employee access token
         (_, bool isFailure, string? token) = await _authService
             .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
         if (isFailure)
@@ -30,8 +31,17 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
             throw new GetValidEmployeeAccessTokenException();
         }
 
+        // Get all Negotiations by user ID
         var negotiationsResult = await _vacanciesService
             .GetNegotiationsByUserIdAsync(query.Dto.Query, token, cancellationToken);
+        
+        switch (negotiationsResult.IsFailure)
+        {
+            case true when negotiationsResult.Error.Code == "value.is.invalid":
+                throw new GetNegotiationsValidationException();
+            case true when negotiationsResult.Error.Code == "record.not.found":
+                throw new GetNegotiationsNotFoundException();
+        }
         if (negotiationsResult.IsFailure || negotiationsResult.Value.Negotiations is null)
         {
             throw new GetNegotiationsFailureException();

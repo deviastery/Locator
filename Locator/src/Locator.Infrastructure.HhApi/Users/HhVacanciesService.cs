@@ -1,9 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Locator.Application.Users;
 using Locator.Contracts.Users.Responses;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Locator.Domain.Thesauruses;
 using Shared;
@@ -32,14 +33,14 @@ public class HhVacanciesService : IVacanciesService
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetResumesFailed();
+            return Errors.General.Failure("Get resumes failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var resumes = JsonSerializer.Deserialize<ResumesResponse>(json);
         return resumes?.Count != null
             ? resumes
-            : Errors.MissingResumes();
+            : Errors.General.Validation("Missing resumes.");
     }
     
     public async Task<Result<EmployeeVacanciesResponse, Error>> GetVacanciesMatchResumeAsync(
@@ -49,11 +50,11 @@ public class HhVacanciesService : IVacanciesService
         CancellationToken cancellationToken)
     {
         if ((query.Experience is not null && !Enum.IsDefined(typeof(ExperienceEnum), query.Experience)) || 
-            (query.Employment is not null && !Enum.IsDefined(typeof(EmploymentEnum), query.Employment))||
+            (query.Employment is not null && !Enum.IsDefined(typeof(EmploymentEnum), query.Employment)) ||
             (query.Schedule is not null && !Enum.IsDefined(typeof(ScheduleEnum), query.Schedule)) ||
             (query.Salary?.Currency is not null && !Enum.IsDefined(typeof(CurrencyEnum), query.Salary.Currency)))
         {
-            return Errors.EnumQueryValidationFailed();
+            return Errors.General.Validation("Enum query is not valid.");
         }
         
         var queryParams = new Dictionary<string, string?>
@@ -67,7 +68,7 @@ public class HhVacanciesService : IVacanciesService
             ["schedule"] = query.Schedule,
             ["area"] = query.Area is not null ? query.Area.ToString() : null,
             ["salary"] = query.Salary?.Salary.ToString(),
-            ["currency"] = query.Salary?.Currency
+            ["currency"] = query.Salary?.Currency,
         };
 
         string queryString = string.Join("&", queryParams
@@ -82,18 +83,24 @@ public class HhVacanciesService : IVacanciesService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return Errors.General.Validation("Bad request to get vacancies");
+        }
+
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetVacanciesFailed();
+            return Errors.General.Failure("Get vacancies failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var vacancies = JsonSerializer.Deserialize<EmployeeVacanciesResponse>(json);
         return vacancies?.Count != null
             ? vacancies
-            : Errors.MissingVacancies();
+            : Errors.General.Validation("Missing vacancies.");
     }
-
+    
     public async Task<Result<VacancyDto, Error>> GetVacancyByIdAsync(string vacancyId, string accessToken, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(
@@ -103,17 +110,23 @@ public class HhVacanciesService : IVacanciesService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Errors.General.NotFound(vacancyId);
+        }
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetVacanciesFailed();
+            return Errors.General.Failure("Get vacancies failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var vacancy = JsonSerializer.Deserialize<VacancyDto>(json);
         return vacancy != null
             ? vacancy
-            : Errors.MissingVacancies();
+            : Errors.General.Validation("Missing vacancies.");
     }
+    
     public async Task<Result<EmployeeNegotiationsResponse, Error>> GetNegotiationsByUserIdAsync(
         GetNegotiationsDto query, 
         string accessToken, 
@@ -138,17 +151,23 @@ public class HhVacanciesService : IVacanciesService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return Errors.General.Validation("Bad request to get value.is.invalid");
+        }
+
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetNegotiationsFailed();
+            return Errors.General.Failure("Get negotiations failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var negotiations = JsonSerializer.Deserialize<EmployeeNegotiationsResponse>(json);
         return negotiations?.Count != null
             ? negotiations
-            : Errors.MissingNegotiations();
+            : Errors.General.NotFound("negotiations");
     }
+    
     public async Task<Result<NegotiationDto, Error>> GetNegotiationByVacancyIdAsync(
         long vacancyId, 
         string accessToken, 
@@ -160,9 +179,17 @@ public class HhVacanciesService : IVacanciesService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
+        
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.BadRequest:
+                return Errors.General.Validation("Bad request to get negotiations");
+            case HttpStatusCode.NotFound:
+                return Errors.General.NotFound("negotiations");
+        }
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetNegotiationsFailed();
+            return Errors.General.Failure("Get negotiations failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -171,9 +198,13 @@ public class HhVacanciesService : IVacanciesService
         var negotiation = negotiations?.Negotiations?.FirstOrDefault();
         return negotiation != null
             ? negotiation
-            : Errors.MissingNegotiations();
+            : Errors.MissingNegotiationByVacancyId(vacancyId);
     }
-    public async Task<Result<int, Error>> GetDaysAfterApplyingAsync(long negotiationId, string accessToken, CancellationToken cancellationToken)
+    
+    public async Task<Result<NegotiationDto, Error>> GetNegotiationByIdAsync(
+        long negotiationId, 
+        string accessToken, 
+        CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(
             HttpMethod.Get, 
@@ -181,19 +212,46 @@ public class HhVacanciesService : IVacanciesService
         request.Headers.Add("User-Agent", "Locator/1.0");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        var response = await _httpClient.SendAsync(request, cancellationToken);        
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.BadRequest:
+                return Errors.General.Validation("Bad request to get negotiation");
+            case HttpStatusCode.NotFound:
+                return Errors.General.NotFound(negotiationId);
+        }
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetNegotiationsFailed();
+            return Errors.General.Failure("Get negotiation failed");
         }
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var negotiation = JsonSerializer.Deserialize<NegotiationDto>(json);
+        
+        return negotiation != null
+            ? negotiation
+            : Errors.General.NotFound(negotiationId);
+    }
+    
+    public async Task<Result<int, Error>> GetDaysAfterApplyingAsync(
+        long negotiationId, 
+        string accessToken, 
+        CancellationToken cancellationToken)
+    {
+        // Get Negotiation by ID
+        (_, bool isFailure, NegotiationDto? negotiation, Error? error) = 
+            await GetNegotiationByIdAsync(negotiationId, accessToken, cancellationToken);
+        if (isFailure)
+        {
+            return error;
+        }
+
         if (negotiation == null)
         {
-            return Errors.GetNegotiationsFailed();
+            return Errors.General.NotFound(negotiationId);
         }
         
+        // Calculate count of days after applying
         string negotiationCreatedAtString = negotiation.CreatedAt;
         var negotiationCreatedAt = DateTimeOffset.Parse(negotiationCreatedAtString);
         var nowInSameOffset = DateTimeOffset.UtcNow.ToOffset(negotiationCreatedAt.Offset);

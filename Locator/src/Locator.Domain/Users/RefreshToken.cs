@@ -5,9 +5,9 @@ public class RefreshToken : BaseToken
     public RefreshToken(
         string token, 
         DateTime createdAt, 
-        long expiresIn,
+        long expiresAt,
         Guid userId)
-        : base(token, createdAt, expiresIn)
+        : base(token, createdAt, expiresAt)
     {
         UserId = userId;
     }

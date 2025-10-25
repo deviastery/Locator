@@ -1,9 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Users.AuthQuery;
 using Locator.Application.Users.Cookies;
-using Locator.Application.Users.RefreshTokenQuery;
-using Locator.Contracts.Users.Dtos;
+using Locator.Application.Users.RefreshTokenCommand;
+using Locator.Contracts.Users.Dto;
 using Locator.Contracts.Users.Responses;
+using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Shared.Fails.Exceptions;
@@ -59,17 +62,16 @@ public class UsersController : ControllerBase
             return StatusCode(500);
         }
         context.Response.Cookies.Append(cookiesOptions.JwtName, result.AccessToken);
+        context.Response.Cookies.Append(cookiesOptions.UserName, result.UserId.ToString() ?? string.Empty);
         
         return Ok();
     }    
     
     [HttpGet("auth/refresh")]
     public async Task<IActionResult> Refresh(
-        [FromServices] IQueryHandler<RefreshTokenResponse, RefreshTokenQuery> queryHandler,
-        [FromQuery] string refreshToken,
+        [FromServices] ICommandHandler<string, RefreshTokenCommand> commandHandler,
         CancellationToken cancellationToken)
     {
-        
         var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
         if (cookiesOptions == null)
         {
@@ -77,15 +79,15 @@ public class UsersController : ControllerBase
         }
         
         var context = HttpContext;
-        var query = new RefreshTokenQuery(refreshToken);
-        var result = await queryHandler.Handle(query, cancellationToken);
-
-        if (result.JwtToken == null)
+        string? userIdString = Request.Cookies[cookiesOptions.UserName];
+        if (!Guid.TryParse(userIdString, out var userId))
         {
-            return Unauthorized();
+            return BadRequest("Invalid user ID format.");
         }
+        var query = new RefreshTokenCommand(userId);
+        var result = await commandHandler.Handle(query, cancellationToken);
         
-        context.Response.Cookies.Append(cookiesOptions.JwtName, result.JwtToken);
-        return Ok();
+        context.Response.Cookies.Append(cookiesOptions.JwtName, result.Value);
+        return result.IsFailure ? result.Error.ToResponse() : Ok();
     }
 }

@@ -1,3 +1,3 @@
 ﻿namespace Locator.Contracts.Users.Responses;
 
-public record AuthResponse(string? UserName, string? AccessToken, int ExpiresIn, string? RefreshToken);
+public record AuthResponse(Guid? UserId, string? AccessToken, int ExpiresIn, string? RefreshToken);

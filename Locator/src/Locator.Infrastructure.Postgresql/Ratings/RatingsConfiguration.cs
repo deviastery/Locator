@@ -1,5 +1,4 @@
 ﻿using Locator.Domain.Thesauruses;
-using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

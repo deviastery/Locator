@@ -4,6 +4,7 @@ using Locator.Application.Ratings.Fails;
 using Locator.Domain.Ratings;
 using Microsoft.EntityFrameworkCore;
 using Shared;
+
 namespace Locator.Infrastructure.Postgresql.Ratings;
 
 public class RatingsEfCoreRepository : IRatingsRepository

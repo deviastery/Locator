@@ -3,9 +3,10 @@ using Locator.Application.Abstractions;
 using Locator.Application.Ratings;
 using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails.Exceptions;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Locator.Application.Vacancies.GetVacancyByIdQuery;
 
@@ -31,6 +32,7 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
         GetVacancyByIdQuery query,
         CancellationToken cancellationToken)
     {
+        // Get Employee access token
         (_, bool isTokenFailure, string? token) = await _authService
             .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
         if (isTokenFailure)
@@ -38,17 +40,24 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
             throw new GetValidEmployeeAccessTokenException();
         }
 
-        (_, bool isFailure, VacancyDto? vacancy) = await _vacanciesService
+        // Get a Vacancy by ID
+        Result<VacancyDto, Error> vacancyByIdResult = await _vacanciesService
             .GetVacancyByIdAsync(query.Dto.VacancyId.ToString(), token, cancellationToken);
-        if (isFailure || vacancy == null)
+        if (vacancyByIdResult.IsFailure && vacancyByIdResult.Error.Code == "record.not.found")
         {
-            throw new GetVacancyByIdException();
+            throw new GetVacancyByIdNotFoundException(query.Dto.VacancyId);
+        }        
+        if (vacancyByIdResult.IsFailure || vacancyByIdResult.Value == null)
+        {
+            throw new GetVacancyByIdFailureException();
         }
 
+        // Get a Rating of a Vacancy
         var rating = await _ratingsDbContext.ReadVacancyRatings
             .Where(r => r.EntityId == query.Dto.VacancyId)
             .FirstOrDefaultAsync(cancellationToken);
         
+        // Get Reviews of a Vacancy
         var reviews = await _vacanciesDbContext.ReadReviews
             .Where(r => r.VacancyId == query.Dto.VacancyId)
             .ToListAsync(cancellationToken);
@@ -57,10 +66,10 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
             r.Id,
             r.Mark,
             r.Comment,
-            r.UserName
-        ));
+            r.UserName));
 
-        var vacancyDto = new FullVacancyDto(query.Dto.VacancyId, vacancy, rating?.Value);
+        // Get Vacancy with Reviews and Rating
+        var vacancyDto = new FullVacancyDto(query.Dto.VacancyId, vacancyByIdResult.Value, rating?.Value);
 
         return new VacancyResponse(vacancyDto, reviewsDto);
     }

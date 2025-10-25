@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using Locator.Application.Exceptions;
+using Locator.Application.Vacancies.Fails;
+using Locator.Application.Vacancies.Fails.Exceptions;
 using Shared;
 
 namespace Locator.Web.Middlewares;
@@ -35,6 +37,10 @@ public class ExceptionMiddleware
         {
             BadRequestException =>
                 (StatusCodes.Status400BadRequest,
+                    JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
+            
+            UnauthorizedException =>
+                (StatusCodes.Status401Unauthorized,
                     JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
 
             NotFoundException =>

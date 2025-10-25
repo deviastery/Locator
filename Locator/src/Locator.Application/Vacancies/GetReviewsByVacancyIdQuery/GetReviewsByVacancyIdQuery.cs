@@ -3,5 +3,4 @@ using Locator.Contracts.Vacancies;
 
 namespace Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 
-public record GetReviewsByVacancyIdQuery(
-    long VacancyId) : IQuery;
+public record GetReviewsByVacancyIdQuery(long VacancyId) : IQuery;

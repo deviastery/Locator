@@ -2,7 +2,7 @@
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Locator.Application.Users;
-using Locator.Contracts.Users.Dtos;
+using Locator.Contracts.Users.Dto;
 using Locator.Contracts.Users.Responses;
 using Locator.Domain.Users;
 using Locator.Infrastructure.HhApi.Users.Fails.Exceptions;
@@ -33,7 +33,9 @@ public class HhAuthService : IAuthService
         _usersRepository = usersRepository;
     }
 
-    public async Task<Result<(AccessTokenResponse tokenResponse, DateTime createdAt), Error>> ExchangeCodeForTokenAsync(
+    public async Task<Result<(
+        AccessTokenResponse tokenResponse, 
+        DateTime createdAt), Error>> ExchangeCodeForTokenAsync(
         string code, 
         CancellationToken cancellationToken)
     {
@@ -45,7 +47,7 @@ public class HhAuthService : IAuthService
             ["client_secret"] = _config.ClientSecret,
             ["code"] = code,
             ["redirect_uri"] = _config.RedirectUri,
-            ["grant_type"] = "authorization_code"
+            ["grant_type"] = "authorization_code",
         });
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -78,43 +80,48 @@ public class HhAuthService : IAuthService
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
-            return Errors.GetUserInfoFailed();
+            return Errors.General.Failure("Get user info failed");
         }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var user = JsonSerializer.Deserialize<UserDto>(json);
         return user?.Email != null
             ? user
-            : Errors.MissingEmail();
+            : Errors.General.Failure("Missing email address.");
     }
 
     public async Task<Result<string, Error>> GetValidEmployeeAccessTokenAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
+        // Get Employee token
         var tokenRecord = await _usersDbContext.ReadEmployeeTokens
             .FirstOrDefaultAsync(t => t.UserId == userId, cancellationToken);
 
         if (tokenRecord == null)
         {
-            throw new UserUnauthorizedFailureException();
+            throw new UserUnauthorizedException();
         }
 
+        // Check expired time of Employee access token
         DateTime createdDateTime = tokenRecord.CreatedAt;
-        DateTime expiredDateTime = createdDateTime.AddSeconds(tokenRecord.ExpiresIn);
+        DateTime expiredDateTime = createdDateTime.AddSeconds(tokenRecord.ExpiresAt);
 
+        // Return Employee access token, if it has not expired
         if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
         {
             return tokenRecord.Token;
         }
 
-        var newEmployeeTokenResult =  await GetRefreshTokenAsync(tokenRecord, cancellationToken);
-        if (newEmployeeTokenResult.IsFailure)
+        // Get a new Employee token, if it has expired
+        (_, bool isFailure, EmployeeToken? newEmployeeToken, Error? error) = 
+            await RefreshTokenAsync(tokenRecord, cancellationToken);
+        if (isFailure)
         {
-            return newEmployeeTokenResult.Error;
+            return error;
         }
-        var newEmployeeToken = newEmployeeTokenResult.Value;
-        
+
+        // Update Employee token
         var newEmployeeTokensIdResult = await _usersRepository.UpdateEmployeeTokenAsync(
             newEmployeeToken, 
             cancellationToken);
@@ -126,7 +133,7 @@ public class HhAuthService : IAuthService
         return newEmployeeToken.Token;
     }
     
-    private async Task<Result<EmployeeToken, Error>> GetRefreshTokenAsync(
+    private async Task<Result<EmployeeToken, Error>> RefreshTokenAsync(
         EmployeeToken tokenRecord, 
         CancellationToken cancellationToken)
     {
@@ -154,10 +161,11 @@ public class HhAuthService : IAuthService
             return Errors.InvalidTokenResponse();
         }
 
+        // Update Access token
         tokenRecord.RefreshToken = token.RefreshToken;
         tokenRecord.Token = token.AccessToken;
         tokenRecord.CreatedAt = DateTime.UtcNow;
-        tokenRecord.ExpiresIn = token.ExpiresIn;
+        tokenRecord.ExpiresAt = token.ExpiresIn;
         
         return tokenRecord;
     }

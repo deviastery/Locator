@@ -7,7 +7,7 @@ namespace Locator.Application.Ratings;
 public interface IRatingsRepository
 {
     /// <summary>
-    /// Method for update vacancy rating
+    /// Updates vacancy rating
     /// </summary>
     /// <param name="rating">Vacancy rating</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -15,7 +15,7 @@ public interface IRatingsRepository
     Task<Result<Guid, Error>> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for create a new vacancy rating
+    /// Creates a new vacancy rating
     /// </summary>
     /// <param name="rating">Vacancy rating</param>
     /// <param name="cancellationToken">Cancellation token</param>

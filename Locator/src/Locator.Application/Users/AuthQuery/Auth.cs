@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Abstractions;
 using Locator.Application.Users.Fails.Exceptions;
-using Locator.Contracts.Users.Dtos;
+using Locator.Contracts.Users.Dto;
 using Locator.Contracts.Users.Responses;
 using Locator.Domain.Users;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Locator.Application.Users.AuthQuery;
 
@@ -35,7 +36,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
             throw new AuthorizationCodeFailureException();
         }
 
-        // Get Token from another API
+        // Get Employee token from another API
         var tokenResult = await _authService.ExchangeCodeForTokenAsync(query.Dto.Code, cancellationToken);
         if (tokenResult.IsFailure)
         {
@@ -44,30 +45,36 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         (AccessTokenResponse newEmployeeToken, DateTime newCreatedAt) = tokenResult.Value;
 
         // Get info about user
-        (_, bool isFailure, UserDto? employeeUser) = await _authService.GetUserInfoAsync(newEmployeeToken.AccessToken, cancellationToken);
-        if (isFailure)
+        Result<UserDto, Error> userInfoResult = 
+            await _authService.GetUserInfoAsync(newEmployeeToken.AccessToken, cancellationToken);
+        if (userInfoResult.IsFailure)
         {
             throw new GetUserInfoFailureException();
         }
 
-        // Find user in DB or create new user
+        // Find user in DB
         var user = await _usersDbContext.ReadUsers
-            .Where(u => u.EmployeeId.ToString() == employeeUser.EmployeeId)
+            .Where(u => u.EmployeeId.ToString() == userInfoResult.Value.EmployeeId)
             .FirstOrDefaultAsync(cancellationToken);
         if (user == null)
         {
-            if (!long.TryParse(employeeUser.EmployeeId, out long newEmployeeId))
+            // Create new user
+            if (!long.TryParse(userInfoResult.Value.EmployeeId, out long newEmployeeId))
             {
                 throw new EmployeeIdParseFailureException();
             }
             user = new User(
-                email: employeeUser.Email ?? string.Empty,
-                name: employeeUser.FirstName ?? string.Empty,
+                email: userInfoResult.Value.Email ?? string.Empty,
+                name: userInfoResult.Value.FirstName ?? string.Empty,
                 employeeId: newEmployeeId);
-            await _usersRepository.CreateUserAsync(user, cancellationToken);
+            var userIdResult = await _usersRepository.CreateUserAsync(user, cancellationToken);
+            if (userIdResult.IsFailure)
+            {
+                throw new CreateUserFailureException();
+            }
         }
         
-        // Save employee tokens with user data
+        // Save Employee tokens with User data
         var newEmployeeTokenDto = new EmployeeToken(
             newEmployeeToken.AccessToken, 
             newEmployeeToken.RefreshToken,
@@ -83,9 +90,9 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         // Generate JWT-token 
         (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
 
-        // Generate JWT-token 
+        // Generate Refresh token 
         string refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
         
-        return new AuthResponse(user.Name, jwtToken, tokenExpiry, refreshToken);
+        return new AuthResponse(user.Id, jwtToken, tokenExpiry, refreshToken);
     } 
 }

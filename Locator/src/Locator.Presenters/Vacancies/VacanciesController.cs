@@ -7,7 +7,7 @@ using Locator.Application.Vacancies.GetNegotiationsQuery;
 using Locator.Application.Vacancies.GetReviewsByVacancyIdQuery;
 using Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 using Locator.Application.Vacancies.GetVacancyByIdQuery;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Locator.Presenters.ResponseExtensions;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +56,7 @@ public class VacanciesController : ControllerBase
     }
     [HttpGet("{vacancyId:long}/negotiations")]
     public async Task<IActionResult> GetNegotiationByVacancyId(
-        [FromServices] IQueryHandler<NegotiationByVacancyIdResponse, GetNegotiationByVacancyIdQuery> queryHandler,
+        [FromServices] IQueryHandler<NegotiationResponse, GetNegotiationByVacancyIdQuery> queryHandler,
         [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {

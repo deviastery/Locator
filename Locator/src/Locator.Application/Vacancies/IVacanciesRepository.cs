@@ -5,7 +5,7 @@ namespace Locator.Application.Vacancies;
 public interface IVacanciesRepository
 {
     /// <summary>
-    /// Method for creating review of vacancy
+    /// Creates review of vacancy
     /// </summary>
     /// <param name="review">Review of vacancy</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -13,7 +13,7 @@ public interface IVacanciesRepository
     Task<Guid> CreateReviewAsync(Review review, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting all reviews of the vacancy
+    /// Gets all reviews of a vacancy
     /// </summary>
     /// <param name="vacancyId">ID of vacancy</param>
     /// <param name="cancellationToken">Cancellation token</param>

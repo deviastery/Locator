@@ -7,7 +7,7 @@ namespace Locator.Application.Users;
 public interface IUsersRepository
 {
     /// <summary>
-    /// Method for creating user
+    /// Creates user
     /// </summary>
     /// <param name="user">User</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -15,15 +15,15 @@ public interface IUsersRepository
     Task<Result<Guid, Error>> CreateUserAsync(User user, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting user
+    /// Gets user
     /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="userId">ID of user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>User</returns>
     Task<Result<User, Error>> GetUserAsync(Guid userId, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for updating token of a job search service
+    /// Updates token of a job search service
     /// </summary>
     /// <param name="token">Access token of a job search service</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -31,7 +31,7 @@ public interface IUsersRepository
     Task<Result<Guid, Error>> UpdateEmployeeTokenAsync(EmployeeToken token, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for creating token of a job search service
+    /// Creates token of a job search service
     /// </summary>
     /// <param name="token">Access token of a job search service</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -39,15 +39,15 @@ public interface IUsersRepository
     Task<Result<Guid, Error>> CreateEmployeeTokenAsync(EmployeeToken token, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for creating refresh token
+    /// Creates refresh token
     /// </summary>
     /// <param name="token">Refresh token</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Refresh token</returns>
+    /// <returns>New refresh token</returns>
     Task<Result<string, Error>> CreateRefreshTokenAsync(RefreshToken? token, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for deleting refresh token
+    /// Deletes refresh token
     /// </summary>
     /// <param name="refreshToken">Refresh token</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -55,10 +55,10 @@ public interface IUsersRepository
     Task<Result<string, Error>> DeleteRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for creating refresh token
+    /// Gets refresh token
     /// </summary>
-    /// <param name="token">Refresh token</param>
+    /// <param name="userId">ID of user</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Refresh token</returns>
-    Task<Result<RefreshToken, Error>> GetRefreshTokenAsync(string token, CancellationToken cancellationToken);
+    /// <returns>Full refresh token</returns>
+    Task<Result<RefreshToken, Error>> GetRefreshTokenByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 }

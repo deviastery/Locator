@@ -4,29 +4,29 @@ using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
 using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-    namespace Locator.Application.Vacancies.CreateReviewCommand;
+namespace Locator.Application.Vacancies.CreateReviewCommand;
 
     public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
-        private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
+    private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
     private readonly IVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
     private readonly IValidator<CreateReviewDto> _validator;
-        private readonly ILogger<CreateReviewCommandHandler> _logger;
+    private readonly ILogger<CreateReviewCommandHandler> _logger;
     
-        public CreateReviewCommandHandler(
+    public CreateReviewCommandHandler(
         IVacanciesRepository vacanciesRepository,
-            ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
+        ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
         IVacanciesService vacanciesService, 
         IAuthService authService,
         IValidator<CreateReviewDto> validator, 
-            ILogger<CreateReviewCommandHandler> logger)
+        ILogger<CreateReviewCommandHandler> logger)
     {
         _vacanciesRepository = vacanciesRepository;
         _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
@@ -34,15 +34,6 @@ using Shared;
         _authService = authService;
         _validator = validator;
         _logger = logger;
-    }
-    private static Result<bool, Failure> IsVacancyReadyForReview(int daysAfterApplying)
-    {
-        const int minDaysToReview = 5;
-        if (daysAfterApplying <= minDaysToReview)
-        {
-            return Errors.NotReadyForReview().ToFailure();
-        }
-        return true;
     }
     public async Task<Result<Guid, Failure>> Handle(
         CreateReviewCommand command,
@@ -55,7 +46,7 @@ using Shared;
             return validationResult.ToErrors().ToFailure();
         }
         
-        // Get Token
+        // Get Employee access token
         (_, bool isFailure, string? token, Error? error) = await _authService
             .GetValidEmployeeAccessTokenAsync(command.UserId, cancellationToken);
         if (isFailure)
@@ -64,7 +55,7 @@ using Shared;
         }
 
         // Validation of business logic
-        // Existing negotiation
+        // Existing Negotiation
         var negotiationResult = await _vacanciesService
             .GetNegotiationByVacancyIdAsync(command.VacancyId, token, cancellationToken);
         if (negotiationResult.IsFailure)
@@ -72,7 +63,7 @@ using Shared;
             return negotiationResult.Error.ToFailure();
         }
         
-        // Possible to leave a review
+        // Possible to leave a Review
         var daysAfterApplyingResult =
             await _vacanciesService.GetDaysAfterApplyingAsync(command.ReviewDto.NegotiationId, token, cancellationToken);
         if (daysAfterApplyingResult.IsFailure)
@@ -92,9 +83,9 @@ using Shared;
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);
         
-        // Updating after create review
+        // Updating after create Review
         var updateVacancyRatingCommand = new PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand(command.VacancyId);
-            var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
+        var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);
         if (updateRatingResult.IsFailure)
         {
@@ -102,5 +93,15 @@ using Shared;
         }
         
         return review.Id;
+    }
+    
+    private static Result<bool, Failure> IsVacancyReadyForReview(int daysAfterApplying)
+    {
+        const int minDaysToReview = 5;
+        if (daysAfterApplying <= minDaysToReview)
+        {
+            return Errors.NotReadyForReview().ToFailure();
+        }
+        return true;
     }
 }

@@ -7,14 +7,14 @@ namespace Locator.Application.Users;
 public interface IJwtProvider
 {
     /// <summary>
-    /// Method for generating JWT access token
+    /// Generates JWT access token
     /// </summary>
     /// <param name="user">User</param>
     /// <returns>Access token & Time of token expiration</returns>
     (string Token, int ExpiresIn) GenerateJwtToken(User user);
     
     /// <summary>
-    /// Method for generating refresh token
+    /// Generates refresh token
     /// </summary>
     /// <param name="userId">User ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -22,10 +22,10 @@ public interface IJwtProvider
     Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for refreshing access token
+    /// Refreshes access token
     /// </summary>
-    /// <param name="refreshToken">Refresh token</param>
+    /// <param name="userId">ID of user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Access token</returns>
-    Task<string> RefreshAccessTokenAsync(string refreshToken, CancellationToken cancellationToken);
+    Task<Result<string, Error>> RefreshAccessTokenAsync(Guid userId, CancellationToken cancellationToken);
 }

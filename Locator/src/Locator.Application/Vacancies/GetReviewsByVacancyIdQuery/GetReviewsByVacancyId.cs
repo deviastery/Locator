@@ -1,5 +1,5 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Microsoft.EntityFrameworkCore;
 

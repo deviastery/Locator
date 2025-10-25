@@ -1,4 +1,4 @@
-﻿using Locator.Contracts.Ratings.Dtos;
+﻿using Locator.Contracts.Ratings.Dto;
 
 namespace Locator.Contracts.Ratings.Responses;
 

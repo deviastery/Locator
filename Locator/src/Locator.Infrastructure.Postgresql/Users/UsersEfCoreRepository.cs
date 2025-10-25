@@ -66,7 +66,7 @@ public class UsersEfCoreRepository : IUsersRepository
             newToken.RefreshToken = token.RefreshToken;
             newToken.Token = token.Token;
             newToken.CreatedAt = DateTime.UtcNow;
-            newToken.ExpiresIn = token.ExpiresIn;
+            newToken.ExpiresAt = token.ExpiresAt;
             
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             return newToken.Id;
@@ -137,16 +137,18 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
 
-    public async Task<Result<RefreshToken, Error>> GetRefreshTokenAsync(string token, CancellationToken cancellationToken)
+    public async Task<Result<RefreshToken, Error>> GetRefreshTokenByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
         try
         {
             var tokenRecord = await _usersDbContext.RefreshTokens
-                .SingleOrDefaultAsync(t => t.Token.ToString() == token, cancellationToken);
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.CreatedAt)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (tokenRecord == null)
             {
-                return Errors.General.NotFound(token);
+                return Errors.RefreshTokenByUserIdNotFound();
             }
             return tokenRecord;
         }

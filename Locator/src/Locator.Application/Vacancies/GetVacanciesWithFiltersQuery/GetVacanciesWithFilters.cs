@@ -3,7 +3,7 @@ using Locator.Application.Abstractions;
 using Locator.Application.Ratings;
 using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails.Exceptions;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Locator.Domain.Thesauruses;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +30,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         GetVacanciesWithFiltersQuery query,
         CancellationToken cancellationToken)
     {
+        // Get Employee access token
         (_, bool isFailure, string? token) = await _authService
             .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
         if (isFailure)
@@ -37,22 +38,37 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             throw new GetValidEmployeeAccessTokenException();
         }
 
+        // Get all resume IDs of user
         var resumesResult = await _vacanciesService
             .GetResumeIdsAsync(token, cancellationToken);
+        if (resumesResult.IsFailure && resumesResult.Error.Code == "record.not.found")
+        {
+            throw new GetValidResumeNotFoundException();
+        }
         if (resumesResult.IsFailure)
         {
-            throw new GetResumeException();
+            throw new GetResumeFailureException();
         }
         
         var resume = resumesResult.Value?.Resumes?
-            .FirstOrDefault(r => r.Status?.Id == ResumeStatusEnum.PUBLISHED.ToString().ToLower());
+            .FirstOrDefault(r => r.Status?.Id == nameof(ResumeStatusEnum.PUBLISHED).ToLower());
         if (resume is null)
         {
             throw new GetValidResumeNotFoundException();
         }
         
+        // Get Vacancies that match resume
         var vacanciesResult = await _vacanciesService
             .GetVacanciesMatchResumeAsync(resume.Id, query.Dto.Query, token, cancellationToken);
+
+        switch (vacanciesResult.IsFailure)
+        {
+            case true when vacanciesResult.Error.Code == "value.is.invalid":
+                throw new GetVacanciesMatchResumeValidationException(vacanciesResult.Error.Message);
+            case true when vacanciesResult.Error.Code == "record.not.found":
+                throw new GetVacanciesMatchResumeNotFoundException();
+        }
+
         if (vacanciesResult.IsFailure || vacanciesResult.Value.Vacancies == null)
         {
             throw new GetVacanciesMatchResumeFailureException();
@@ -67,15 +83,16 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         var vacancyIds = vacancies
             .Select(v => long.Parse(v.Id)).ToList();
         
+        // Get Ratings of all Vacancies
         var ratingsDict = await _ratingsDbContext.ReadVacancyRatings
             .Where(r => vacancyIds.Contains(r.EntityId))
             .ToDictionaryAsync(r => r.EntityId, r => r.Value, cancellationToken);
         
+        // Vacancies with their Ratings
         var vacanciesDto = vacancies.Select(v => new FullVacancyDto(
             long.Parse(v.Id),
             v,
-            ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null
-        ));
+            ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null));
         
         return new VacanciesResponse(count, vacanciesDto, page, pages, perPage);
     }

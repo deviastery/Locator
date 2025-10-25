@@ -6,10 +6,10 @@ public class EmployeeToken : BaseToken
         string token, 
         string refreshToken, 
         DateTime createdAt, 
-        long expiresIn, 
+        long expiresAt, 
         Guid userId, 
         string tokenType = "bearer")
-    : base(token, createdAt, expiresIn)
+    : base(token, createdAt, expiresAt)
     {
         RefreshToken = refreshToken;
         UserId = userId;

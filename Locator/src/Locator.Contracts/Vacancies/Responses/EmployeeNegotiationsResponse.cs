@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 
 namespace Locator.Contracts.Vacancies.Responses;
 

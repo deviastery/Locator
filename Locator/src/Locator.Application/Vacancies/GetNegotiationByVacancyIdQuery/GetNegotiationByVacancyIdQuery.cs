@@ -1,5 +1,5 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 
 namespace Locator.Application.Vacancies.GetNegotiationByVacancyIdQuery;
 

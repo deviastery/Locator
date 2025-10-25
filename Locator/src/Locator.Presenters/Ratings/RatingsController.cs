@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Ratings.GetRatingByVacancyIdQuery;
 using Locator.Contracts.Ratings.Responses;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,6 @@ namespace Locator.Presenters.Ratings;
 [Authorize]
 public class RatingsController : ControllerBase
 {
-
     [HttpGet("vacancies/{vacancyId:long}")]
     public async Task<IActionResult> GetByVacancyId(
         [FromServices] IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> queryHandler,

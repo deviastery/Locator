@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Contracts.Users.Responses;
-using Locator.Contracts.Vacancies.Dtos;
+using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
 using Shared;
 
@@ -9,7 +9,7 @@ namespace Locator.Application.Users;
 public interface IVacanciesService
 {
     /// <summary>
-    /// Method for getting IDs of user resumes 
+    /// Gets IDs of user resumes 
     /// </summary>
     /// <param name="accessToken">Access token of a job search service</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -19,7 +19,7 @@ public interface IVacanciesService
         CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting vacancies that match resume
+    /// Gets vacancies that match resume
     /// </summary>
     /// <param name="resumeId">ID of resume</param>
     /// <param name="query">Filters and pagination</param>
@@ -33,7 +33,7 @@ public interface IVacanciesService
         CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting vacancy by ID
+    /// Gets vacancy by ID
     /// </summary>
     /// <param name="vacancyId">Vacancy ID</param>
     /// <param name="accessToken">Access token of a job search service</param>
@@ -45,7 +45,7 @@ public interface IVacanciesService
         CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting negotiations of user
+    /// Gets negotiations of user
     /// </summary>
     /// <param name="query">Pagination</param>
     /// <param name="accessToken">Access token of a job search service</param>
@@ -57,7 +57,7 @@ public interface IVacanciesService
         CancellationToken cancellationToken);
 
     /// <summary>
-    /// Method for getting negotiation by vacancy ID
+    /// Gets negotiation by vacancy ID
     /// </summary>
     /// <param name="vacancyId">Vacancy ID</param>
     /// <param name="accessToken">Access token of a job search service</param>
@@ -67,9 +67,21 @@ public interface IVacanciesService
         long vacancyId, 
         string accessToken, 
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Gets negotiation by ID
+    /// </summary>
+    /// <param name="negotiationId">ID of negotiation</param>
+    /// <param name="accessToken">Access token of a job search service</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Negotiation</returns>
+    Task<Result<NegotiationDto, Error>> GetNegotiationByIdAsync(
+        long negotiationId,
+        string accessToken,
+        CancellationToken cancellationToken);
     
     /// <summary>
-    /// Method for getting the difference between today and the response day in days
+    /// Gets the difference between today and the response day in days
     /// </summary>
     /// <param name="negotiationId">Negotiation ID</param>
     /// <param name="accessToken">Access token of a job search service</param>

@@ -48,7 +48,7 @@ public enum ErrorType
     VALIDATION,
 
     /// <summary>
-    /// Error not found
+    /// Error unauthorized
     /// </summary>
     UNAUTHORIZED,
     
