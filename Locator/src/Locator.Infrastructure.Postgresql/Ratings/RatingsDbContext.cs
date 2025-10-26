@@ -1,9 +1,6 @@
 ﻿using Locator.Application.Ratings;
 using Locator.Domain.Ratings;
-using Locator.Domain.Thesauruses;
-using Locator.Domain.Vacancies;
 using Microsoft.EntityFrameworkCore;
-using Guid = System.Guid;
 
 namespace Locator.Infrastructure.Postgresql.Ratings;
 

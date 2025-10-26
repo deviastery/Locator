@@ -1,7 +1,6 @@
-﻿namespace Locator.Application.Abstractions;
+namespace Locator.Application.Abstractions;
 
 public interface IQuery;
-
 public interface IQueryHandler<TResponse, in TQuery>
     where TQuery : IQuery
 {

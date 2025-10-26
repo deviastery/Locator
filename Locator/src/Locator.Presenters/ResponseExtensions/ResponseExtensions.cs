@@ -20,7 +20,7 @@ public static class ResponseExtensions
             .Distinct()
             .ToList();
         
-        var statusCode = distinctErrorTypes.Count > 1 
+        int statusCode = distinctErrorTypes.Count > 1 
             ? StatusCodes.Status500InternalServerError
             : GetStatusCodeFromErrorType(distinctErrorTypes.First());
 
@@ -31,8 +31,8 @@ public static class ResponseExtensions
         errorType switch
         {
             ErrorType.VALIDATION => StatusCodes.Status400BadRequest,
+            ErrorType.UNAUTHORIZED => StatusCodes.Status401Unauthorized,
             ErrorType.NOT_FOUND => StatusCodes.Status404NotFound,
-            ErrorType.FAILURE => StatusCodes.Status500InternalServerError,
             ErrorType.CONFLICT => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
         };

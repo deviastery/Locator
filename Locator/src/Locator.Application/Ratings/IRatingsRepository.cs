@@ -6,6 +6,19 @@ namespace Locator.Application.Ratings;
 
 public interface IRatingsRepository
 {
-    Task<Guid> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
-    Task<Result<VacancyRating?, Error>> GetVacancyRatingByIdAsync(Guid ratingId, CancellationToken cancellationToken);
+    /// <summary>
+    /// Updates vacancy rating
+    /// </summary>
+    /// <param name="rating">Vacancy rating</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>ID of updated vacancy rating</returns>
+    Task<Result<Guid, Error>> UpdateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Creates a new vacancy rating
+    /// </summary>
+    /// <param name="rating">Vacancy rating</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>ID of created vacancy rating</returns>
+    Task<Result<Guid, Error>> CreateVacancyRatingAsync(VacancyRating rating, CancellationToken cancellationToken);
 }

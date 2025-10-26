@@ -8,11 +8,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Locator.Application\Locator.Application.csproj" />
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
+      <ProjectReference Include="..\Locator.Infrastructure.HhApi\Locator.Infrastructure.HhApi.csproj" />
       <ProjectReference Include="..\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj" />
       <ProjectReference Include="..\Locator.Presenters\Locator.Presenters.csproj" />
       <ProjectReference Include="..\Shared\Shared.csproj" />

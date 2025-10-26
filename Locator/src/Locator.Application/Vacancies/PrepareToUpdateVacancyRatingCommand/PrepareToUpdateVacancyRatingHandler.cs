@@ -2,15 +2,16 @@
 using FluentValidation;
 using Locator.Application.Abstractions;
 using Locator.Application.Extensions;
+using Locator.Application.Ratings.Fails;
 using Locator.Application.Ratings.UpdateVacancyRatingCommand;
-using Locator.Contracts.Ratings;
+using Locator.Contracts.Ratings.Dto;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
 
 namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
 
-public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
+    public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
@@ -33,9 +34,13 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         PrepareToUpdateVacancyRatingCommand command, 
         CancellationToken cancellationToken)
     {
-        // Get all reviews of a vacancy
+        // Get all Reviews of a Vacancy
         var reviewsVacancyId = await _vacanciesRepository.GetReviewsByVacancyIdAsync(
-            command.vacancyId, cancellationToken);
+            command.VacancyId, cancellationToken);
+        if (reviewsVacancyId.Count == 0)
+        {
+            return Errors.General.NotFound($"Reviews not found by vacancy ID={command.VacancyId}").ToFailure();
+        }
 
         // Calculate average mark
         var averageMarkResult = Review.CalculateAverageMark(reviewsVacancyId);
@@ -45,15 +50,15 @@ public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<Prepar
         }
         
         // Input data validation
-        var vacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
+        var vacancyRatingDto = new UpdateVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
         var validationResult = await _validator.ValidateAsync(vacancyRatingDto, cancellationToken);
         if (!validationResult.IsValid)
         {
             return validationResult.ToErrors().ToFailure();
         }
 
-        // Create VacancyRating
-        var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.vacancyId, averageMarkResult.Value);
+        // Create vacancy Rating
+        var updateVacancyRatingDto = new UpdateVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
         var updateVacancyRatingCommand = new UpdateVacancyRatingCommand(updateVacancyRatingDto);
         var createVacancyRatingResult = await _updateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);

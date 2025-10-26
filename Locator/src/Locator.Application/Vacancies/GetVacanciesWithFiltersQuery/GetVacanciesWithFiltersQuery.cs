@@ -1,7 +1,7 @@
 ﻿using Locator.Application.Abstractions;
-using Locator.Contracts.Vacancies;
+using Locator.Contracts.Vacancies.Dto;
 
 namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 
 public record GetVacanciesWithFiltersQuery(
-    GetVacanciesDto Dto) : IQuery;
+    GetVacanciesByUserIdDto Dto) : IQuery;

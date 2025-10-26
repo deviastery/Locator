@@ -18,16 +18,18 @@ public record Error
         InvalidField = invalidField;
     }
 
-    public static Error NotFound(string? code, string message, Guid? id) => 
+    public static Error Unauthorized(string message, string? code = null) => 
+        new(code ?? "user.unauthorized", message, ErrorType.UNAUTHORIZED);
+    public static Error NotFound(string message, string? code = null) => 
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
     
-    public static Error Validation(string? code, string message, string? invalidField = null) => 
+    public static Error Validation(string message, string? code = null, string? invalidField = null) => 
         new(code ?? "value.is.invalid", message, ErrorType.VALIDATION, invalidField);
     
-    public static Error Conflict(string? code, string message) => 
+    public static Error Conflict(string message, string? code = null) => 
         new(code ?? "value.is.conflict", message, ErrorType.CONFLICT);
     
-    public static Error Failure(string? code, string message) => 
+    public static Error Failure(string message, string? code = null) => 
         new(code ?? "failure", message, ErrorType.FAILURE);
     
     public Failure ToFailure() => this;
@@ -45,6 +47,11 @@ public enum ErrorType
     /// </summary>
     VALIDATION,
 
+    /// <summary>
+    /// Error unauthorized
+    /// </summary>
+    UNAUTHORIZED,
+    
     /// <summary>
     /// Error not found
     /// </summary>

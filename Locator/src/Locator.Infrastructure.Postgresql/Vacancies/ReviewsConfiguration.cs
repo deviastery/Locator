@@ -10,12 +10,6 @@ public class ReviewsConfiguration : IEntityTypeConfiguration<Review>
     {
         builder.ToTable("Reviews"); 
         
-        // Vacancy -> Reviews (one-to-many) connection
-        builder
-            .HasOne(r => r.Vacancy)
-            .WithMany(v => v.Reviews)
-            .HasForeignKey(r => r.VacancyId);
-        
         builder.Property(r => r.Id)
             .ValueGeneratedNever();
         builder.Property(r => r.Mark)
