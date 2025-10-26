@@ -4,8 +4,8 @@ namespace Locator.Application.Vacancies.Fails.Exceptions;
 
 public class GetNegotiationsNotFoundException : NotFoundException
 {
-    public GetNegotiationsNotFoundException() 
-        : base([Errors.General.NotFound<int?>(null)])
+    public GetNegotiationsNotFoundException(string message) 
+        : base([Errors.General.NotFound(message)])
     {
     }
 }

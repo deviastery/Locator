@@ -40,7 +40,7 @@ public class HhVacanciesService : IVacanciesService
         var resumes = JsonSerializer.Deserialize<ResumesResponse>(json);
         return resumes?.Count != null
             ? resumes
-            : Errors.General.Validation("Missing resumes.");
+            : Errors.General.NotFound("Resumes not found");
     }
     
     public async Task<Result<EmployeeVacanciesResponse, Error>> GetVacanciesMatchResumeAsync(
@@ -98,7 +98,7 @@ public class HhVacanciesService : IVacanciesService
         var vacancies = JsonSerializer.Deserialize<EmployeeVacanciesResponse>(json);
         return vacancies?.Count != null
             ? vacancies
-            : Errors.General.Validation("Missing vacancies.");
+            : Errors.General.NotFound("Vacancies that match resume not found");
     }
     
     public async Task<Result<VacancyDto, Error>> GetVacancyByIdAsync(string vacancyId, string accessToken, CancellationToken cancellationToken)
@@ -113,7 +113,7 @@ public class HhVacanciesService : IVacanciesService
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return Errors.General.NotFound(vacancyId);
+            return Errors.General.NotFound($"Vacancy not found by ID={vacancyId}");
         }
         if (!response.IsSuccessStatusCode)
         {
@@ -124,7 +124,7 @@ public class HhVacanciesService : IVacanciesService
         var vacancy = JsonSerializer.Deserialize<VacancyDto>(json);
         return vacancy != null
             ? vacancy
-            : Errors.General.Validation("Missing vacancies.");
+            : Errors.General.NotFound($"Vacancy not found by ID={vacancyId}");
     }
     
     public async Task<Result<EmployeeNegotiationsResponse, Error>> GetNegotiationsByUserIdAsync(
@@ -153,7 +153,7 @@ public class HhVacanciesService : IVacanciesService
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            return Errors.General.Validation("Bad request to get value.is.invalid");
+            return Errors.General.Validation("Bad request to get negotiations");
         }
 
         if (!response.IsSuccessStatusCode)
@@ -165,7 +165,7 @@ public class HhVacanciesService : IVacanciesService
         var negotiations = JsonSerializer.Deserialize<EmployeeNegotiationsResponse>(json);
         return negotiations?.Count != null
             ? negotiations
-            : Errors.General.NotFound("negotiations");
+            : Errors.General.NotFound("Negotiations not found");
     }
     
     public async Task<Result<NegotiationDto, Error>> GetNegotiationByVacancyIdAsync(
@@ -185,7 +185,7 @@ public class HhVacanciesService : IVacanciesService
             case HttpStatusCode.BadRequest:
                 return Errors.General.Validation("Bad request to get negotiations");
             case HttpStatusCode.NotFound:
-                return Errors.General.NotFound("negotiations");
+                return Errors.General.NotFound($"Negotiation not found by vacancy ID={vacancyId}");
         }
         if (!response.IsSuccessStatusCode)
         {
@@ -198,7 +198,7 @@ public class HhVacanciesService : IVacanciesService
         var negotiation = negotiations?.Negotiations?.FirstOrDefault();
         return negotiation != null
             ? negotiation
-            : Errors.MissingNegotiationByVacancyId(vacancyId);
+            : Errors.General.NotFound($"Negotiation not found by vacancy ID={vacancyId}");
     }
     
     public async Task<Result<NegotiationDto, Error>> GetNegotiationByIdAsync(
@@ -218,7 +218,7 @@ public class HhVacanciesService : IVacanciesService
             case HttpStatusCode.BadRequest:
                 return Errors.General.Validation("Bad request to get negotiation");
             case HttpStatusCode.NotFound:
-                return Errors.General.NotFound(negotiationId);
+                return Errors.General.NotFound($"Negotiation not found by ID={negotiationId}");
         }
         if (!response.IsSuccessStatusCode)
         {
@@ -230,7 +230,7 @@ public class HhVacanciesService : IVacanciesService
         
         return negotiation != null
             ? negotiation
-            : Errors.General.NotFound(negotiationId);
+            : Errors.General.NotFound($"Negotiation not found by ID={negotiationId}");
     }
     
     public async Task<Result<int, Error>> GetDaysAfterApplyingAsync(
@@ -248,7 +248,7 @@ public class HhVacanciesService : IVacanciesService
 
         if (negotiation == null)
         {
-            return Errors.General.NotFound(negotiationId);
+            return Errors.General.NotFound($"Negotiation not found by ID={negotiationId}");
         }
         
         // Calculate count of days after applying

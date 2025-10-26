@@ -13,6 +13,17 @@ public class VacanciesEfCoreRepository : IVacanciesRepository
          _vacanciesDbContext = vacanciesDbContext;
     }
 
+    public async Task<bool> HasUserReviewedVacancyAsync(
+        Guid userId,
+        long vacancyId,
+        CancellationToken cancellationToken)
+    {
+        var review = await _vacanciesDbContext.Reviews
+            .Where(r => r.VacancyId == vacancyId && r.UserId == userId)
+            .FirstOrDefaultAsync(cancellationToken);
+        return review != null;
+    }
+
     public async Task<Guid> CreateReviewAsync(Review review, CancellationToken cancellationToken)
     {
         await _vacanciesDbContext.Reviews.AddAsync(review, cancellationToken);

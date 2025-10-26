@@ -4,8 +4,8 @@ namespace Locator.Application.Vacancies.Fails.Exceptions;
 
 public class GetValidResumeNotFoundException : NotFoundException
 {
-    public GetValidResumeNotFoundException() 
-        : base([Errors.General.NotFound<int?>(null)])
+    public GetValidResumeNotFoundException(string message) 
+        : base([Errors.General.NotFound(message)])
     {
     }
 }

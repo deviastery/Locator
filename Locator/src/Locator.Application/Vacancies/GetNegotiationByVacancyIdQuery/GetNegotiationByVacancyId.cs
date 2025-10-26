@@ -41,7 +41,8 @@ public class GetNegotiationByVacancyId : IQueryHandler<NegotiationResponse, GetN
             case true when negotiationResult.Error.Code == "value.is.invalid":
                 throw new GetNegotiationsValidationException();
             case true when negotiationResult.Error.Code == "record.not.found":
-                throw new GetNegotiationsNotFoundException();
+                throw new GetNegotiationsNotFoundException(
+                    $"Negotiations not found by vacancy ID={query.Dto.VacancyId}");
         }
         if (negotiationResult.IsFailure || negotiationResult.Value is null)
         {

@@ -5,17 +5,19 @@ namespace Locator.Domain.Vacancies;
 
 public class Review
 {
-    public Review(double mark, string? comment, string userName, long vacancyId)
+    public Review(double mark, string? comment, Guid userId, string userName, long vacancyId)
     {
         Id = Guid.NewGuid();
         Mark = mark;
         Comment = comment;
+        UserId = userId;
         UserName = userName;
         VacancyId = vacancyId;
     }
     public Guid Id { get; init; }
     public double Mark { get; init; }
     public string? Comment { get; init; }
+    public Guid UserId { get; init; }
     public string UserName { get; init; }
     public long VacancyId { get; init; }
     public DateTime CreatedAt { get; init; }

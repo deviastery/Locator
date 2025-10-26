@@ -43,7 +43,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             .GetResumeIdsAsync(token, cancellationToken);
         if (resumesResult.IsFailure && resumesResult.Error.Code == "record.not.found")
         {
-            throw new GetValidResumeNotFoundException();
+            throw new GetValidResumeNotFoundException("Resumes not found");
         }
         if (resumesResult.IsFailure)
         {
@@ -54,7 +54,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             .FirstOrDefault(r => r.Status?.Id == nameof(ResumeStatusEnum.PUBLISHED).ToLower());
         if (resume is null)
         {
-            throw new GetValidResumeNotFoundException();
+            throw new GetValidResumeNotFoundException("Resumes not found");
         }
         
         // Get Vacancies that match resume
@@ -66,7 +66,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             case true when vacanciesResult.Error.Code == "value.is.invalid":
                 throw new GetVacanciesMatchResumeValidationException(vacanciesResult.Error.Message);
             case true when vacanciesResult.Error.Code == "record.not.found":
-                throw new GetVacanciesMatchResumeNotFoundException();
+                throw new GetVacanciesMatchResumeNotFoundException("Vacancies that match resume not found");
         }
 
         if (vacanciesResult.IsFailure || vacanciesResult.Value.Vacancies == null)

@@ -45,7 +45,7 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
             .GetVacancyByIdAsync(query.Dto.VacancyId.ToString(), token, cancellationToken);
         if (vacancyByIdResult.IsFailure && vacancyByIdResult.Error.Code == "record.not.found")
         {
-            throw new GetVacancyByIdNotFoundException(query.Dto.VacancyId);
+            throw new GetVacancyByIdNotFoundException($"Vacancy not found by ID={query.Dto.VacancyId}");
         }        
         if (vacancyByIdResult.IsFailure || vacancyByIdResult.Value == null)
         {

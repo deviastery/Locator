@@ -87,7 +87,7 @@ public class HhAuthService : IAuthService
         var user = JsonSerializer.Deserialize<UserDto>(json);
         return user?.Email != null
             ? user
-            : Errors.General.Failure("Missing email address.");
+            : Errors.General.NotFound("Email address not found");
     }
 
     public async Task<Result<string, Error>> GetValidEmployeeAccessTokenAsync(

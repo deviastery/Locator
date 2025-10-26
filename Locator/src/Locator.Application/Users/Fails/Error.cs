@@ -10,8 +10,8 @@ public partial class Errors
             Error.Validation("Validation error.");
         public static Error Unauthorized() =>
             Error.Unauthorized("The user is not authorized.");
-        public static Error NotFound<T>(T id) =>
-            Error.NotFound("Record not found.", id, "record.not.found");
+        public static Error NotFound(string? message = null) =>
+            Error.NotFound(message ?? "Record not found.", "record.not.found");
         public static Error Failure(string message) =>
             Error.Failure($"Something went wrong: {message}", "server.failure");
     }

@@ -14,6 +14,7 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
     public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewCommand>
 {
     private readonly IVacanciesRepository _vacanciesRepository;
+    private readonly IUsersRepository _usersRepository;
     private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
     private readonly IVacanciesService _vacanciesService;
     private readonly IAuthService _authService;
@@ -22,6 +23,7 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
     
     public CreateReviewCommandHandler(
         IVacanciesRepository vacanciesRepository,
+        IUsersRepository usersRepository,
         ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
         IVacanciesService vacanciesService, 
         IAuthService authService,
@@ -29,6 +31,7 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
         ILogger<CreateReviewCommandHandler> logger)
     {
         _vacanciesRepository = vacanciesRepository;
+        _usersRepository = usersRepository;
         _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
         _vacanciesService = vacanciesService;
         _authService = authService;
@@ -62,10 +65,22 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
         {
             return negotiationResult.Error.ToFailure();
         }
+        if (!long.TryParse(negotiationResult.Value.Id, out long negotiationId))
+        {
+            return Errors.TryParseNegotiationIdFail().ToFailure();
+        }
         
-        // Possible to leave a Review
+        // Has user reviewed vacancy?
+        bool hasUserReviewedVacancy = await _vacanciesRepository.HasUserReviewedVacancyAsync(
+            command.UserId, command.VacancyId, cancellationToken);
+        if (hasUserReviewedVacancy)
+        {
+            return Errors.UserAlreadyReviewedVacancy().ToFailure();
+        }
+        
+        // Have enough days passed since the applying?
         var daysAfterApplyingResult =
-            await _vacanciesService.GetDaysAfterApplyingAsync(command.ReviewDto.NegotiationId, token, cancellationToken);
+            await _vacanciesService.GetDaysAfterApplyingAsync(negotiationId, token, cancellationToken);
         if (daysAfterApplyingResult.IsFailure)
         {
             return daysAfterApplyingResult.Error.ToFailure();
@@ -78,8 +93,20 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
             return isReadyForReviewResult.Error.ToFailure();
         }
         
+        // Get User
+        var userResult = await _usersRepository.GetUserAsync(command.UserId, cancellationToken);
+        if (userResult.IsFailure)
+        {
+            return userResult.Error.ToFailure();
+        }
+        
         // Create Review
-        var review = new Review(command.ReviewDto.Mark, command.ReviewDto.Comment, command.ReviewDto.UserName, command.VacancyId);
+        var review = new Review(
+            command.ReviewDto.Mark, 
+            command.ReviewDto.Comment, 
+            command.UserId, 
+            userResult.Value.Name, 
+            command.VacancyId);
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);
         

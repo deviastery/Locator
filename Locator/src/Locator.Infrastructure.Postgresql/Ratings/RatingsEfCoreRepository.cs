@@ -25,7 +25,7 @@ public class RatingsEfCoreRepository : IRatingsRepository
 
             if (ratingRecord == null)
             {
-                return Errors.General.NotFound(rating.Id);
+                return Errors.General.NotFound($"Rating not found by ID={rating.Id}");
             }
             
             ratingRecord.Value = rating.Value;

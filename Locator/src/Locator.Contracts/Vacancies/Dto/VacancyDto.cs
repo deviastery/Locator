@@ -10,6 +10,9 @@ public record VacancyDto
     [JsonPropertyName("name")]
     public string Name { get; init; } = default!;
     
+    [JsonPropertyName("alternate_url")]
+    public string Url { get; init; } = default!;
+    
     [JsonPropertyName("snippet")]
     public Snippet? Description { get; init; }
     

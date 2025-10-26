@@ -39,7 +39,7 @@ public class UsersEfCoreRepository : IUsersRepository
 
             if (userRecord == null)
             {
-                return Errors.General.NotFound(userId);
+                return Errors.General.NotFound($"User not found be ID={userId}");
             }
             return userRecord;
         }
@@ -60,7 +60,7 @@ public class UsersEfCoreRepository : IUsersRepository
 
             if (newToken == null)
             {
-                return Errors.General.NotFound(token.Id);
+                return Errors.General.NotFound($"Token not found by ID={token.Id}");
             }
             
             newToken.RefreshToken = token.RefreshToken;
@@ -124,7 +124,7 @@ public class UsersEfCoreRepository : IUsersRepository
 
             if (deletedToken == null)
             {
-                return Errors.General.NotFound(token.Token);
+                return Errors.General.NotFound($"Token not found by ID={token.Id}");
             }
 
             _usersDbContext.Remove(deletedToken);

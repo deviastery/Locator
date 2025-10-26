@@ -40,7 +40,7 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
             case true when negotiationsResult.Error.Code == "value.is.invalid":
                 throw new GetNegotiationsValidationException();
             case true when negotiationsResult.Error.Code == "record.not.found":
-                throw new GetNegotiationsNotFoundException();
+                throw new GetNegotiationsNotFoundException("Negotiations not found");
         }
         if (negotiationsResult.IsFailure || negotiationsResult.Value.Negotiations is null)
         {

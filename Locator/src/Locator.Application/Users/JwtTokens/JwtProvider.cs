@@ -79,7 +79,7 @@ public class JwtProvider : IJwtProvider
 
         if (user is null)
         {
-            return Errors.General.NotFound(refreshTokenRecord.UserId);
+            return Errors.General.NotFound("User not found");
         }
         
         return GenerateJwtToken(user).Token;

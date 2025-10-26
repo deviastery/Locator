@@ -39,7 +39,7 @@ namespace Locator.Application.Vacancies.PrepareToUpdateVacancyRatingCommand;
             command.VacancyId, cancellationToken);
         if (reviewsVacancyId.Count == 0)
         {
-            return Errors.General.NotFound<int?>(null).ToFailure();
+            return Errors.General.NotFound($"Reviews not found by vacancy ID={command.VacancyId}").ToFailure();
         }
 
         // Calculate average mark

@@ -6,6 +6,7 @@ public record FullVacancyDto
     {
         Id = id;
         Name = dto.Name;
+        Url = dto.Url;
         Responsibility = dto.Description?.Responsibility;
         Employer = dto.Employer?.Name;
         Area = dto.Area;
@@ -19,6 +20,7 @@ public record FullVacancyDto
 
     public long Id { get; init; }
     public string Name { get; init; }
+    public string Url { get; init; }
     public string? Responsibility { get; init; }
     public string? Employer { get; init; }
     public Area? Area { get; init; }
