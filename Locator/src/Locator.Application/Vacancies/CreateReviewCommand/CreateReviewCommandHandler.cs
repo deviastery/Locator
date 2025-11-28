@@ -5,6 +5,7 @@ using Locator.Application.Extensions;
 using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails;
 using Locator.Contracts.Vacancies.Dto;
+using Locator.Domain.Users;
 using Locator.Domain.Vacancies;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -35,6 +36,7 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
         _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
         _vacanciesService = vacanciesService;
         _authService = authService;
+        _usersRepository = usersRepository;
         _validator = validator;
         _logger = logger;
     }
@@ -50,11 +52,10 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
         }
         
         // Get Employee access token
-        (_, bool isFailure, string? token, Error? error) = await _authService
-            .GetValidEmployeeAccessTokenAsync(command.UserId, cancellationToken);
-        if (isFailure)
+        string? token = await _authService.GetEmployeeTokenAsync(command.UserId, cancellationToken);
+        if (token is null)
         {
-            return error.ToFailure();
+            return Errors.General.Failure("Error getting Employee access token").ToFailure();
         }
 
         // Validation of business logic

@@ -14,13 +14,16 @@ public class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _jwtOptions;
     private readonly IUsersRepository _usersRepository;
+    private readonly ITokenCacheService _tokenCache;
 
     public JwtProvider(
         IOptions<JwtOptions> jwtOptions, 
-        IUsersRepository usersRepository)
+        IUsersRepository usersRepository,
+        ITokenCacheService tokenCache)
     {
-        _usersRepository = usersRepository;
         _jwtOptions = jwtOptions.Value;
+        _usersRepository = usersRepository;
+        _tokenCache = tokenCache;
     }
 
     public (string Token, int ExpiresIn) GenerateJwtToken(User user)
@@ -54,27 +57,26 @@ public class JwtProvider : IJwtProvider
         CancellationToken cancellationToken)
     {
         // Get Refresh token
-        (_, bool isTokenFailure, RefreshToken? refreshTokenRecord, Error? error) =
-            await _usersRepository.GetRefreshTokenByUserIdAsync(userId, cancellationToken);
-        if (isTokenFailure)
+        var refreshToken = await GetRefreshTokenAsync(userId, cancellationToken);
+        if (refreshToken is null)
         {
-            return error;
+            return Errors.General.Failure("Error getting refresh token.");
         }
-
+        
         // Check expired time of a Refresh token
-        DateTime createdDateTime = refreshTokenRecord.CreatedAt;
-        DateTime expiredDateTime = createdDateTime.AddSeconds(refreshTokenRecord.ExpiresAt);
+        DateTime createdDateTime = refreshToken.CreatedAt;
+        DateTime expiredDateTime = createdDateTime.AddSeconds(refreshToken.ExpiresAt);
         if (expiredDateTime.ToUniversalTime() > DateTime.UtcNow)
         {
             return Errors.RefreshTokenHasExpired();
         }
-        await _usersRepository.DeleteRefreshTokenAsync(refreshTokenRecord, cancellationToken);
+        await _usersRepository.DeleteRefreshTokenAsync(refreshToken, cancellationToken);
         
         // Get User
-        (_, bool isFailure, User? user) = await _usersRepository.GetUserAsync(refreshTokenRecord.UserId, cancellationToken);
+        (_, bool isFailure, User? user) = await _usersRepository.GetUserAsync(refreshToken.UserId, cancellationToken);
         if (isFailure)
         {
-            return Errors.General.Failure("Error get user.");
+            return Errors.General.Failure("Error getting user.");
         }
 
         if (user is null)
@@ -97,4 +99,39 @@ public class JwtProvider : IJwtProvider
 
         return refreshToken.Token;
     }    
+    
+    private async Task<RefreshToken?> GetRefreshTokenAsync(
+        Guid userId, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Try to get Refresh token from cache
+            var cachedRefreshToken = await _tokenCache.GetRefreshTokenAsync(userId, cancellationToken);
+            if (cachedRefreshToken != null)
+            {
+                return cachedRefreshToken;
+            }
+
+            // If Cache miss try to get Refresh token from DB
+            (_, bool isFailure, RefreshToken dbRefreshToken) =
+                await _usersRepository.GetRefreshTokenByUserIdAsync(userId, cancellationToken);
+            if (isFailure)
+            {
+                return null;
+            }
+
+            // Set Refresh token in cache
+            if (dbRefreshToken != null)
+            {
+                await _tokenCache.SetRefreshTokenAsync(dbRefreshToken, cancellationToken);
+            }
+
+            return dbRefreshToken;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }
