@@ -5,7 +5,7 @@ namespace Locator.Application.Users.Fails.Exceptions;
 public class GetUserInfoFailureException : FailureException
 {
     public GetUserInfoFailureException() 
-        : base([Errors.General.Failure("Error get user info.")])
+        : base([Errors.General.Failure("Error getting user info.")])
     {
     }
 }

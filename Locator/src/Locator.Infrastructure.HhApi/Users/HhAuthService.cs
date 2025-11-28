@@ -20,17 +20,20 @@ public class HhAuthService : IAuthService
     private readonly HhApiConfiguration _config;
     private readonly UsersDbContext _usersDbContext;
     private readonly IUsersRepository _usersRepository;
+    private readonly ITokenCacheService _tokenCache;
 
     public HhAuthService(
         HttpClient httpClient, 
         IOptions<HhApiConfiguration> config, 
         UsersDbContext usersDbContext,
-        IUsersRepository usersRepository)
+        IUsersRepository usersRepository,
+        ITokenCacheService tokenCache)
     {
         _httpClient = httpClient;
         _config = config.Value; 
         _usersDbContext = usersDbContext;
         _usersRepository = usersRepository;
+        _tokenCache = tokenCache;
     }
 
     public async Task<Result<(
@@ -131,6 +134,39 @@ public class HhAuthService : IAuthService
         }
         
         return newEmployeeToken.Token;
+    }
+    
+    public async Task<string?> GetEmployeeTokenAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Try to get Employee token from cache
+            string? cachedEmployeeToken = await _tokenCache.GetEmployeeTokenAsync(userId, cancellationToken);
+            if (cachedEmployeeToken != null)
+            {
+                return cachedEmployeeToken;
+            }
+
+            // If Cache miss try to get Employee token from DB
+            (_, bool isFailure, string? dbEmployeeToken) =
+                await GetValidEmployeeAccessTokenAsync(userId, cancellationToken);
+            if (isFailure)
+            {
+                return null;
+            }
+
+            // Set Employee token in cache
+            if (dbEmployeeToken != null)
+            {
+                await _tokenCache.SetEmployeeTokenAsync(dbEmployeeToken, userId, cancellationToken);
+            }
+
+            return dbEmployeeToken;
+        }
+        catch
+        {
+            return null;
+        }
     }
     
     private async Task<Result<EmployeeToken, Error>> RefreshTokenAsync(

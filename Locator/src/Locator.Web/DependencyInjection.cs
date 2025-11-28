@@ -2,6 +2,7 @@
 using Locator.Application;
 using Locator.Infrastructure.HhApi;
 using Locator.Infrastructure.Postgresql;
+using Locator.Infrastructure.Redis;
 using Microsoft.OpenApi.Models;
 
 namespace Locator.Web;
@@ -12,6 +13,7 @@ public static class DependencyInjection
     services.AddWebDependencies()
             .AddApplication(configuration)
             .AddPostgresInfrastructure(configuration)
+            .AddRedisInfrastructure(configuration)
             .AddHhApiInfrastructure(configuration);
 
     private static IServiceCollection AddWebDependencies(this IServiceCollection services)

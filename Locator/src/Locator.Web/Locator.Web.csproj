@@ -16,6 +16,7 @@
       <ProjectReference Include="..\Locator.Domain\Locator.Domain.csproj" />
       <ProjectReference Include="..\Locator.Infrastructure.HhApi\Locator.Infrastructure.HhApi.csproj" />
       <ProjectReference Include="..\Locator.Infrastructure.Postgresql\Locator.Infrastructure.Postgresql.csproj" />
+      <ProjectReference Include="..\Locator.Infrastructure.Redis\Locator.Infrastructure.Redis.csproj" />
       <ProjectReference Include="..\Locator.Presenters\Locator.Presenters.csproj" />
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>

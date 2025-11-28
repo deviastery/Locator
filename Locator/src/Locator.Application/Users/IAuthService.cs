@@ -13,7 +13,9 @@ public interface IAuthService
     /// <param name="code">Authorization code</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Token of a job search service & Time that token created at</returns>
-    Task<Result<(AccessTokenResponse tokenResponse, DateTime createdAt), Error>> ExchangeCodeForTokenAsync(string code, CancellationToken cancellationToken);
+    Task<Result<(AccessTokenResponse tokenResponse, DateTime createdAt), Error>> ExchangeCodeForTokenAsync(
+        string code, 
+        CancellationToken cancellationToken);
     
     /// <summary>
     /// Gets user info from a job search service
@@ -30,4 +32,12 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Access token of a job search service</returns>
     Task<Result<string, Error>> GetValidEmployeeAccessTokenAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Gets employee access token a job search service
+    /// </summary>
+    /// <param name="userId">ID of user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Access token of a job search service</returns>
+    Task<string?> GetEmployeeTokenAsync(Guid userId, CancellationToken cancellationToken);
 }

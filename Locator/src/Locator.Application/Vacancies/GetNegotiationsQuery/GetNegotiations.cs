@@ -24,9 +24,8 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
         CancellationToken cancellationToken)
     {
         // Get Employee access token
-        (_, bool isFailure, string? token) = await _authService
-            .GetValidEmployeeAccessTokenAsync(query.Dto.UserId, cancellationToken);
-        if (isFailure)
+        string? token = await _authService.GetEmployeeTokenAsync(query.Dto.UserId, cancellationToken);
+        if (token is null)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
