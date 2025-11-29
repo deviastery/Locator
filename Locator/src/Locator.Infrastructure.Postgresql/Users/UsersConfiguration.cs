@@ -1,7 +1,7 @@
-﻿using Locator.Domain.Thesauruses;
-using Locator.Domain.Users;
+﻿using Locator.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Thesauruses;
 
 namespace Locator.Infrastructure.Postgresql.Users;
 

@@ -111,7 +111,7 @@ namespace Locator.Application.Vacancies.CreateReviewCommand;
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);
         
-        // Updating after create Review
+        // Update Rating after create Review
         var updateVacancyRatingCommand = new PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand(command.VacancyId);
         var updateRatingResult = await _prepareToUpdateVacancyRatingCommandHandler
             .Handle(updateVacancyRatingCommand, cancellationToken);

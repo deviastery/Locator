@@ -1,6 +1,6 @@
-﻿using Locator.Domain.Thesauruses;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Thesauruses;
 
 namespace Locator.Infrastructure.Postgresql.Ratings;
 

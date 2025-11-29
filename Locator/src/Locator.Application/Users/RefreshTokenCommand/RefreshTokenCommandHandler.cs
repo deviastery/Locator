@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Abstractions;
+using Locator.Application.Users.JwtTokens;
 using Shared;
 
 namespace Locator.Application.Users.RefreshTokenCommand;

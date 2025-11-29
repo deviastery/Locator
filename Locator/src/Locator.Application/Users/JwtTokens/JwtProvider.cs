@@ -7,6 +7,7 @@ using Locator.Domain.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
+using Shared.Options;
 
 namespace Locator.Application.Users.JwtTokens;
 

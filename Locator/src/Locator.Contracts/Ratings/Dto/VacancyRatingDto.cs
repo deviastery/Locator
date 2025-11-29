@@ -1,4 +1,4 @@
-﻿using Locator.Domain.Thesauruses;
+﻿using Shared.Thesauruses;
 
 namespace Locator.Contracts.Ratings.Dto;
 

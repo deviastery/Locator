@@ -1,4 +1,4 @@
-﻿namespace Locator.Application.Users.JwtTokens;
+﻿namespace Shared.Options;
 
 public class JwtOptions
 {

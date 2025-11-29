@@ -2,7 +2,7 @@
 using Locator.Domain.Users;
 using Shared;
 
-namespace Locator.Application.Users;
+namespace Locator.Application.Users.JwtTokens;
 
 public interface IJwtProvider
 {

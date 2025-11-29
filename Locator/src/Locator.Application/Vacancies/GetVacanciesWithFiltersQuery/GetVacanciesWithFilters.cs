@@ -5,8 +5,8 @@ using Locator.Application.Users;
 using Locator.Application.Vacancies.Fails.Exceptions;
 using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
-using Locator.Domain.Thesauruses;
 using Microsoft.EntityFrameworkCore;
+using Shared.Thesauruses;
 
 namespace Locator.Application.Vacancies.GetVacanciesWithFiltersQuery;
 

@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Locator.Application.Abstractions;
 using Locator.Application.Users.AuthQuery;
-using Locator.Application.Users.Cookies;
 using Locator.Application.Users.RefreshTokenCommand;
 using Locator.Contracts.Users.Dto;
 using Locator.Contracts.Users.Responses;

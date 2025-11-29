@@ -25,6 +25,10 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
+            if (ex is TaskCanceledException or OperationCanceledException)
+            {
+                return;
+            }
             await HandleExceptionAsync(httpContext, ex);
         }
     }

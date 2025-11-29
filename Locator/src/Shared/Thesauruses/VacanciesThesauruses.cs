@@ -1,4 +1,4 @@
-namespace Locator.Domain.Thesauruses;
+namespace Shared.Thesauruses;
 
 public enum CurrencyEnum
 {

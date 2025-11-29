@@ -1,4 +1,4 @@
-﻿namespace Locator.Application.Users.Cookies;
+﻿namespace Shared.Options;
 
 public class CookiesOptions
 {

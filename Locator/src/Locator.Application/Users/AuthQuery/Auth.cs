@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Locator.Application.Abstractions;
 using Locator.Application.Users.Fails.Exceptions;
+using Locator.Application.Users.JwtTokens;
 using Locator.Contracts.Users.Dto;
 using Locator.Contracts.Users.Responses;
 using Locator.Domain.Users;

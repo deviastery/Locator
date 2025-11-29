@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Locator.Application.Users.Cookies;
 using Locator.Application.Users.Fails;
 using Locator.Application.Users.JwtTokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Fails.Exceptions;
+using Shared.Options;
 
 namespace Locator.Application.Users.Extensions;
 

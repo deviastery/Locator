@@ -6,8 +6,8 @@ using Locator.Application.Users;
 using Locator.Contracts.Users.Responses;
 using Locator.Contracts.Vacancies.Dto;
 using Locator.Contracts.Vacancies.Responses;
-using Locator.Domain.Thesauruses;
 using Shared;
+using Shared.Thesauruses;
 using Errors = Locator.Infrastructure.HhApi.Users.Fails.Errors;
 
 namespace Locator.Infrastructure.HhApi.Users;

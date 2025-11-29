@@ -19,6 +19,7 @@ using Locator.Contracts.Users.Responses;
 using Locator.Contracts.Vacancies.Responses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Options;
 
 namespace Locator.Application;
 
