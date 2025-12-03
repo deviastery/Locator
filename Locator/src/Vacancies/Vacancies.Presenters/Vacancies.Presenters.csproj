@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
+      <ProjectReference Include="..\Vacancies.Application\Vacancies.Application.csproj" />
+      <ProjectReference Include="..\Vacancies.Contracts\Vacancies.Contracts.csproj" />
+      <ProjectReference Include="..\Vacancies.Infrastructure.Postgresql\Vacancies.Infrastructure.Postgresql.csproj" />
+    </ItemGroup>
+
+</Project>

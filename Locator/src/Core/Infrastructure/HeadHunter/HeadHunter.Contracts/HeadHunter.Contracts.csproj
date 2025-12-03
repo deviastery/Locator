@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>HeadHunter.Contracts</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Users\Users.Contracts\Users.Contracts.csproj" />
+      <ProjectReference Include="..\..\..\..\Vacancies\Vacancies.Contracts\Vacancies.Contracts.csproj" />
+      <ProjectReference Include="..\..\..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+</Project>
