@@ -8,6 +8,12 @@ namespace HeadHunter.Contracts;
 public interface IAuthContract
 {
     /// <summary>
+    /// Gets authorization url
+    /// </summary>
+    /// <returns>Url authorization string</returns>
+    string GetAuthorizationUrl();
+    
+    /// <summary>
     /// Exchanges authorization code for access and refresh tokens
     /// </summary>
     /// <param name="code">Authorization code</param>

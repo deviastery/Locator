@@ -1,4 +1,5 @@
 using Framework.Extensions;
+using HeadHunter.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Shared.Abstractions;
@@ -16,26 +17,19 @@ namespace Users.Presenters;
 public class UsersController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    public UsersController(IConfiguration configuration)
+    private readonly IAuthContract _authContract;
+    public UsersController(
+        IConfiguration configuration, 
+        IAuthContract authContract)
     {
         _configuration = configuration;
+        _authContract = authContract;
     }
     
     [HttpGet("auth")]
     public IActionResult Auth()
     {
-        var hhOptions = _configuration.GetSection(HeadHunterOptions.SECTION_NAME).Get<HeadHunterOptions>();
-        if (hhOptions == null)
-        {
-            throw new ConfigurationFailureException("Failed to get hh api options.");
-        }
-        
-        string url = $"https://hh.ru/oauth/authorize?" +
-                     $"response_type=code&" +
-                     $"client_id={Uri.EscapeDataString(hhOptions.ClientId)}&" +
-                     $"redirect_uri={Uri.EscapeDataString(hhOptions.RedirectUri)}&" +
-                     $"scope={Uri.EscapeDataString(hhOptions.Scope)}";
-        
+        string url = _authContract.GetAuthorizationUrl();
         return Redirect(url);
     }
     

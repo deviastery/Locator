@@ -7,6 +7,7 @@ using HeadHunter.Fails.Exceptions;
 using Microsoft.Extensions.Options;
 using Redis.Contracts;
 using Shared;
+using Shared.Fails.Exceptions;
 using Shared.Options;
 using Users.Contracts;
 using Users.Contracts.Dto;
@@ -31,6 +32,24 @@ public class HeadHunterAuthService : IAuthContract
         _config = config.Value; 
         _usersContract = usersContract;
         _tokenCache = tokenCache;
+    }
+
+    public string GetAuthorizationUrl()
+    {
+        if (string.IsNullOrWhiteSpace(_config.ClientId) ||
+            string.IsNullOrWhiteSpace(_config.RedirectUri) ||
+            string.IsNullOrWhiteSpace(_config.Scope))
+        {
+            throw new ConfigurationFailureException("Failed to get hh api options.");
+        }
+        
+        string url = $"https://hh.ru/oauth/authorize?" +
+                     $"response_type=code&" +
+                     $"client_id={Uri.EscapeDataString(_config.ClientId)}&" +
+                     $"redirect_uri={Uri.EscapeDataString(_config.RedirectUri)}&" +
+                     $"scope={Uri.EscapeDataString(_config.Scope)}";
+
+        return url;
     }
 
     public async Task<Result<(
