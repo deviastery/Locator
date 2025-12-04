@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Ratings.Contracts;
 using Ratings.Contracts.Dto;
 using Ratings.Contracts.Responses;
 using Shared.Abstractions;

@@ -1,11 +1,9 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Ratings.Application.GetRatingByVacancyIdQuery;
+using Ratings.Contracts.Dto;
 using Ratings.Contracts.Responses;
 using Shared.Abstractions;
-using Vacancies.Contracts.Dto;
 
 namespace Ratings.Presenters;
 
@@ -20,14 +18,7 @@ public class RatingsController : ControllerBase
         [FromRoute] long vacancyId,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(
-                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? 
-                User.FindFirstValue(JwtRegisteredClaimNames.Sub), out var userId))
-        {
-            return Unauthorized("User ID not found in token.");
-        }
-
-        var dto = new GetVacancyIdDto(vacancyId, userId);
+        var dto = new GetRatingByVacancyIdDto(vacancyId);
         var query = new GetRatingByVacancyIdQuery(dto);
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);

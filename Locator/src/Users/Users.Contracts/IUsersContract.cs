@@ -9,10 +9,10 @@ public interface IUsersContract
     /// <summary>
     /// Gets user
     /// </summary>
-    /// <param name="userId">ID of user</param>
+    /// <param name="dto">Dto for getting user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>User dto</returns>
-    Task<Result<UserDto, Error>> GetUserDtoAsync(Guid userId, CancellationToken cancellationToken);
+    Task<UserDto?> GetUserDtoAsync(GetUserDto dto, CancellationToken cancellationToken);
         
     /// <summary>
     /// Updates token of a job search service
@@ -30,7 +30,7 @@ public interface IUsersContract
     /// <param name="userId">ID of user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Dto of token of a job search service</returns>
-    Task<Result<EmployeeTokenDto, Error>> GetEmployeeTokenDtoByUserIdAsync(
+    Task<EmployeeTokenDto?> GetEmployeeTokenDtoByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken);
 }

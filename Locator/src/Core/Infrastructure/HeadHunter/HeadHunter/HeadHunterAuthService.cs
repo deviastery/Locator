@@ -114,14 +114,12 @@ public class HeadHunterAuthService : IAuthContract
         CancellationToken cancellationToken)
     {
         // Get Employee token
-        var tokenDtoResult = await _usersContract
+        var tokenDto = await _usersContract
             .GetEmployeeTokenDtoByUserIdAsync(userId, cancellationToken);
-        if (tokenDtoResult.IsFailure)
+        if (tokenDto is null)
         {
-            return tokenDtoResult.Error;
+            return Errors.General.NotFound("Employee token not found");
         }
-
-        var tokenDto = tokenDtoResult.Value;
 
         if (tokenDto == null)
         {
@@ -147,12 +145,12 @@ public class HeadHunterAuthService : IAuthContract
         }
 
         // Update Employee token
-        var newEmployeeTokensIdResult = await _usersContract.UpdateEmployeeTokenAsync(
+        var newEmployeeTokenIdResult = await _usersContract.UpdateEmployeeTokenAsync(
             newEmployeeToken, 
             cancellationToken);
-        if (newEmployeeTokensIdResult.IsFailure)
+        if (newEmployeeTokenIdResult.IsFailure)
         {
-            return newEmployeeTokensIdResult.Error;
+            return newEmployeeTokenIdResult.Error;
         }
         
         return newEmployeeToken.Token;

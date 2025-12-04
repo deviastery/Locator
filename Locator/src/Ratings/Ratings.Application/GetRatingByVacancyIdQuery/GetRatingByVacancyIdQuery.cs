@@ -1,6 +1,6 @@
-﻿using Shared.Abstractions;
-using Vacancies.Contracts.Dto;
+﻿using Ratings.Contracts.Dto;
+using Shared.Abstractions;
 
 namespace Ratings.Application.GetRatingByVacancyIdQuery;
 
-public record GetRatingByVacancyIdQuery(GetVacancyIdDto Dto) : IQuery;
+public record GetRatingByVacancyIdQuery(GetRatingByVacancyIdDto Dto) : IQuery;

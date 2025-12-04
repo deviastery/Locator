@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
-      <ProjectReference Include="..\..\Vacancies\Vacancies.Contracts\Vacancies.Contracts.csproj" />
       <ProjectReference Include="..\Ratings.Application\Ratings.Application.csproj" />
       <ProjectReference Include="..\Ratings.Contracts\Ratings.Contracts.csproj" />
       <ProjectReference Include="..\Ratings.Infrastructure.Postgresql\Ratings.Infrastructure.Postgresql.csproj" />

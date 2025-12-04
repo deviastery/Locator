@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using HeadHunter.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Ratings.Contracts;
+using Ratings.Contracts.Dto;
 using Shared;
 using Shared.Abstractions;
 using Vacancies.Application.Fails.Exceptions;
@@ -52,17 +53,17 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
             throw new GetVacancyByIdFailureException();
         }
 
+        var getRatingByVacancyIdDto = new GetRatingByVacancyIdDto(query.Dto.VacancyId);
+
         // Get a Rating of a Vacancy
-        var ratingResult = await _ratingsContract.GetRatingDtoByVacancyIdAsync(
-                query.Dto.VacancyId, 
+        var rating = await _ratingsContract.GetRatingDtoByVacancyIdAsync(
+                getRatingByVacancyIdDto,
                 cancellationToken);
-        if (ratingResult.IsFailure)
+        if (rating is null)
         {
             throw new GetRatingByVacancyIdNotFoundException(
                 $"Rating not found by Vacancy ID={query.Dto.VacancyId}");
         }
-
-        var rating = ratingResult.Value;
         
         // Get Reviews of a Vacancy
         var reviews = await _vacanciesDbContext.ReadReviews

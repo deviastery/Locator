@@ -153,23 +153,23 @@ public class UsersEfCoreRepository : IUsersRepository
     }
     
     public async Task<Result<Guid, Error>> UpdateEmployeeTokenAsync(
-        EmployeeToken token,
+        EmployeeToken newToken,
         CancellationToken cancellationToken)
     {
         try
         {
-            var newToken = await _usersDbContext.EmployeeTokens
-                .SingleOrDefaultAsync(t => t.Id == token.Id, cancellationToken);
+            var token = await _usersDbContext.EmployeeTokens
+                .SingleOrDefaultAsync(t => t.Id == newToken.Id, cancellationToken);
 
-            if (newToken == null)
+            if (token == null)
             {
-                return Errors.General.NotFound($"Token not found by ID={token.Id}");
+                return Errors.General.NotFound($"Token not found by ID={newToken.Id}");
             }
             
-            newToken.RefreshToken = token.RefreshToken;
-            newToken.Token = token.Token;
-            newToken.CreatedAt = DateTime.UtcNow;
-            newToken.ExpiresAt = token.ExpiresAt;
+            token.RefreshToken = newToken.RefreshToken;
+            token.Token = newToken.Token;
+            token.CreatedAt = DateTime.UtcNow;
+            token.ExpiresAt = newToken.ExpiresAt;
             
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             return newToken.Id;

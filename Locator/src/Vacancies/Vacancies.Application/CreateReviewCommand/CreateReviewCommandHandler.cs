@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
 using Users.Contracts;
+using Users.Contracts.Dto;
 using Vacancies.Application.Fails;
 using Vacancies.Contracts.Dto;
 using Vacancies.Domain;
@@ -92,12 +93,14 @@ namespace Vacancies.Application.CreateReviewCommand;
         {
             return isReadyForReviewResult.Error.ToFailure();
         }
+
+        var getUserDto = new GetUserDto(command.UserId);
         
         // Get User
-        var userResult = await _usersContract.GetUserDtoAsync(command.UserId, cancellationToken);
-        if (userResult.IsFailure)
+        var user = await _usersContract.GetUserDtoAsync(getUserDto, cancellationToken);
+        if (user is null)
         {
-            return userResult.Error.ToFailure();
+            return Errors.General.NotFound($"User not found be ID={command.UserId}").ToFailure();
         }
         
         // Create Review
@@ -105,7 +108,7 @@ namespace Vacancies.Application.CreateReviewCommand;
             command.ReviewDto.Mark, 
             command.ReviewDto.Comment, 
             command.UserId, 
-            userResult.Value.FirstName ?? string.Empty, 
+            user.FirstName ?? string.Empty, 
             command.VacancyId);
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);

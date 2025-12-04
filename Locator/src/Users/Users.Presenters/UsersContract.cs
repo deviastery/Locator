@@ -1,64 +1,63 @@
 ﻿using CSharpFunctionalExtensions;
 using Shared;
-using Users.Application;
+using Shared.Abstractions;
+using Users.Application.Fails;
+using Users.Application.GetEmployeeTokenByUserIdQuery;
+using Users.Application.GetUserQuery;
+using Users.Application.UpdateEmployeeTokenCommand;
 using Users.Contracts;
 using Users.Contracts.Dto;
-using Users.Domain;
+using Users.Contracts.Responses;
 
 namespace Users.Presenters;
 
 public class UsersContract : IUsersContract
 {
-    private readonly IUsersRepository _userRepository;
+    private readonly IQueryHandler<UserResponse, GetUserQuery> _getUserQueryHandler;
+    private readonly IQueryHandler<EmployeeTokenResponse, GetEmployeeTokenByUserIdQuery> _getEmployeeTokenByUserIdHandler;
+    private readonly ICommandHandler<Guid, UpdateEmployeeTokenCommand> _updateEmployeeTokenCommandHandler;
 
     public UsersContract(
-        IUsersRepository userRepository)
+        IQueryHandler<UserResponse, GetUserQuery> getUserQueryHandler, 
+        ICommandHandler<Guid, UpdateEmployeeTokenCommand> updateEmployeeTokenCommandHandler, 
+        IQueryHandler<EmployeeTokenResponse, GetEmployeeTokenByUserIdQuery> getEmployeeTokenByUserIdHandler)
     {
-        _userRepository = userRepository;
+        _getUserQueryHandler = getUserQueryHandler;
+        _updateEmployeeTokenCommandHandler = updateEmployeeTokenCommandHandler;
+        _getEmployeeTokenByUserIdHandler = getEmployeeTokenByUserIdHandler;
     }
     
-    public async Task<Result<UserDto, Error>> GetUserDtoAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<UserDto?> GetUserDtoAsync(GetUserDto dto, CancellationToken cancellationToken)
     {
-        (_, bool isFailure, User? user, Error? error) = await _userRepository.GetUserAsync(userId, cancellationToken);
-        if (isFailure)
-        {
-            return error;
-        }
-
-        var dto = new UserDto(user.EmployeeId.ToString(), user.Name, user.Email);
-        return dto;
+        var getUserQuery = new GetUserQuery(dto);
+        var user = await _getUserQueryHandler
+            .Handle(getUserQuery, cancellationToken);
+        return user.User ?? null;
     }
     
     public async Task<Result<Guid, Error>> UpdateEmployeeTokenAsync(
-        EmployeeTokenDto token, CancellationToken cancellationToken)
+        EmployeeTokenDto dto, CancellationToken cancellationToken)
     {
-        var dto = new EmployeeToken(
-            token.Token,
-            token.RefreshToken,
-            token.CreatedAt,
-            token.ExpiresAt,
-            token.UserId);
+        var updateEmployeeTokenCommand = new UpdateEmployeeTokenCommand(dto);
+        var newTokenResult = await _updateEmployeeTokenCommandHandler
+            .Handle(updateEmployeeTokenCommand, cancellationToken);
+        if (newTokenResult.IsFailure)
+        {
+            return Errors.General.Failure("Update employee token failed");
+        }
+
+        var newToken = newTokenResult.Value;
         
-        return await _userRepository.UpdateEmployeeTokenAsync(dto, cancellationToken);
+        return newToken;
     }
     
-    public async Task<Result<EmployeeTokenDto, Error>> GetEmployeeTokenDtoByUserIdAsync(
+    public async Task<EmployeeTokenDto?> GetEmployeeTokenDtoByUserIdAsync(
         Guid userId, 
         CancellationToken cancellationToken)
     {
-        (_, bool isFailure, EmployeeToken? token, Error? error) = await _userRepository.GetEmployeeTokenByUserIdAsync(userId, cancellationToken);
-        if (isFailure)
-        {
-            return error;
-        }
-
-        var dto = new EmployeeTokenDto(
-            token.Id,
-            token.Token,
-            token.RefreshToken,
-            token.CreatedAt,
-            token.ExpiresAt,
-            token.UserId);
-        return dto;
+        var getEmployeeTokenByUserIdQuery = new GetEmployeeTokenByUserIdQuery(userId);
+        var token = await _getEmployeeTokenByUserIdHandler
+            .Handle(getEmployeeTokenByUserIdQuery, cancellationToken);
+        return token.EmployeeToken ?? null;
     }
 }

@@ -81,12 +81,11 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             .Select(v => long.Parse(v.Id)).ToList();
         
         // Get Ratings of all Vacancies
-        var ratingsResult = await _ratingsContract.GetRatingsDtoAsync(cancellationToken);
-        if (ratingsResult.IsFailure)
+        var ratings = await _ratingsContract.GetVacancyRatingsDtoAsync(cancellationToken);
+        if (ratings.Length == 0)
         {
             throw new GetRatingsFailureException();
         }
-        var ratings = ratingsResult.Value;
         
         var ratingsDict = ratings
             .Where(r => vacancyIds.Contains(r.EntityId))

@@ -1,34 +1,33 @@
 ﻿using CSharpFunctionalExtensions;
 using Ratings.Contracts.Dto;
 using Shared;
+using Vacancies.Contracts.Dto;
 
 namespace Ratings.Contracts;
 
 public interface IRatingsContract
 {
     /// <summary>
-    /// Gets a Vacancy Rating
+    /// Gets a Vacancy rating
     /// </summary>
-    /// <param name="vacancyId">ID of Vacancy</param>
+    /// <param name="dto">Dto for getting Vacancy rating</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Dto of Vacancy Rating</returns>
-    Task<Result<VacancyRatingDto, Error>> GetRatingDtoByVacancyIdAsync(
-        long vacancyId, CancellationToken cancellationToken);
+    Task<VacancyRatingDto?> GetRatingDtoByVacancyIdAsync(GetRatingByVacancyIdDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Gets a Vacancy Ratings
+    /// Gets a Vacancy ratings
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>List of Dto of Vacancy Ratings</returns>
-    Task<Result<VacancyRatingDto[], Error>> GetRatingsDtoAsync(
-        CancellationToken cancellationToken);
+    /// <returns>List of Dto of Vacancy ratings</returns>
+    Task<VacancyRatingDto[]> GetVacancyRatingsDtoAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Updates a Vacancy Rating
+    /// Updates a Vacancy rating
     /// </summary>
-    /// <param name="updateVacancyRatingDto">Dto for updating Vacancy Rating</param>
+    /// <param name="updateVacancyRatingDto">Dto for updating Vacancy rating</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Guid of new Vacancy Rating</returns>
+    /// <returns>Guid of new Vacancy rating</returns>
     Task<Result<Guid, Failure>> UpdateVacancyRatingAsync(
         UpdateVacancyRatingDto updateVacancyRatingDto,
         CancellationToken cancellationToken);

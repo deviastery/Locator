@@ -1,9 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Ratings.Application;
+using Ratings.Application.GetRatingByVacancyIdQuery;
+using Ratings.Application.GetVacancyRatingsQuery;
 using Ratings.Application.UpdateVacancyRatingCommand;
 using Ratings.Contracts;
 using Ratings.Contracts.Dto;
-using Ratings.Domain;
+using Ratings.Contracts.Responses;
 using Shared;
 using Shared.Abstractions;
 
@@ -11,52 +12,36 @@ namespace Ratings.Presenters;
 
 public class RatingsContract : IRatingsContract
 {
-    private readonly IRatingsRepository _ratingsRepository;
     private readonly ICommandHandler<Guid, UpdateVacancyRatingCommand> _updateVacancyRatingCommandHandler;
+    private readonly IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> _getRatingDtoByVacancyIdQueryHandler;
+    private readonly IQueryHandler<VacancyRatingsResponse, GetVacancyRatingsQuery> _getVacancyRatingsQueryHandler;
 
     public RatingsContract(
-        IRatingsRepository ratingsRepository,
-        ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler)
+        ICommandHandler<Guid, UpdateVacancyRatingCommand> updateVacancyRatingCommandHandler, 
+        IQueryHandler<RatingByVacancyIdResponse, GetRatingByVacancyIdQuery> getRatingDtoByVacancyIdQueryHandler, 
+        IQueryHandler<VacancyRatingsResponse, GetVacancyRatingsQuery> getVacancyRatingsQueryHandler)
     {
-        _ratingsRepository = ratingsRepository;
         _updateVacancyRatingCommandHandler = updateVacancyRatingCommandHandler;
+        _getRatingDtoByVacancyIdQueryHandler = getRatingDtoByVacancyIdQueryHandler;
+        _getVacancyRatingsQueryHandler = getVacancyRatingsQueryHandler;
     }
 
-    public async Task<Result<VacancyRatingDto, Error>> GetRatingDtoByVacancyIdAsync(
-        long vacancyId, CancellationToken cancellationToken)
+    public async Task<VacancyRatingDto?> GetRatingDtoByVacancyIdAsync(
+        GetRatingByVacancyIdDto dto, CancellationToken cancellationToken)
     {
-        var ratingResult = await _ratingsRepository.GetRatingByVacancyIdAsync(vacancyId, cancellationToken);
-        if (ratingResult.IsFailure)
-        {
-            return ratingResult.Error;
-        }
-        var rating = ratingResult.Value;
-        
-        var ratingDto = new VacancyRatingDto(
-            rating.Id,
-            rating.Value,
-            rating.EntityId);
-        
-        return ratingDto;
+        var getRatingDtoByVacancyIdQuery = new GetRatingByVacancyIdQuery(dto);
+        var rating = await _getRatingDtoByVacancyIdQueryHandler
+            .Handle(getRatingDtoByVacancyIdQuery, cancellationToken);
+        return rating.Rating ?? null;
     }
     
-    public async Task<Result<VacancyRatingDto[], Error>> GetRatingsDtoAsync(
+    public async Task<VacancyRatingDto[]> GetVacancyRatingsDtoAsync(
         CancellationToken cancellationToken)
     {
-        (_, bool isFailure, VacancyRating[]? ratings, Error? error) = await _ratingsRepository
-            .GetRatingsAsync(cancellationToken);
-        if (isFailure)
-        {
-            return error;
-        }
-
-        var ratingsDto = ratings.Select(r =>
-            new VacancyRatingDto(
-                r.Id,
-                r.Value,
-                r.EntityId));
-            
-        return ratingsDto.ToArray();
+        var getRatingsDtoByVacancyIdQuery = new GetVacancyRatingsQuery();
+        var ratings = await _getVacancyRatingsQueryHandler
+            .Handle(getRatingsDtoByVacancyIdQuery, cancellationToken);
+        return ratings.VacancyRatings ?? [];
     }
 
     public async Task<Result<Guid, Failure>> UpdateVacancyRatingAsync(
