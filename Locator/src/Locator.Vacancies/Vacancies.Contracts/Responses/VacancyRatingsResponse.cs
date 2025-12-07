@@ -1,5 +1,10 @@
-﻿using Vacancies.Contracts.Dto;
+﻿using System.Text.Json.Serialization;
+using Vacancies.Contracts.Dto;
 
 namespace Vacancies.Contracts.Responses;
 
-public record VacancyRatingsResponse(VacancyRatingDto[]? VacancyRatings);
+public record VacancyRatingsResponse
+{
+    [JsonPropertyName("vacancyRatings")]
+    public VacancyRatingDto[]? VacancyRatings { get; init; }
+}

@@ -1,4 +1,6 @@
-﻿namespace HeadHunter.Contracts.Dto;
+﻿using System.Text.Json.Serialization;
+
+namespace HeadHunter.Contracts.Dto;
 
 public record EmployeeTokenDto
 {
@@ -18,10 +20,16 @@ public record EmployeeTokenDto
         UserId = userId;
     }
     
+    [JsonPropertyName("id")]
     public Guid Id { get; set; }
+    [JsonPropertyName("token")]
     public string Token { get; set; }
+    [JsonPropertyName("refreshToken")]
     public string RefreshToken { get; set; }
+    [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("expiresAt")]
     public long ExpiresAt { get; set; }
+    [JsonPropertyName("userId")]
     public Guid UserId { get; set; }
 }

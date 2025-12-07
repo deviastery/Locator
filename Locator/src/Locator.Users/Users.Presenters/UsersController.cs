@@ -1,12 +1,12 @@
 using Framework.Extensions;
 using HeadHunter.Contracts;
-using HeadHunter.Contracts.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Shared.Abstractions;
 using Shared.Fails.Exceptions;
 using Shared.Options;
 using Users.Application.AuthQuery;
+using Users.Application.GetUserQuery;
 using Users.Application.GetValidEmployeeTokenByUserIdQuery;
 using Users.Application.RefreshTokenCommand;
 using Users.Contracts.Dto;
@@ -29,6 +29,27 @@ public class UsersController : ControllerBase
         _authContract = authContract;
     }
     
+    [HttpGet("{userId:Guid}")]
+    public async Task<IActionResult> GetUserId(
+        [FromServices] IQueryHandler<UserResponse, GetUserQuery> queryHandler,
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
+        }
+        
+        var query = new GetUserQuery(userId);
+        var result = await queryHandler.Handle(query, cancellationToken);
+        if (result.User == null)
+        {
+            return StatusCode(500);
+        }
+        return Ok(result);
+    }   
+    
     [HttpGet("auth/employee_token/{userId:Guid}")]
     public async Task<IActionResult> GetValidEmployeeTokenByUserId(
         [FromServices] IQueryHandler<EmployeeTokenResponse, GetValidEmployeeTokenByUserIdQuery> queryHandler,
@@ -41,17 +62,13 @@ public class UsersController : ControllerBase
             throw new ConfigurationFailureException("Failed to get cookies options.");
         }
         
-        var context = HttpContext;
         var query = new GetValidEmployeeTokenByUserIdQuery(userId);
         var result = await queryHandler.Handle(query, cancellationToken);
         if (result.EmployeeToken == null)
         {
             return StatusCode(500);
         }
-        context.Response.Cookies.Append(cookiesOptions.JwtName, result.EmployeeToken.Token);
-        context.Response.Cookies.Append(cookiesOptions.UserName, result.EmployeeToken.UserId.ToString() ?? string.Empty);
-        
-        return Ok();
+        return Ok(result);
     }   
     
     [HttpGet("auth")]

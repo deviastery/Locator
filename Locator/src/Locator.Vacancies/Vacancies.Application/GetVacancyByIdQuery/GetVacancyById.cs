@@ -82,18 +82,8 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
 
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
         var ratingResponse = JsonSerializer.Deserialize<RatingByVacancyIdResponse>(json);
-        if (ratingResponse?.Rating == null)
-        {
-            throw new GetRatingByVacancyIdNotFoundException(
-                $"Rating not found by Vacancy ID={query.Dto.VacancyId}");
-        }
         
         var rating = ratingResponse?.Rating;
-        if (rating is null)
-        {
-            throw new GetRatingByVacancyIdNotFoundException(
-                $"Rating not found by Vacancy ID={query.Dto.VacancyId}");
-        }
         
         // Get Reviews of a Vacancy
         var reviews = await _vacanciesDbContext.ReadReviews

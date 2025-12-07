@@ -19,7 +19,7 @@ public class GetUser: IQueryHandler<UserResponse, GetUserQuery>
     {   
         // Find user in DB
         var userRecord = await _usersDbContext.ReadUsers
-            .Where(u => u.Id == query.Dto.UserId)
+            .Where(u => u.Id == query.UserId)
             .FirstOrDefaultAsync(cancellationToken);
         if (userRecord == null)
         {

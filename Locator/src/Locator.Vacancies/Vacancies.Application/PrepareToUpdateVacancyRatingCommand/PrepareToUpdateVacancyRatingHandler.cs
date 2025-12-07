@@ -83,7 +83,7 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
 
         string jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
         var ratingId = JsonSerializer.Deserialize<Guid>(jsonResponse);
-        if (ratingId != Guid.Empty)
+        if (ratingId == Guid.Empty)
         {
             return Errors.CreateVacancyRatingFail().ToFailure();
         }
