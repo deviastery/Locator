@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Locator.Core\Infrastructure\HeadHunter\HeadHunter.Presenters\HeadHunter.Presenters.csproj" />
+      <ProjectReference Include="..\..\Locator.Core\Infrastructure\Redis\Redis.Presenters\Redis.Presenters.csproj" />
+      <ProjectReference Include="..\Users.Presenters\Users.Presenters.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.OpenApi" Version="1.6.22" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Locator.Core\Infrastructure\HeadHunter\HeadHunter.Contracts\HeadHunter.Contracts.csproj" />
+      <ProjectReference Include="..\Users.Application\Users.Application.csproj" />
+      <ProjectReference Include="..\Users.Contracts\Users.Contracts.csproj" />
+      <ProjectReference Include="..\Users.Infrastructure.Postgresql\Users.Infrastructure.Postgresql.csproj" />
+    </ItemGroup>
+
+</Project>
