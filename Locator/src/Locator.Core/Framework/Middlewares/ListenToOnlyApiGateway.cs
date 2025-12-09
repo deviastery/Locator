@@ -4,12 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Framework.Middlewares;
 
-public class LintenToOnlyApiGateway
+public class ListenToOnlyApiGateway
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalException> _logger;
 
-    public LintenToOnlyApiGateway(RequestDelegate next, ILogger<GlobalException> logger)
+    public ListenToOnlyApiGateway(RequestDelegate next, ILogger<GlobalException> logger)
     {
         _next = next;
         _logger = logger;
@@ -35,5 +35,5 @@ public class LintenToOnlyApiGateway
 public static class ListenToOnlyApiGatewayMiddlewareExtension
 {
     public static IApplicationBuilder UseListenToOnlyApiGatewayMiddleware(this WebApplication app) =>
-        app.UseMiddleware<LintenToOnlyApiGateway>();
+        app.UseMiddleware<ListenToOnlyApiGateway>();
 }

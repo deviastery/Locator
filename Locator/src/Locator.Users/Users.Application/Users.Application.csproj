@@ -7,8 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Core\Infrastructure\HeadHunter\HeadHunter.Contracts\HeadHunter.Contracts.csproj" />
-      <ProjectReference Include="..\..\Core\Infrastructure\Redis\Redis.Contracts\Redis.Contracts.csproj" />
       <ProjectReference Include="..\..\Locator.Core\Infrastructure\HeadHunter\HeadHunter.Contracts\HeadHunter.Contracts.csproj" />
       <ProjectReference Include="..\..\Locator.Core\Infrastructure\Redis\Redis.Contracts\Redis.Contracts.csproj" />
       <ProjectReference Include="..\Users.Contracts\Users.Contracts.csproj" />

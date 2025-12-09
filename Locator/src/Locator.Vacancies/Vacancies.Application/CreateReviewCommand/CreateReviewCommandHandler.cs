@@ -52,8 +52,9 @@ namespace Vacancies.Application.CreateReviewCommand;
         // Get Employee access token
         var tokenRequest = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:7146/api/users/auth/employee_token/{command.UserId}");
+            $"https://localhost:5000/api/users/auth/employee_token/{command.UserId}");
         tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
+        tokenRequest.Headers.Add("Api-Gateway", "Signed");
 
         var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
         if (!tokenResponse.IsSuccessStatusCode)
@@ -109,8 +110,9 @@ namespace Vacancies.Application.CreateReviewCommand;
         // Get User
         var request = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:7146/api/users/{command.UserId}");
+            $"https://localhost:5000/api/users/{command.UserId}");
         request.Headers.Add("User-Agent", "Locator/1.0");
+        request.Headers.Add("Api-Gateway", "Signed");
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)

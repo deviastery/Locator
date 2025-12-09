@@ -74,6 +74,7 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
             Content = content,
         };
         request.Headers.Add("User-Agent", "Locator/1.0");
+        request.Headers.Add("Api-Gateway", "Signed");
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)

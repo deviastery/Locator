@@ -44,7 +44,7 @@ public static class DependencyInjection
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Locator API",
+                Title = "Ratings API",
                 Version = "v1",
             });
         });

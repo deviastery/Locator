@@ -1,5 +1,6 @@
 using Framework.Extensions;
 using HeadHunter.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Shared.Abstractions;
@@ -28,7 +29,7 @@ public class UsersController : ControllerBase
         _configuration = configuration;
         _authContract = authContract;
     }
-    
+
     [HttpGet("{userId:Guid}")]
     public async Task<IActionResult> GetUserId(
         [FromServices] IQueryHandler<UserResponse, GetUserQuery> queryHandler,
@@ -104,6 +105,7 @@ public class UsersController : ControllerBase
     }    
     
     [HttpGet("auth/refresh")]
+    [Authorize]
     public async Task<IActionResult> Refresh(
         [FromServices] ICommandHandler<string, RefreshTokenCommand> commandHandler,
         CancellationToken cancellationToken)

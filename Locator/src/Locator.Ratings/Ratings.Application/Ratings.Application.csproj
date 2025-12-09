@@ -7,8 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Core\Framework\Framework.csproj" />
-      <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
       <ProjectReference Include="..\..\Locator.Core\Framework\Framework.csproj" />
       <ProjectReference Include="..\..\Locator.Core\Shared\Shared.csproj" />
       <ProjectReference Include="..\..\Vacancies\Vacancies.Contracts\Vacancies.Contracts.csproj" />

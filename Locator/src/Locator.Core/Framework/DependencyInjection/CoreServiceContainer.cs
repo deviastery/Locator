@@ -25,7 +25,7 @@ public static class CoreServiceContainer
         this IApplicationBuilder app)
     {
         app.UseMiddleware<GlobalException>();
-        // app.UseMiddleware<LintenToOnlyApiGateway>();
+        app.UseMiddleware<ListenToOnlyApiGateway>();
 
         return app;
     }

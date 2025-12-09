@@ -28,8 +28,9 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         // Get Employee access token
         var tokenRequest = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:7146/api/users/auth/employee_token/{query.Dto.UserId}");
+            $"https://localhost:5000/api/users/auth/employee_token/{query.Dto.UserId}");
         tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
+        tokenRequest.Headers.Add("Api-Gateway", "Signed");
 
         var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
         if (!tokenResponse.IsSuccessStatusCode)
@@ -99,6 +100,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         // Get Ratings of all Vacancies
         var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5001/api/ratings");
         request.Headers.Add("User-Agent", "Locator/1.0");
+        request.Headers.Add("Api-Gateway", "Signed");
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)

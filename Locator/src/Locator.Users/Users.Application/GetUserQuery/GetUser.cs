@@ -1,7 +1,6 @@
 ﻿using HeadHunter.Contracts.Dto;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions;
-using Users.Contracts.Dto;
 using Users.Contracts.Responses;
 
 namespace Users.Application.GetUserQuery;

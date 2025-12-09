@@ -26,8 +26,9 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
         // Get Employee access token
         var tokenRequest = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:7146/api/users/auth/employee_token/{query.Dto.UserId}");
+            $"https://localhost:5000/api/users/auth/employee_token/{query.Dto.UserId}");
         tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
+        tokenRequest.Headers.Add("Api-Gateway", "Signed");
 
         var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
         if (!tokenResponse.IsSuccessStatusCode)
