@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using HeadHunter.Contracts;
 using HeadHunter.Contracts.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -13,44 +12,41 @@ namespace Vacancies.Application.GetVacancyByIdQuery;
 
 public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
+        _getRequestEmployeeTokenQuery;
+    private readonly IQueryHandler<RatingByVacancyIdResponse, GetRequestRatingByVacancyIdQuery.GetRequestRatingByVacancyIdQuery> 
+        _getRequestRatingByVacancyIdQuery;
     private readonly IVacanciesReadDbContext _vacanciesDbContext;
     private readonly IVacanciesContract _vacanciesContract;
     
     public GetVacancyById(
-        HttpClient httpClient,
-        IVacanciesReadDbContext vacanciesDbContext,
-        IVacanciesContract vacanciesContract)
+        IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> getRequestEmployeeTokenQuery,
+        IQueryHandler<RatingByVacancyIdResponse, GetRequestRatingByVacancyIdQuery.GetRequestRatingByVacancyIdQuery> 
+            getRequestRatingByVacancyIdQuery,
+        IVacanciesContract vacanciesContract, 
+        IVacanciesReadDbContext vacanciesDbContext)
     {
+        _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
+        _getRequestRatingByVacancyIdQuery = getRequestRatingByVacancyIdQuery;
         _vacanciesDbContext = vacanciesDbContext;
         _vacanciesContract = vacanciesContract;
-        _httpClient = httpClient;
     }  
     public async Task<VacancyResponse> Handle(
         GetVacancyByIdQuery query,
         CancellationToken cancellationToken)
     {
         // Get Employee access token
-        var tokenRequest = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5000/api/users/auth/employee_token/{query.Dto.UserId}");
-        tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
-        tokenRequest.Headers.Add("Api-Gateway", "Signed");
-
-        var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
-        if (!tokenResponse.IsSuccessStatusCode)
-        {
-            throw new GetValidEmployeeAccessTokenException();
-        }
-
-        string tokenJson = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
-        var employeeTokenResponse = JsonSerializer.Deserialize<EmployeeTokenResponse>(tokenJson);
+        var getRequestEmployeeTokenQuery = new GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery(
+            query.Dto.UserId);
+        var employeeTokenResponse = await _getRequestEmployeeTokenQuery.Handle(
+            getRequestEmployeeTokenQuery,
+            cancellationToken);
         if (employeeTokenResponse?.EmployeeToken?.Token == null)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
         
-        string? token = employeeTokenResponse.EmployeeToken.Token;
+        string token = employeeTokenResponse.EmployeeToken.Token;
         if (token is null)
         {
             throw new GetValidEmployeeAccessTokenException();
@@ -69,23 +65,11 @@ public class GetVacancyById : IQueryHandler<VacancyResponse, GetVacancyByIdQuery
         }
 
         // Get a Rating of a Vacancy
-        var request = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5001/api/ratings/vacancies/{query.Dto.VacancyId}");
-        request.Headers.Add("User-Agent", "Locator/1.0");
-        request.Headers.Add("Api-Gateway", "Signed");
-
-        var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new GetRatingByVacancyIdNotFoundException(
-                $"Rating not found by Vacancy ID={query.Dto.VacancyId}");
-        }
-
-        string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        var ratingResponse = JsonSerializer.Deserialize<RatingByVacancyIdResponse>(json);
+        var ratingResponse = await _getRequestRatingByVacancyIdQuery.Handle(
+            new GetRequestRatingByVacancyIdQuery.GetRequestRatingByVacancyIdQuery(query.Dto.VacancyId),
+            cancellationToken);
         
-        var rating = ratingResponse?.Rating;
+        var rating = ratingResponse.Rating;
         
         // Get Reviews of a Vacancy
         var reviews = await _vacanciesDbContext.ReadReviews

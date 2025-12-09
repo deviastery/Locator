@@ -7,25 +7,28 @@ using Shared;
 using Shared.Abstractions;
 using Users.Application.Fails.Exceptions;
 using Users.Application.JwtTokens;
-using Users.Contracts.Dto;
 using Users.Contracts.Responses;
 using Users.Domain;
+using Vacancies.Contracts.Dto;
 
 namespace Users.Application.AuthQuery;
 
 public class Auth: IQueryHandler<AuthResponse, AuthQuery>
 {
+    private readonly ICommandHandler<Guid, CreateUserCommand.CreateUserCommand> _createUserCommandHandler;
     private readonly IAuthContract _authContract;
     private readonly IJwtProvider _jwtProvider;
     private readonly IUsersRepository _usersRepository;
     private readonly IUsersReadDbContext _usersDbContext;
 
     public Auth(
+        ICommandHandler<Guid, CreateUserCommand.CreateUserCommand> createUserCommandHandler,
         IAuthContract authContract, 
         IJwtProvider jwtProvider, 
         IUsersRepository usersRepository, 
         IUsersReadDbContext usersDbContext)
     {
+        _createUserCommandHandler = createUserCommandHandler;
         _authContract = authContract;
         _jwtProvider = jwtProvider;
         _usersRepository = usersRepository;
@@ -60,6 +63,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         var user = await _usersDbContext.ReadUsers
             .Where(u => u.EmployeeId.ToString() == userInfoResult.Value.EmployeeId)
             .FirstOrDefaultAsync(cancellationToken);
+        Guid userId;
         if (user == null)
         {
             // Create new user
@@ -67,15 +71,23 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
             {
                 throw new EmployeeIdParseFailureException();
             }
-            user = new User(
-                email: userInfoResult.Value.Email ?? string.Empty,
-                name: userInfoResult.Value.FirstName ?? string.Empty,
-                employeeId: newEmployeeId);
-            var userIdResult = await _usersRepository.CreateUserAsync(user, cancellationToken);
+
+            var userDto = new CreateUserDto(
+                newEmployeeId,
+                userInfoResult.Value.Email ?? string.Empty,
+                userInfoResult.Value.FirstName ?? string.Empty);
+            var userIdResult = await _createUserCommandHandler.Handle(
+                new CreateUserCommand.CreateUserCommand(userDto), cancellationToken);
             if (userIdResult.IsFailure)
             {
                 throw new CreateUserFailureException();
             }
+
+            userId = userIdResult.Value;
+        }
+        else
+        {
+            userId = user.Id;
         }
         
         // Save Employee tokens with User data
@@ -84,7 +96,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
             newEmployeeToken.RefreshToken,
             newCreatedAt, 
             newEmployeeToken.ExpiresIn, 
-            user.Id);
+            userId);
         var saveTokensResult = await _usersRepository.CreateEmployeeTokenAsync(newEmployeeTokenDto, cancellationToken);
         if (saveTokensResult.IsFailure)
         {
@@ -92,11 +104,11 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
         }
 
         // Generate JWT-token 
-        (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(user);
+        (string jwtToken, int tokenExpiry) = _jwtProvider.GenerateJwtToken(userId, user?.Email);
 
         // Generate Refresh token 
-        string refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
+        string refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(userId, cancellationToken);
         
-        return new AuthResponse(user.Id, jwtToken, tokenExpiry, refreshToken);
+        return new AuthResponse(userId, jwtToken, tokenExpiry, refreshToken);
     } 
 }

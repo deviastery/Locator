@@ -18,5 +18,7 @@ public partial class Errors
     public static Error RefreshTokenHasExpired() =>
         Error.Validation("Refresh token has expired.", "token.has.for.expired");
     public static Error RefreshTokenByUserIdNotFound() =>
-        Error.NotFound("Refresh token by user id not found.", "refresh.token.not.found");  
+        Error.NotFound("Refresh token by user id not found.", "refresh.token.not.found"); 
+    public static Error CreateUserFailure() =>
+        Error.Failure("Error creating user.");  
 }
