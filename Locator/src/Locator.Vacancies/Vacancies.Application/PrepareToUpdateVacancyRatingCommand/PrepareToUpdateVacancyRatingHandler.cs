@@ -14,18 +14,19 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
 
     public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
-    private readonly HttpClient _httpClient;
+    private readonly ICommandHandler<Guid, CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand> 
+        _createRequestVacancyRatingCommandHandler;
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
     public PrepareToUpdateVacancyRatingCommandHandler(
-        HttpClient httpClient,
+        ICommandHandler<Guid, CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand> createRequestVacancyRatingCommandHandler,
         IVacanciesRepository vacanciesRepository,
         ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
-        _httpClient = httpClient;
+        _createRequestVacancyRatingCommandHandler = createRequestVacancyRatingCommandHandler;
         _vacanciesRepository = vacanciesRepository;
         _logger = logger;
         _validator = validator;
@@ -59,36 +60,14 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
         }
         
         // Create vacancy Rating
-        var requestBody = new
+        var dto = new CreateRequestVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
+        var ratingIdResponse = await _createRequestVacancyRatingCommandHandler.Handle(
+            new CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand(dto),
+            cancellationToken);
+        if (ratingIdResponse.IsFailure)
         {
-            averageMark = updateVacancyRatingDto.AverageMark,
-        };
-
-        string jsonRequest = JsonSerializer.Serialize(requestBody);
-        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-        
-        var request = new HttpRequestMessage(
-            HttpMethod.Post, 
-            $"https://localhost:5001/api/ratings/vacancies/{updateVacancyRatingDto.VacancyId}")
-        {
-            Content = content,
-        };
-        request.Headers.Add("User-Agent", "Locator/1.0");
-        request.Headers.Add("Api-Gateway", "Signed");
-
-        var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            return Errors.CreateVacancyRatingFail().ToFailure();
+            return ratingIdResponse.Error.ToFailure();
         }
-
-        string jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-        var ratingId = JsonSerializer.Deserialize<Guid>(jsonResponse);
-        if (ratingId == Guid.Empty)
-        {
-            return Errors.CreateVacancyRatingFail().ToFailure();
-        }
-
         return default;
     }
 }

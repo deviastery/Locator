@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using FluentValidation;
 using Framework.Extensions;
 using HeadHunter.Contracts;
@@ -16,24 +15,30 @@ namespace Vacancies.Application.CreateReviewCommand;
 
     public class CreateReviewCommandHandler : ICommandHandler<Guid, CreateReviewCommand>
 {
-    private readonly HttpClient _httpClient;
     private readonly IVacanciesRepository _vacanciesRepository;
-    private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> _prepareToUpdateVacancyRatingCommandHandler;
+    private readonly ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> 
+        _prepareToUpdateVacancyRatingCommandHandler;
+    private readonly IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
+        _getRequestEmployeeTokenQuery;
+    private readonly IQueryHandler<UserResponse, GetRequestUserByIdQuery.GetRequestUserByIdQuery> 
+        _getRequestUserByIdQuery;
     private readonly IVacanciesContract _vacanciesContract;
     private readonly IValidator<CreateReviewDto> _validator;
     private readonly ILogger<CreateReviewCommandHandler> _logger;
     
     public CreateReviewCommandHandler(
-        HttpClient httpClient,
         IVacanciesRepository vacanciesRepository,
-        ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler,
+        ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand> prepareToUpdateVacancyRatingCommandHandler, 
+        IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> getRequestEmployeeTokenQuery,
+        IQueryHandler<UserResponse, GetRequestUserByIdQuery.GetRequestUserByIdQuery> getRequestUserByIdQuery,
         IVacanciesContract vacanciesContract, 
         IValidator<CreateReviewDto> validator, 
         ILogger<CreateReviewCommandHandler> logger)
     {
-        _httpClient = httpClient;
         _vacanciesRepository = vacanciesRepository;
         _prepareToUpdateVacancyRatingCommandHandler = prepareToUpdateVacancyRatingCommandHandler;
+        _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
+        _getRequestUserByIdQuery = getRequestUserByIdQuery;
         _vacanciesContract = vacanciesContract;
         _validator = validator;
         _logger = logger;
@@ -50,26 +55,17 @@ namespace Vacancies.Application.CreateReviewCommand;
         }
         
         // Get Employee access token
-        var tokenRequest = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5000/api/users/auth/employee_token/{command.UserId}");
-        tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
-        tokenRequest.Headers.Add("Api-Gateway", "Signed");
-
-        var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
-        if (!tokenResponse.IsSuccessStatusCode)
-        {
-            throw new GetValidEmployeeAccessTokenException();
-        }
-
-        string tokenJson = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
-        var employeeTokenResponse = JsonSerializer.Deserialize<EmployeeTokenResponse>(tokenJson);
+        var getRequestEmployeeTokenQuery = new GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery(
+            command.UserId);
+        var employeeTokenResponse = await _getRequestEmployeeTokenQuery.Handle(
+            getRequestEmployeeTokenQuery,
+            cancellationToken);
         if (employeeTokenResponse?.EmployeeToken?.Token == null)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
         
-        string? token = employeeTokenResponse.EmployeeToken.Token;
+        string token = employeeTokenResponse.EmployeeToken.Token;
 
         // Validation of business logic
         // Existing Negotiation
@@ -108,25 +104,16 @@ namespace Vacancies.Application.CreateReviewCommand;
         }
         
         // Get User
-        var request = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5000/api/users/{command.UserId}");
-        request.Headers.Add("User-Agent", "Locator/1.0");
-        request.Headers.Add("Api-Gateway", "Signed");
-
-        var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            return Errors.GetUserByIdFail().ToFailure();
-        }
-
-        string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        var userResponse = JsonSerializer.Deserialize<UserResponse>(json);
-        if (userResponse == null)
-        {
-            return Errors.GetUserByIdFail().ToFailure();
-        }
+        var getRequestUserByIdQuery = new GetRequestUserByIdQuery.GetRequestUserByIdQuery(
+            command.UserId);
+        var userResponse = await _getRequestUserByIdQuery.Handle(
+            getRequestUserByIdQuery,
+            cancellationToken);
         
+        if (userResponse.User == null)
+        {
+            return Errors.GetUserByIdFail().ToFailure();
+        }
         var user = userResponse.User;
         if (user is null)
         {

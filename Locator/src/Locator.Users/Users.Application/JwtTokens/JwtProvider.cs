@@ -30,12 +30,12 @@ public class JwtProvider : IJwtProvider
         _tokenCache = tokenCache;
     }
 
-    public (string Token, int ExpiresIn) GenerateJwtToken(User user)
+    public (string Token, int ExpiresIn) GenerateJwtToken(Guid userId, string? email)
     {
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, email ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
@@ -94,7 +94,7 @@ public class JwtProvider : IJwtProvider
             return Errors.General.NotFound("User not found");
         }
         
-        return GenerateJwtToken(user).Token;
+        return GenerateJwtToken(user.Id, user.Email).Token;
     }
 
     public async Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken)

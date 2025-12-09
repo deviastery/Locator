@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using HeadHunter.Contracts;
+﻿using HeadHunter.Contracts;
 using Shared.Abstractions;
 using Shared.Thesauruses;
 using Vacancies.Application.Fails.Exceptions;
@@ -10,15 +9,22 @@ namespace Vacancies.Application.GetVacanciesWithFiltersQuery;
 
 public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
+        _getRequestEmployeeTokenQuery;    
+    private readonly IQueryHandler<VacancyRatingsResponse, GetRequestRatingsQuery.GetRequestRatingsQuery> 
+        _getRequestRatingsQuery;
     private readonly IVacanciesContract _vacanciesContract;
     
     public GetVacanciesWithFilters(
-        HttpClient httpClient,
+        IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
+            getRequestEmployeeTokenQuery,
+        IQueryHandler<VacancyRatingsResponse, GetRequestRatingsQuery.GetRequestRatingsQuery> 
+            getRequestRatingsQuery,
         IVacanciesContract vacanciesContract)
     {
+        _getRequestRatingsQuery = getRequestRatingsQuery;
+        _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
         _vacanciesContract = vacanciesContract;
-        _httpClient = httpClient;
     }  
 
     public async Task<VacanciesResponse> Handle(
@@ -26,26 +32,17 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         CancellationToken cancellationToken)
     {
         // Get Employee access token
-        var tokenRequest = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5000/api/users/auth/employee_token/{query.Dto.UserId}");
-        tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
-        tokenRequest.Headers.Add("Api-Gateway", "Signed");
-
-        var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
-        if (!tokenResponse.IsSuccessStatusCode)
-        {
-            throw new GetValidEmployeeAccessTokenException();
-        }
-
-        string tokenJson = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
-        var employeeTokenResponse = JsonSerializer.Deserialize<EmployeeTokenResponse>(tokenJson);
-        if (employeeTokenResponse?.EmployeeToken?.Token == null)
+        var getRequestEmployeeTokenQuery = new GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery(
+            query.Dto.UserId);
+        var employeeTokenResponse = await _getRequestEmployeeTokenQuery.Handle(
+            getRequestEmployeeTokenQuery,
+            cancellationToken);
+        if (employeeTokenResponse.EmployeeToken?.Token == null)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
         
-        string? token = employeeTokenResponse.EmployeeToken.Token;
+        string token = employeeTokenResponse.EmployeeToken.Token;
         
         if (token is null)
         {
@@ -98,19 +95,11 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             .Select(v => long.Parse(v.Id)).ToList();
         
         // Get Ratings of all Vacancies
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5001/api/ratings");
-        request.Headers.Add("User-Agent", "Locator/1.0");
-        request.Headers.Add("Api-Gateway", "Signed");
-
-        var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new GetRatingsFailureException();
-        }
-
-        string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        var ratingsResponse = JsonSerializer.Deserialize<VacancyRatingsResponse>(json);
-        if (ratingsResponse?.VacancyRatings == null || ratingsResponse.VacancyRatings?.Length == 0)
+        var ratingsResponse = await _getRequestRatingsQuery.Handle(
+            new GetRequestRatingsQuery.GetRequestRatingsQuery(),
+            cancellationToken);
+        
+        if (ratingsResponse.VacancyRatings == null || ratingsResponse.VacancyRatings?.Length == 0)
         {
             throw new GetRatingsFailureException();
         }
@@ -118,14 +107,14 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
         var ratings = ratingsResponse.VacancyRatings;
         
         var ratingsDict = ratings
-            .Where(r => vacancyIds.Contains(r.EntityId))
+            ?.Where(r => vacancyIds.Contains(r.EntityId))
             .ToDictionary(r => r.EntityId, r => r.Value);
         
         // Vacancies with their Ratings
         var vacanciesDto = vacancies.Select(v => new FullVacancyDto(
             long.Parse(v.Id),
             v,
-            ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null));
+            ratingsDict != null && ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null));
         
         return new VacanciesResponse(count, vacanciesDto, page, pages, perPage);
     }

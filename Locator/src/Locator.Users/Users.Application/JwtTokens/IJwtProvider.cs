@@ -9,14 +9,15 @@ public interface IJwtProvider
     /// <summary>
     /// Generates JWT access token
     /// </summary>
-    /// <param name="user">User</param>
+    /// <param name="userId">ID of user</param>
+    /// <param name="email">Email of user</param>
     /// <returns>Access token & Time of token expiration</returns>
-    (string Token, int ExpiresIn) GenerateJwtToken(User user);
+    (string Token, int ExpiresIn) GenerateJwtToken(Guid userId, string? email);
     
     /// <summary>
     /// Generates refresh token
     /// </summary>
-    /// <param name="userId">User ID</param>
+    /// <param name="userId">ID of user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Refresh token</returns>
     Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken);

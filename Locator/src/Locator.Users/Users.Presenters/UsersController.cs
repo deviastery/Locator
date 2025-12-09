@@ -7,11 +7,13 @@ using Shared.Abstractions;
 using Shared.Fails.Exceptions;
 using Shared.Options;
 using Users.Application.AuthQuery;
+using Users.Application.CreateUserCommand;
 using Users.Application.GetUserQuery;
 using Users.Application.GetValidEmployeeTokenByUserIdQuery;
 using Users.Application.RefreshTokenCommand;
 using Users.Contracts.Dto;
 using Users.Contracts.Responses;
+using Vacancies.Contracts.Dto;
 
 namespace Users.Presenters;
 
@@ -31,7 +33,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{userId:Guid}")]
-    public async Task<IActionResult> GetUserId(
+    public async Task<IActionResult> GetUserById(
         [FromServices] IQueryHandler<UserResponse, GetUserQuery> queryHandler,
         [FromRoute] Guid userId,
         CancellationToken cancellationToken)
@@ -49,6 +51,23 @@ public class UsersController : ControllerBase
             return StatusCode(500);
         }
         return Ok(result);
+    }   
+    
+    [HttpPost("{userId:Guid}")]
+    public async Task<IActionResult> CreateUser(
+        [FromServices] ICommandHandler<Guid, CreateUserCommand> commandHandler,
+        [FromBody] CreateUserDto dto,
+        CancellationToken cancellationToken)
+    {
+        var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
+        }
+        
+        var command = new CreateUserCommand(dto);
+        var result = await commandHandler.Handle(command, cancellationToken);
+        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }   
     
     [HttpGet("auth/employee_token/{userId:Guid}")]

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions;
 using Shared.Options;
 using Users.Application.AuthQuery;
+using Users.Application.CreateUserCommand;
 using Users.Application.GetEmployeeTokenByUserIdQuery;
 using Users.Application.GetUserQuery;
 using Users.Application.GetValidEmployeeTokenByUserIdQuery;
@@ -31,7 +32,9 @@ public static class DependencyInjection
         
         services.AddScoped<ICommandHandler<string, RefreshTokenCommand.RefreshTokenCommand>, RefreshTokenCommandHandler>();
         services.AddScoped<ICommandHandler<Guid, UpdateEmployeeTokenCommand.UpdateEmployeeTokenCommand>, 
-            UpdateEmployeeTokenCommandHandler>();
+            UpdateEmployeeTokenCommandHandler>();        
+        services.AddScoped<ICommandHandler<Guid, CreateUserCommand.CreateUserCommand>, 
+            CreateUserCommandHandler>();
         
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SECTION_NAME));
         services.AddScoped<IJwtProvider, JwtProvider>();

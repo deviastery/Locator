@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using HeadHunter.Contracts;
+﻿using HeadHunter.Contracts;
 using Shared.Abstractions;
 using Vacancies.Application.Fails.Exceptions;
 using Vacancies.Contracts.Responses;
@@ -8,15 +7,16 @@ namespace Vacancies.Application.GetNegotiationsQuery;
 
 public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiationsQuery>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
+        _getRequestEmployeeTokenQuery;
     private readonly IVacanciesContract _vacanciesContract;
     
     public GetNegotiations( 
-        HttpClient httpClient,
+        IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> getRequestEmployeeTokenQuery,
         IVacanciesContract vacanciesContract)
     {
+        _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
         _vacanciesContract = vacanciesContract;
-        _httpClient = httpClient;
     }  
 
     public async Task<NegotiationsResponse> Handle(
@@ -24,26 +24,17 @@ public class GetNegotiations : IQueryHandler<NegotiationsResponse, GetNegotiatio
         CancellationToken cancellationToken)
     {
         // Get Employee access token
-        var tokenRequest = new HttpRequestMessage(
-            HttpMethod.Get, 
-            $"https://localhost:5000/api/users/auth/employee_token/{query.Dto.UserId}");
-        tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
-        tokenRequest.Headers.Add("Api-Gateway", "Signed");
-
-        var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
-        if (!tokenResponse.IsSuccessStatusCode)
-        {
-            throw new GetValidEmployeeAccessTokenException();
-        }
-
-        string tokenJson = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
-        var employeeTokenResponse = JsonSerializer.Deserialize<EmployeeTokenResponse>(tokenJson);
+        var getRequestEmployeeTokenQuery = new GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery(
+            query.Dto.UserId);
+        var employeeTokenResponse = await _getRequestEmployeeTokenQuery.Handle(
+            getRequestEmployeeTokenQuery,
+            cancellationToken);
         if (employeeTokenResponse?.EmployeeToken?.Token == null)
         {
             throw new GetValidEmployeeAccessTokenException();
         }
         
-        string? token = employeeTokenResponse.EmployeeToken.Token;
+        string token = employeeTokenResponse.EmployeeToken.Token;
         if (token is null)
         {
             throw new GetValidEmployeeAccessTokenException();
