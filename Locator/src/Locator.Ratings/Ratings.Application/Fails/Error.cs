@@ -12,5 +12,5 @@ public partial class Errors
             Error.Failure($"Something went wrong: {message}", "server.failure");
     }   
     public static Error RefreshTokenByUserIdNotFound() =>
-        Error.NotFound("Refresh token by user id not found.", "refresh.token.not.found");  
+        Error.NotFound("Refresh token by user id not found.", "refresh.token.not.found");
 }

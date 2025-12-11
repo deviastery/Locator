@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Confluent.Kafka;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Framework.Extensions;
@@ -14,19 +14,18 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
 
     public class PrepareToUpdateVacancyRatingCommandHandler : ICommandHandler<PrepareToUpdateVacancyRatingCommand>
 {
-    private readonly ICommandHandler<Guid, CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand> 
-        _createRequestVacancyRatingCommandHandler;
+    private readonly IProducer<Null, string> _producer;
     private readonly IVacanciesRepository _vacanciesRepository;
     private readonly ILogger<PrepareToUpdateVacancyRatingCommandHandler> _logger;
     private readonly IValidator<UpdateVacancyRatingDto> _validator;
     
     public PrepareToUpdateVacancyRatingCommandHandler(
-        ICommandHandler<Guid, CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand> createRequestVacancyRatingCommandHandler,
+        IProducer<Null, string> producer,
         IVacanciesRepository vacanciesRepository,
         ILogger<PrepareToUpdateVacancyRatingCommandHandler> logger, 
         IValidator<UpdateVacancyRatingDto> validator)
     {
-        _createRequestVacancyRatingCommandHandler = createRequestVacancyRatingCommandHandler;
+        _producer = producer;
         _vacanciesRepository = vacanciesRepository;
         _logger = logger;
         _validator = validator;
@@ -61,13 +60,17 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
         
         // Create vacancy Rating
         var dto = new CreateRequestVacancyRatingDto(command.VacancyId, averageMarkResult.Value);
-        var ratingIdResponse = await _createRequestVacancyRatingCommandHandler.Handle(
-            new CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand(dto),
-            cancellationToken);
-        if (ratingIdResponse.IsFailure)
+        var result = await _producer.ProduceAsync(
+            "add-review",
+            new Message<Null, string>
+            {
+                Value = JsonSerializer.Serialize(dto),
+            });
+        if (result.Status != PersistenceStatus.Persisted)
         {
-            return ratingIdResponse.Error.ToFailure();
+            return Errors.SentVacancyRatingFail().ToFailure();
         }
+        
         return default;
     }
 }

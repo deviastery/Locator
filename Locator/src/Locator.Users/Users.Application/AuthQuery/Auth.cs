@@ -7,9 +7,9 @@ using Shared;
 using Shared.Abstractions;
 using Users.Application.Fails.Exceptions;
 using Users.Application.JwtTokens;
+using Users.Contracts.Dto;
 using Users.Contracts.Responses;
 using Users.Domain;
-using Vacancies.Contracts.Dto;
 
 namespace Users.Application.AuthQuery;
 
