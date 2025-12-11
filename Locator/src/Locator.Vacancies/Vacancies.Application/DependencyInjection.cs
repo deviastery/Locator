@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using Confluent.Kafka;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions;
+using Shared.Options;
 using Vacancies.Application.CreateRequestVacancyRatingCommand;
 using Vacancies.Application.CreateReviewCommand;
 using Vacancies.Application.GetNegotiationByVacancyIdQuery;
@@ -40,6 +42,16 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<UserResponse, GetRequestUserByIdQuery.GetRequestUserByIdQuery>, GetRequestUserById>();
         services.AddScoped<IQueryHandler<VacancyRatingsResponse, GetRequestRatingsQuery.GetRequestRatingsQuery>, GetRequestRatings>();
         services.AddScoped<IQueryHandler<RatingByVacancyIdResponse, GetRequestRatingByVacancyIdQuery.GetRequestRatingByVacancyIdQuery>, GetRequestRatingByVacancyId>();
+        
+        services.Configure<KafkaOptions>(configuration.GetSection(KafkaOptions.SECTION_NAME));
+        var kafkaOptions = configuration.GetSection(KafkaOptions.SECTION_NAME).Get<KafkaOptions>();
+        var producerConfig = new ProducerConfig
+        {
+            BootstrapServers = kafkaOptions?.BootstrapServers ?? "localhost:9092",
+        };
+
+        services.AddSingleton<IProducer<Null, string>>(sp => 
+            new ProducerBuilder<Null, string>(producerConfig).Build());
         
         return services;
     }

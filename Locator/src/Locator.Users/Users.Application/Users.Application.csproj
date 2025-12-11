@@ -9,8 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Locator.Core\Infrastructure\HeadHunter\HeadHunter.Contracts\HeadHunter.Contracts.csproj" />
       <ProjectReference Include="..\..\Locator.Core\Infrastructure\Redis\Redis.Contracts\Redis.Contracts.csproj" />
-      <ProjectReference Include="..\..\Locator.Vacancies\Vacancies.Application\Vacancies.Application.csproj" />
-      <ProjectReference Include="..\..\Locator.Vacancies\Vacancies.Contracts\Vacancies.Contracts.csproj" />
       <ProjectReference Include="..\Users.Contracts\Users.Contracts.csproj" />
       <ProjectReference Include="..\Users.Domain\Users.Domain.csproj" />
     </ItemGroup>

@@ -1,5 +1,5 @@
 ﻿using Shared.Abstractions;
-using Vacancies.Contracts.Dto;
+using Users.Contracts.Dto;
 
 namespace Users.Application.CreateUserCommand;
 

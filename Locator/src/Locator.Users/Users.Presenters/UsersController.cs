@@ -13,7 +13,6 @@ using Users.Application.GetValidEmployeeTokenByUserIdQuery;
 using Users.Application.RefreshTokenCommand;
 using Users.Contracts.Dto;
 using Users.Contracts.Responses;
-using Vacancies.Contracts.Dto;
 
 namespace Users.Presenters;
 

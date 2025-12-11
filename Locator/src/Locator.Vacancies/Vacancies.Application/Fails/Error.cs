@@ -25,6 +25,8 @@ public partial class Errors
     
     public static Error CreateVacancyRatingFail() =>
         Error.Failure("Failed to create vacancy rating");
+    public static Error SentVacancyRatingFail() =>
+        Error.Failure("Failed to sent vacancy rating to rating service");
     
     public static Error GetUserByIdFail() =>
         Error.Failure("Failed to get user by ID");
