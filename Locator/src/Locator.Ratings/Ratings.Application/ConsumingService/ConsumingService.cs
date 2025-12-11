@@ -1,12 +1,9 @@
 ﻿using System.Text.Json;
 using Confluent.Kafka;
-using CSharpFunctionalExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Ratings.Application.Fails;
 using Ratings.Contracts.Dto;
-using Shared;
 using Shared.Abstractions;
 
 namespace Ratings.Application.ConsumingService;
@@ -31,6 +28,8 @@ public class ConsumingService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await Task.Delay(5000);
+        
         _consumer.Subscribe([AddReviewTopic]);
         _logger.LogInformation("Started consuming from topic: {Topic}", AddReviewTopic);
         

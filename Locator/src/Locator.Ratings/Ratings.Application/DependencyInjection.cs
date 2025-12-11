@@ -2,7 +2,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Ratings.Application.ConsumingService;
 using Ratings.Application.GetRatingByVacancyIdQuery;
 using Ratings.Application.GetVacancyRatingsQuery;
 using Ratings.Application.UpdateVacancyRatingCommand;
