@@ -61,6 +61,19 @@
       "SwaggerKey": "users"
     },
     {
+      "DownstreamPathTemplate": "/api/users/auth/logout",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/auth/logout",
+      "UpstreamHttpMethod": ["POST"],
+      "SwaggerKey": "users"
+    },
+    {
       "DownstreamPathTemplate": "/api/vacancies",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [

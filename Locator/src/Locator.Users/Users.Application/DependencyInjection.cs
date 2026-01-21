@@ -9,6 +9,7 @@ using Users.Application.GetEmployeeTokenByUserIdQuery;
 using Users.Application.GetUserQuery;
 using Users.Application.GetValidEmployeeTokenByUserIdQuery;
 using Users.Application.JwtTokens;
+using Users.Application.LogoutCommand;
 using Users.Application.RefreshTokenCommand;
 using Users.Application.UpdateEmployeeTokenCommand;
 using Users.Contracts.Responses;
@@ -35,6 +36,7 @@ public static class DependencyInjection
             UpdateEmployeeTokenCommandHandler>();        
         services.AddScoped<ICommandHandler<Guid, CreateUserCommand.CreateUserCommand>, 
             CreateUserCommandHandler>();
+        services.AddScoped<ICommandHandler<LogoutCommand.LogoutCommand>, LogoutCommandHandler>();
         
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SECTION_NAME));
         services.AddScoped<IJwtProvider, JwtProvider>();

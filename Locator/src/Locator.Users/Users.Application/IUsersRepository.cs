@@ -71,6 +71,22 @@ public interface IUsersRepository
     Task<Result<Guid, Error>> UpdateEmployeeTokenAsync(EmployeeToken token, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Deletes all refresh token by user ID
+    /// </summary>
+    /// <param name="userId">ID of user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Default or Error</returns>
+    Task<Result<Error>> DeleteRefreshTokensByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes all employee token by user ID
+    /// </summary>
+    /// <param name="userId">ID of user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Default or Error</returns>
+    Task<Result<Error>> DeleteEmployeeTokensByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Gets token of a job search service by user ID
     /// </summary>
     /// <param name="userId">ID of user</param>

@@ -9,7 +9,6 @@ using Redis.Contracts.Dto;
 using Shared;
 using Shared.Options;
 using Users.Application.Fails;
-using Users.Contracts.Dto;
 using Users.Domain;
 
 namespace Users.Application.JwtTokens;
@@ -108,8 +107,15 @@ public class JwtProvider : IJwtProvider
         await _usersRepository.CreateRefreshTokenAsync(refreshToken, cancellationToken);
 
         return refreshToken.Token;
-    }    
-    
+    }
+
+    public async Task DeleteRefreshTokensByUserId(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        await _usersRepository.DeleteRefreshTokensByUserIdAsync(userId, cancellationToken);
+    }
+
     private async Task<RefreshTokenDto?> GetRefreshTokenAsync(
         Guid userId, 
         CancellationToken cancellationToken)

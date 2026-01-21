@@ -180,6 +180,57 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
     
+    public async Task<Result<Error>> DeleteRefreshTokensByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deletedTokens = await _usersDbContext.RefreshTokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync(cancellationToken);
+
+            if (deletedTokens.Count == 0)
+            {
+                return Errors.General.NotFound($"Tokens not found by UserID={userId}");
+            }
+
+            _usersDbContext.Remove(deletedTokens);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            return default;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+    
+    public async Task<Result<Error>> DeleteEmployeeTokensByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deletedTokens = await _usersDbContext.EmployeeTokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync(cancellationToken);
+
+            if (deletedTokens.Count == 0)
+            {
+                return Errors.General.NotFound($"Tokens not found by UserID={userId}");
+            }
+
+            _usersDbContext.Remove(deletedTokens);
+            await _usersDbContext.SaveChangesAsync(cancellationToken);
+            
+            return default;
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure(e.Message);
+        }
+    }
+    
     public async Task<Result<EmployeeToken, Error>> GetEmployeeTokenByUserIdAsync(
         Guid userId, 
         CancellationToken cancellationToken)

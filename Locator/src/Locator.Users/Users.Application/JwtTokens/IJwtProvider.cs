@@ -29,4 +29,12 @@ public interface IJwtProvider
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Access token</returns>
     Task<Result<string, Error>> RefreshAccessTokenAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes refresh tokens from DB 
+    /// </summary>
+    /// <param name="userId">ID of user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    Task DeleteRefreshTokensByUserId(Guid userId, CancellationToken cancellationToken);
 }

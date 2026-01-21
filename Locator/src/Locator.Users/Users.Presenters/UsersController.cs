@@ -10,6 +10,7 @@ using Users.Application.AuthQuery;
 using Users.Application.CreateUserCommand;
 using Users.Application.GetUserQuery;
 using Users.Application.GetValidEmployeeTokenByUserIdQuery;
+using Users.Application.LogoutCommand;
 using Users.Application.RefreshTokenCommand;
 using Users.Contracts.Dto;
 using Users.Contracts.Responses;
@@ -144,6 +145,34 @@ public class UsersController : ControllerBase
         var result = await commandHandler.Handle(query, cancellationToken);
         
         context.Response.Cookies.Append(cookiesOptions.JwtName, result.Value);
+        return result.IsFailure ? result.Error.ToResponse() : Ok();
+    }
+    
+    [HttpPost("auth/logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout(
+        [FromServices] ICommandHandler<LogoutCommand> commandHandler,
+        CancellationToken cancellationToken)
+    {
+        var cookiesOptions = _configuration.GetSection(CookiesOptions.SECTION_NAME).Get<CookiesOptions>();
+        if (cookiesOptions == null)
+        {
+            throw new ConfigurationFailureException("Failed to get cookies options.");
+        }
+        
+        var context = HttpContext;
+        string? userIdString = Request.Cookies[cookiesOptions.UserName];
+        if (!Guid.TryParse(userIdString, out var userId))
+        {
+            return BadRequest("Invalid user ID format.");
+        }
+        
+        var query = new LogoutCommand(userId);
+        var result = await commandHandler.Handle(query, cancellationToken);
+        
+        context.Response.Cookies.Delete(cookiesOptions.JwtName);
+        context.Response.Cookies.Delete(cookiesOptions.UserName);
+        
         return result.IsFailure ? result.Error.ToResponse() : Ok();
     }
 }
