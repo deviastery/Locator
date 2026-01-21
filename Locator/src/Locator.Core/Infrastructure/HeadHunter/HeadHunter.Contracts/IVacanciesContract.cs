@@ -65,7 +65,7 @@ public interface IVacanciesContract
     /// <returns>Success or Error</returns>
     Task<UnitResult<Error>> CreateNegotiationByVacancyIdAsync(
         long vacancyId,
-        long resumeId,
+        string resumeId,
         string accessToken,
         CancellationToken cancellationToken);
 

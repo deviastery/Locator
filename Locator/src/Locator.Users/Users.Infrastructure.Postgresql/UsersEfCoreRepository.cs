@@ -195,7 +195,7 @@ public class UsersEfCoreRepository : IUsersRepository
                 return Errors.General.NotFound($"Tokens not found by UserID={userId}");
             }
 
-            _usersDbContext.Remove(deletedTokens);
+            _usersDbContext.RemoveRange(deletedTokens);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             
             return UnitResult.Success<Error>();
@@ -221,7 +221,7 @@ public class UsersEfCoreRepository : IUsersRepository
                 return Errors.General.NotFound($"Tokens not found by UserID={userId}");
             }
 
-            _usersDbContext.Remove(deletedTokens);
+            _usersDbContext.RemoveRange(deletedTokens);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             
             return UnitResult.Success<Error>();

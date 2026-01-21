@@ -71,16 +71,11 @@ namespace Vacancies.Application.CreateNegotiationCommand;
             throw new GetValidResumeNotFoundException("Resumes not found");
         }
         
-        if (!long.TryParse(resume.Id, out long resumeId))
-        {
-            return Errors.TryParseResumeIdFail().ToFailure();
-        }
-        
         // Create a negotiation to a Vacancy by ID
         var createNegotiationResult = await _vacanciesContract
             .CreateNegotiationByVacancyIdAsync(
                 command.VacancyId, 
-                resumeId,
+                resume.Id,
                 token, 
                 cancellationToken);
         if (createNegotiationResult.IsFailure)
@@ -88,7 +83,7 @@ namespace Vacancies.Application.CreateNegotiationCommand;
             _logger.LogError(
                 "Failed to create negotiation for vacancy {VacancyId}, resume {ResumeId}, user {UserId}. Error: {ErrorCode} - {ErrorMessage}",
                 command.VacancyId, 
-                resumeId, 
+                resume.Id, 
                 command.UserId,
                 createNegotiationResult.Error.Code, 
                 createNegotiationResult.Error.Message);
