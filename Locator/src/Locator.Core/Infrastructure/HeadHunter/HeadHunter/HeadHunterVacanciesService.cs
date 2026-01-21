@@ -200,6 +200,39 @@ public class HeadHunterVacanciesService : IVacanciesContract
             : Errors.General.NotFound($"Negotiation not found by vacancy ID={vacancyId}");
     }
     
+    public async Task<UnitResult<Error>> CreateNegotiationByVacancyIdAsync(
+        long vacancyId, 
+        long resumeId, 
+        string accessToken, 
+        CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.hh.ru/negotiations");
+        request.Headers.Add("User-Agent", "Locator/1.0");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        
+        var formData = new MultipartFormDataContent();
+        formData.Add(new StringContent(vacancyId.ToString()), "vacancy_id");
+        formData.Add(new StringContent(resumeId.ToString()), "resume_id");
+        request.Content = formData;
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.BadRequest:
+                return Errors.General.Validation("Bad request to create negotiations");
+            
+            case HttpStatusCode.Forbidden:
+                return Errors.General.Validation("Unable to respond to the vacancy. " +
+                                                 "Try responding via the direct link to the vacancy");
+            case HttpStatusCode.NotFound:
+                return Errors.General.NotFound($"Negotiation not found by vacancy ID={vacancyId}");
+        }
+        return !response.IsSuccessStatusCode ? 
+            Errors.General.Failure("Create negotiations failed") : 
+            UnitResult.Success<Error>();
+    }
+    
     public async Task<Result<NegotiationDto, Error>> GetNegotiationByIdAsync(
         long negotiationId, 
         string accessToken, 

@@ -109,11 +109,19 @@ public class JwtProvider : IJwtProvider
         return refreshToken.Token;
     }
 
-    public async Task DeleteRefreshTokensByUserId(
+    public async Task<UnitResult<Error>> DeleteRefreshTokensByUserId(
         Guid userId,
         CancellationToken cancellationToken)
     {
-        await _usersRepository.DeleteRefreshTokensByUserIdAsync(userId, cancellationToken);
+        try
+        {
+            await _usersRepository.DeleteRefreshTokensByUserIdAsync(userId, cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            return Errors.General.Failure("Unable to delete refresh tokens");
+        }
     }
 
     private async Task<RefreshTokenDto?> GetRefreshTokenAsync(

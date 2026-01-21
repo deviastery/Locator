@@ -180,7 +180,7 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
     
-    public async Task<Result<Error>> DeleteRefreshTokensByUserIdAsync(
+    public async Task<UnitResult<Error>> DeleteRefreshTokensByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
@@ -197,7 +197,8 @@ public class UsersEfCoreRepository : IUsersRepository
 
             _usersDbContext.Remove(deletedTokens);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
-            return default;
+            
+            return UnitResult.Success<Error>();
         }
         catch (Exception e)
         {
@@ -205,7 +206,7 @@ public class UsersEfCoreRepository : IUsersRepository
         }
     }
     
-    public async Task<Result<Error>> DeleteEmployeeTokensByUserIdAsync(
+    public async Task<UnitResult<Error>> DeleteEmployeeTokensByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
@@ -223,7 +224,7 @@ public class UsersEfCoreRepository : IUsersRepository
             _usersDbContext.Remove(deletedTokens);
             await _usersDbContext.SaveChangesAsync(cancellationToken);
             
-            return default;
+            return UnitResult.Success<Error>();
         }
         catch (Exception e)
         {

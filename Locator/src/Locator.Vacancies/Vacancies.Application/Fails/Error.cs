@@ -22,6 +22,8 @@ public partial class Errors
             "review.already.left");
     public static Error TryParseNegotiationIdFail() =>
         Error.Failure("Failed to parse negotiation ID");  
+    public static Error TryParseResumeIdFail() =>
+        Error.Failure("Failed to parse resume ID");  
     
     public static Error CreateVacancyRatingFail() =>
         Error.Failure("Failed to create vacancy rating");

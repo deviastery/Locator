@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions;
 using Shared.Options;
+using Vacancies.Application.CreateNegotiationCommand;
 using Vacancies.Application.CreateRequestVacancyRatingCommand;
 using Vacancies.Application.CreateReviewCommand;
 using Vacancies.Application.GetNegotiationByVacancyIdQuery;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<PrepareToUpdateVacancyRatingCommand.PrepareToUpdateVacancyRatingCommand>, PrepareToUpdateVacancyRatingCommandHandler>();
         services.AddScoped<ICommandHandler<Guid, CreateReviewCommand.CreateReviewCommand>, CreateReviewCommandHandler>();
         services.AddScoped<ICommandHandler<Guid, CreateRequestVacancyRatingCommand.CreateRequestVacancyRatingCommand>, CreateRequestVacancyRatingCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateNegotiationCommand.CreateNegotiationCommand>, CreateNegotiationCommandHandler>();
 
         services.AddScoped<IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery.GetVacanciesWithFiltersQuery>, GetVacanciesWithFilters>();
         services.AddScoped<IQueryHandler<VacancyResponse, GetVacancyByIdQuery.GetVacancyByIdQuery>, GetVacancyById>();

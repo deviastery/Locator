@@ -56,6 +56,20 @@ public interface IVacanciesContract
         CancellationToken cancellationToken);
 
     /// <summary>
+    /// Creates a negotiation to a Vacancy by ID
+    /// </summary>
+    /// <param name="vacancyId">Vacancy ID</param>
+    /// <param name="resumeId">Resume ID</param>
+    /// <param name="accessToken">Access token of a job search service</param>
+    /// <param name="cancellationToken">List of negotiations with pagination info</param>
+    /// <returns>Success or Error</returns>
+    Task<UnitResult<Error>> CreateNegotiationByVacancyIdAsync(
+        long vacancyId,
+        long resumeId,
+        string accessToken,
+        CancellationToken cancellationToken);
+
+    /// <summary>
     /// Gets negotiation by vacancy ID
     /// </summary>
     /// <param name="vacancyId">Vacancy ID</param>

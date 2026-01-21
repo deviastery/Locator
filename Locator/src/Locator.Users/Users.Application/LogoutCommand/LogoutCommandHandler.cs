@@ -30,11 +30,15 @@ public class LogoutCommandHandler: ICommandHandler<LogoutCommand>
         await _tokenCache.InvalidateTokensAsync(command.UserId, cancellationToken);
 
         // Delete all refresh tokens by user ID from DB
-        await _jwtProvider.DeleteRefreshTokensByUserId(command.UserId, cancellationToken);
+        var refreshTokensResult = await _jwtProvider.DeleteRefreshTokensByUserId(command.UserId, cancellationToken);
+        if (refreshTokensResult.IsFailure)
+            return refreshTokensResult.Error.ToFailure();
         
         // Delete all employee tokens by user ID from DB
-        await _usersRepository.DeleteEmployeeTokensByUserIdAsync(command.UserId, cancellationToken);
-
-        return default;
+        var employeeTokensResult = await _usersRepository.DeleteEmployeeTokensByUserIdAsync(command.UserId, cancellationToken);
+        if (employeeTokensResult.IsFailure)
+            return employeeTokensResult.Error.ToFailure();
+        
+        return UnitResult.Success<Failure>();
     }
 }

@@ -149,7 +149,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/negotiations",
-      "UpstreamHttpMethod": ["GET"],
+      "UpstreamHttpMethod": ["GET", "POST"],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []

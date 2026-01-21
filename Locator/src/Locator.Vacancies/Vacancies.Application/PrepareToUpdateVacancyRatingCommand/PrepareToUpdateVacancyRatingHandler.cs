@@ -71,6 +71,6 @@ namespace Vacancies.Application.PrepareToUpdateVacancyRatingCommand;
             return Errors.SentVacancyRatingFail().ToFailure();
         }
         
-        return default;
+        return UnitResult.Success<Failure>();
     }
 }

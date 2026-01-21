@@ -36,5 +36,5 @@ public interface IJwtProvider
     /// <param name="userId">ID of user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    Task DeleteRefreshTokensByUserId(Guid userId, CancellationToken cancellationToken);
+    Task<UnitResult<Error>> DeleteRefreshTokensByUserId(Guid userId, CancellationToken cancellationToken);
 }
