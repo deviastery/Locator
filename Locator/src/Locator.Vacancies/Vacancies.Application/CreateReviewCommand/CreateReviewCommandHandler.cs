@@ -1,10 +1,14 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text;
+using System.Text.Json;
+using CSharpFunctionalExtensions;
 using FluentValidation;
 using Framework.Extensions;
 using HeadHunter.Contracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shared;
 using Shared.Abstractions;
+using Shared.Options;
 using Vacancies.Application.Fails;
 using Vacancies.Application.Fails.Exceptions;
 using Vacancies.Contracts.Dto;
@@ -23,6 +27,8 @@ namespace Vacancies.Application.CreateReviewCommand;
     private readonly IQueryHandler<UserResponse, GetRequestUserByIdQuery.GetRequestUserByIdQuery> 
         _getRequestUserByIdQuery;
     private readonly IVacanciesContract _vacanciesContract;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ModeratorOptions _moderatorOptions;
     private readonly IValidator<CreateReviewDto> _validator;
     private readonly ILogger<CreateReviewCommandHandler> _logger;
     
@@ -32,6 +38,8 @@ namespace Vacancies.Application.CreateReviewCommand;
         IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> getRequestEmployeeTokenQuery,
         IQueryHandler<UserResponse, GetRequestUserByIdQuery.GetRequestUserByIdQuery> getRequestUserByIdQuery,
         IVacanciesContract vacanciesContract, 
+        IHttpClientFactory httpClientFactory,
+        IOptions<ModeratorOptions> moderatorOptions, 
         IValidator<CreateReviewDto> validator, 
         ILogger<CreateReviewCommandHandler> logger)
     {
@@ -40,6 +48,8 @@ namespace Vacancies.Application.CreateReviewCommand;
         _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
         _getRequestUserByIdQuery = getRequestUserByIdQuery;
         _vacanciesContract = vacanciesContract;
+        _httpClientFactory = httpClientFactory;
+        _moderatorOptions = moderatorOptions.Value;
         _validator = validator;
         _logger = logger;
     }
@@ -127,6 +137,19 @@ namespace Vacancies.Application.CreateReviewCommand;
             command.UserId, 
             user.FirstName ?? string.Empty, 
             command.VacancyId);
+        
+        // Moderate comment
+        if(review.Comment != null)
+        {
+            var moderationResult = await ModerateCommentAsync(
+                review.Comment, 
+                cancellationToken);
+            if (moderationResult.IsFailure)
+            {
+                return moderationResult.Error.ToFailure();
+            }
+        }
+        
         var reviewId = await _vacanciesRepository.CreateReviewAsync(review, cancellationToken);
         _logger.LogInformation("Review created with id={ReviewId} on vacancy with id={VacancyId}", reviewId, command.VacancyId);
         
@@ -150,5 +173,76 @@ namespace Vacancies.Application.CreateReviewCommand;
             return Errors.NotReadyForReview().ToFailure();
         }
         return true;
+    }
+    
+    private async Task<UnitResult<Failure>> ModerateCommentAsync(
+        string comment, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("ModerationClient");
+            
+            var requestBody = new
+            {
+                text = comment,
+            };
+
+            string jsonRequest = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+        
+            var request = new HttpRequestMessage(
+                HttpMethod.Post, 
+                "moderate")
+            {
+                Content = content,
+            };
+            request.Headers.Add("User-Agent", "Locator/1.0");
+
+            var response = await client.SendAsync(request, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Moderation service returned status {StatusCode}", response.StatusCode);
+                return Errors.General.Failure("Failed to moderate comment").ToFailure();
+            }
+
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var moderationResult = JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+            if (moderationResult == null)
+            {
+                return Errors.General.Failure("Invalid moderation response").ToFailure();
+            }
+            
+            var thresholds = new Dictionary<string, int>
+            {
+                ["insult"] = int.Parse(_moderatorOptions.Insult),
+                ["threat"] = int.Parse(_moderatorOptions.Threat),
+                ["obscenity"] = int.Parse(_moderatorOptions.Obscenity),
+                ["meaningless"] = int.Parse(_moderatorOptions.Meaningless),
+            };
+
+            foreach ((string category, int threshold) in thresholds)
+            {
+                if (moderationResult.TryGetValue(category, out int level) && level >= threshold)
+                {
+                    _logger.LogWarning(
+                        "Comment rejected due to high {Category} level: {Level}. Comment: '{Comment}'",
+                        category,
+                        level,
+                        comment);
+
+                    return Errors.General.Validation(
+                        $"Comment contains inappropriate content ({category})").ToFailure();
+                }
+            }
+
+            return Result.Success<Failure>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception during comment moderation");
+            return Errors.General.Failure("Comment moderation failed").ToFailure();
+        }
     }
 }

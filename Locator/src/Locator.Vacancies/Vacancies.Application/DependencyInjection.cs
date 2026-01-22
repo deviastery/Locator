@@ -55,6 +55,13 @@ public static class DependencyInjection
         services.AddSingleton<IProducer<Null, string>>(sp => 
             new ProducerBuilder<Null, string>(producerConfig).Build());
         
+        services.Configure<ModeratorOptions>(configuration.GetSection(ModeratorOptions.SECTION_NAME));
+        
+        services.AddHttpClient("ModerationClient", o =>
+        {
+            o.BaseAddress = new Uri("http://localhost:5005/");
+        });
+        
         return services;
     }
 }
