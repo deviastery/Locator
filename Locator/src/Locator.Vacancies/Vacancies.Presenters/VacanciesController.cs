@@ -102,6 +102,7 @@ public class VacanciesController : ControllerBase
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
+    
     [HttpGet("negotiations")]
     public async Task<IActionResult> GetNegotiations(
         [FromServices] IQueryHandler<NegotiationsResponse, GetNegotiationsQuery> queryHandler,

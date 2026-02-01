@@ -22,9 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Locator.Core\Shared\Shared.csproj" />
-      <ProjectReference Include="..\Vacancies.Application\Vacancies.Application.csproj" />
-      <ProjectReference Include="..\Vacancies.Presenters\Vacancies.Presenters.csproj" />
+      <ProjectReference Include="..\Ratings.Presenters\Ratings.Presenters.csproj" />
     </ItemGroup>
 
 </Project>
