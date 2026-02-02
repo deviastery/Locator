@@ -11,8 +11,10 @@
         <PackageReference Include="AutoFixture" Version="5.0.0-preview0012" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="FluentAssertions" Version="8.8.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.12" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
-        <PackageReference Include="Moq" Version="4.20.72" />
+        <PackageReference Include="Testcontainers" Version="4.10.0" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.10.0" />
         <PackageReference Include="xunit" Version="2.9.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
     </ItemGroup>
@@ -22,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Ratings.Presenters\Ratings.Presenters.csproj" />
+      <ProjectReference Include="..\Users.Web\Users.Web.csproj" />
     </ItemGroup>
 
 </Project>

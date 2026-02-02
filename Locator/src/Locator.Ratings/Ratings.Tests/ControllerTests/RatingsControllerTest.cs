@@ -8,7 +8,7 @@ using Ratings.Contracts.Dto;
 using Ratings.Presenters;
 using Shared.Abstractions;
 
-namespace Ratings.Test.Controller;
+namespace Ratings.Test.ControllerTests;
 
 public class RatingsControllerTest
 {

@@ -77,7 +77,7 @@ public class Auth: IQueryHandler<AuthResponse, AuthQuery>
                 userInfoResult.Value.Email ?? string.Empty,
                 userInfoResult.Value.FirstName ?? string.Empty);
             var userIdResult = await _createUserCommandHandler.Handle(
-                new CreateUserCommand.CreateUserCommand(userDto), cancellationToken);
+                new CreateUserCommand.CreateUserCommand(Guid.NewGuid(), userDto), cancellationToken);
             if (userIdResult.IsFailure)
             {
                 throw new CreateUserFailureException();

@@ -2,13 +2,13 @@
 using FluentAssertions;
 using Vacancies.Domain;
 
-namespace Vacancies.Test;
+namespace Vacancies.Test.UnitTests;
 
-public class CalculateAverageMarkTests
+public class CalculateAverageMarkTest
 {
     private readonly Fixture _fixture;
  
-    public CalculateAverageMarkTests()
+    public CalculateAverageMarkTest()
     {
         _fixture = new Fixture();
     }

@@ -23,7 +23,10 @@ public class CreateUserCommandHandler: ICommandHandler<Guid, CreateUserCommand>
         var user = new User(
             email: command.Dto.Email ?? string.Empty,
             name: command.Dto.FirstName ?? string.Empty,
-            employeeId: command.Dto.EmployeeId);
+            employeeId: command.Dto.EmployeeId)
+        {
+            Id = command.UserId,
+        };
         var userIdResult = await _usersRepository.CreateUserAsync(user, cancellationToken);
         if (userIdResult.IsFailure)
         {

@@ -3,14 +3,14 @@ using FluentValidation.TestHelper;
 using Vacancies.Application.CreateReviewCommand;
 using Vacancies.Contracts.Dto;
 
-namespace Vacancies.Test;
+namespace Vacancies.Test.UnitTests;
 
-public class CreateReviewDtoValidatorTests
+public class CreateReviewDtoValidatorTest
 {
     private readonly CreateReviewDtoValidator _validator;
     private readonly Fixture _fixture;
  
-    public CreateReviewDtoValidatorTests()
+    public CreateReviewDtoValidatorTest()
     {
         _validator = new CreateReviewDtoValidator();
         _fixture = new Fixture();

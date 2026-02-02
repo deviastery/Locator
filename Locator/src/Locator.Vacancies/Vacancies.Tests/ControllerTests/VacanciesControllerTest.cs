@@ -11,7 +11,7 @@ using Vacancies.Contracts.Dto;
 using Vacancies.Contracts.Responses;
 using Vacancies.Presenters;
 
-namespace Vacancies.Test.Controller;
+namespace Vacancies.Test.ControllerTests;
 
 public class VacanciesControllerTest
 {

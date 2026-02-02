@@ -56,6 +56,7 @@ public class UsersController : ControllerBase
     [HttpPost("{userId:Guid}")]
     public async Task<IActionResult> CreateUser(
         [FromServices] ICommandHandler<Guid, CreateUserCommand> commandHandler,
+        [FromRoute] Guid userId,
         [FromBody] CreateUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -65,7 +66,7 @@ public class UsersController : ControllerBase
             throw new ConfigurationFailureException("Failed to get cookies options.");
         }
         
-        var command = new CreateUserCommand(dto);
+        var command = new CreateUserCommand(userId, dto);
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }   
