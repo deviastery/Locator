@@ -33,3 +33,8 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
+
+namespace Ratings.Web
+{
+    public partial class Program;
+}

@@ -10,18 +10,18 @@ namespace Ratings.Application.ConsumingService;
 
 public class ConsumingService : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IConsumer<Null, string> _consumer;
     private readonly ILogger<ConsumingService> _logger;
     
     private const string AddReviewTopic = "add-review";
 
     public ConsumingService(
-        IServiceScopeFactory scopeFactory,
+        IServiceProvider serviceProvider,
         IConsumer<Null, string> consumer, 
         ILogger<ConsumingService> logger)
     {
-        _scopeFactory = scopeFactory;
+        _serviceProvider = serviceProvider;
         _consumer = consumer;
         _logger = logger;
     }
@@ -42,28 +42,31 @@ public class ConsumingService : BackgroundService
 
                 if (consumeResult.Topic == AddReviewTopic)
                 {
-                    using var scope = _scopeFactory.CreateScope();
-                    var commandHandler = scope.ServiceProvider.GetRequiredService<
-                        ICommandHandler<Guid, UpdateVacancyRatingCommand.UpdateVacancyRatingCommand>>();
-                    
-                    var dto = JsonSerializer.Deserialize<UpdateVacancyRatingDto>(
-                        consumeResult.Message.Value);
-                    if (dto == null)
+                    using (var scope = _serviceProvider.CreateScope())
                     {
-                        _logger.LogWarning("Invalid message format: {Value}", consumeResult.Message.Value);
-                        continue;
-                    }
+                        var commandHandler = scope.ServiceProvider.GetRequiredService<
+                            ICommandHandler<Guid, UpdateVacancyRatingCommand.UpdateVacancyRatingCommand>>();
 
-                    var command = new UpdateVacancyRatingCommand.UpdateVacancyRatingCommand(dto);
-                    var ratingIdResponse = await commandHandler.Handle(command, cancellationToken);
-                    if (ratingIdResponse.IsFailure)
-                    {
-                        _logger.LogError("Failed to handle message: {Error}", ratingIdResponse.Error);
-                    }
-                    else
-                    {
-                        _consumer.Commit(consumeResult);
-                        _logger.LogInformation("Successfully processed rating for vacancy ID: {VacancyId}", dto.VacancyId);
+                        var dto = JsonSerializer.Deserialize<UpdateVacancyRatingDto>(
+                            consumeResult.Message.Value);
+                        if (dto == null)
+                        {
+                            _logger.LogWarning("Invalid message format: {Value}", consumeResult.Message.Value);
+                            continue;
+                        }
+
+                        var command = new UpdateVacancyRatingCommand.UpdateVacancyRatingCommand(dto);
+                        var ratingIdResponse = await commandHandler.Handle(command, cancellationToken);
+                        if (ratingIdResponse.IsFailure)
+                        {
+                            _logger.LogError("Failed to handle message: {Error}", ratingIdResponse.Error);
+                        }
+                        else
+                        {
+                            _consumer.Commit(consumeResult);
+                            _logger.LogInformation("Successfully processed rating for vacancy ID: {VacancyId}",
+                                dto.VacancyId);
+                        }
                     }
                 }
             }

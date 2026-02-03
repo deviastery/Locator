@@ -28,7 +28,7 @@ public class DockerWebApplicationFactoryFixture : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var connectionString = _dbContainer.GetConnectionString();
+        string? connectionString = _dbContainer.GetConnectionString();
         
         base.ConfigureWebHost(builder);
         builder.ConfigureTestServices(services =>
