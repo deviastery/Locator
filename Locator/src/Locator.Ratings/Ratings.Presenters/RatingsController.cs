@@ -26,7 +26,7 @@ public class RatingsController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> Get(
+    public async Task<IActionResult> GetVacancyRatings(
         [FromServices] IQueryHandler<VacancyRatingsResponse, GetVacancyRatingsQuery> queryHandler,
         CancellationToken cancellationToken)
     {
