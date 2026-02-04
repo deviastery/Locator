@@ -47,6 +47,18 @@ export default function () {
         firstRequestTime[vacancyId] = startTime;
     }
 
+    const success = check(res, {
+        "status is 200": (r) => r.status === 200,
+        "has rating data": (r) => {
+            try {
+                const body = JSON.parse(r.body);
+                return body !== null && body !== undefined;
+            } catch (e) {
+                return false;
+            }
+        },
+    });
+
     if (isFromCache) {
         cacheHits.add(1);
         cachedResponseTime.add(duration);

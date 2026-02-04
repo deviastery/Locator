@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { sleep } from "k6";
+import { sleep, check } from "k6";
 
 export const options = {
     stages: [
@@ -28,7 +28,19 @@ export default function () {
         },
     };
 
-    http.get(url, params);
+    var res = http.get(url, params);
+
+    const success = check(res, {
+        "status is 200": (r) => r.status === 200,
+        "has reviews data": (r) => {
+            try {
+                const body = JSON.parse(r.body);
+                return body !== null && body !== undefined;
+            } catch (e) {
+                return false;
+            }
+        },
+    });
 
     sleep(1);
 }
