@@ -1,26 +1,6 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/users/auth",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost", 
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/api/users/auth",
-      "UpstreamHttpMethod": ["GET"],
-      "RateLimitOptions": {
-        "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "60s",
-        "Limit": 5,
-        "PeriodTimespan": 10
-      },
-      "SwaggerKey": "users"
-    },
-    {
       "DownstreamPathTemplate": "/api/users/auth/callback",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -74,48 +54,24 @@
       "SwaggerKey": "users"
     },
     {
-      "DownstreamPathTemplate": "/api/vacancies",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost", 
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/api/vacancies",
-      "UpstreamHttpMethod": ["GET"],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      },
-      "FileCacheOptions": {
-        "TtlSeconds": 60,
-        "Region": "default",
-        "Header": "Locator-Caching-Control"
-      },
-      "SwaggerKey": "vacancies"
-    },
-    {
-      "DownstreamPathTemplate": "/api/vacancies/{vacancyId}",
+      "DownstreamPathTemplate": "/api/users/auth",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5002
+          "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/api/vacancies/{vacancyId}",
+      "UpstreamPathTemplate": "/api/users/auth",
       "UpstreamHttpMethod": ["GET"],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "60s",
+        "Limit": 5,
+        "PeriodTimespan": 10
       },
-      "FileCacheOptions": {
-        "TtlSeconds": 60,
-        "Region": "default",
-        "Header": "Locator-Caching-Control"
-      },
-      "SwaggerKey": "vacancies"
+      "SwaggerKey": "users"
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/negotiations",
@@ -166,15 +122,77 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost", 
+          "Host": "localhost",
           "Port": 5002
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
-      "UpstreamHttpMethod": ["GET", "POST"],
+      "UpstreamHttpMethod": ["GET"],
+      "FileCacheOptions": {
+        "TtlSeconds": 60,
+        "Region": "default",
+        "Header": "Locator-Caching-Control"
+      },
+      "SwaggerKey": "vacancies"
+    },
+    {
+      "DownstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
+      "UpstreamHttpMethod": ["POST"],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "SwaggerKey": "vacancies"
+    },
+    {
+      "DownstreamPathTemplate": "/api/vacancies/{vacancyId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/vacancies/{vacancyId}",
+      "UpstreamHttpMethod": ["GET"],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 60,
+        "Region": "default",
+        "Header": "Locator-Caching-Control"
+      },
+      "SwaggerKey": "vacancies"
+    },
+    {
+      "DownstreamPathTemplate": "/api/vacancies",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/vacancies",
+      "UpstreamHttpMethod": ["GET"],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 60,
+        "Region": "default",
+        "Header": "Locator-Caching-Control"
       },
       "SwaggerKey": "vacancies"
     },

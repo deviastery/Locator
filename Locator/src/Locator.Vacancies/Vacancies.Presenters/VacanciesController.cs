@@ -19,10 +19,10 @@ namespace Vacancies.Presenters;
 
 [ApiController]
 [Route("api/vacancies")]
-[Authorize]
 public class VacanciesController : ControllerBase
 {
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Get(
         [FromServices] IQueryHandler<VacanciesResponse, GetVacanciesWithFiltersQuery> queryHandler,
         [FromQuery] GetVacanciesDto request,
@@ -40,6 +40,7 @@ public class VacanciesController : ControllerBase
         return Ok(result);
     }
     [HttpGet("{vacancyId:long}")]
+    [Authorize]
     public async Task<IActionResult> GetById(
         [FromServices] IQueryHandler<VacancyResponse, GetVacancyByIdQuery> queryHandler,
         [FromRoute] long vacancyId,
@@ -57,6 +58,7 @@ public class VacanciesController : ControllerBase
         return Ok(result);
     }
     [HttpGet("{vacancyId:long}/negotiations")]
+    [Authorize]
     public async Task<IActionResult> GetNegotiationByVacancyId(
         [FromServices] IQueryHandler<NegotiationResponse, GetNegotiationByVacancyIdQuery> queryHandler,
         [FromRoute] long vacancyId,
@@ -75,6 +77,7 @@ public class VacanciesController : ControllerBase
     }
     
     [HttpPost("{vacancyId:long}/reviews")]
+    [Authorize]
     public async Task<IActionResult> CreateReview(
         [FromServices] ICommandHandler<Guid, CreateReviewCommand> commandHandler,
         [FromRoute] long vacancyId,
@@ -91,7 +94,7 @@ public class VacanciesController : ControllerBase
         var result = await commandHandler.Handle(command, cancellationToken);
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
-    
+
     [HttpGet("{vacancyId:long}/reviews")]
     public async Task<IActionResult> GetReviewsByVacancyId(
         [FromServices] IQueryHandler<ReviewsByVacancyIdResponse, GetReviewsByVacancyIdQuery> queryHandler,
@@ -102,7 +105,9 @@ public class VacanciesController : ControllerBase
         var result = await queryHandler.Handle(query, cancellationToken);
         return Ok(result);
     }
+    
     [HttpGet("negotiations")]
+    [Authorize]
     public async Task<IActionResult> GetNegotiations(
         [FromServices] IQueryHandler<NegotiationsResponse, GetNegotiationsQuery> queryHandler,
         [FromQuery] GetNegotiationsDto request,
@@ -121,6 +126,7 @@ public class VacanciesController : ControllerBase
     }
     
     [HttpPost("{vacancyId:long}/negotiations")]
+    [Authorize]
     public async Task<IActionResult> CreateNegotiation(
         [FromServices] ICommandHandler<CreateNegotiationCommand> commandHandler,
         [FromRoute] long vacancyId,
