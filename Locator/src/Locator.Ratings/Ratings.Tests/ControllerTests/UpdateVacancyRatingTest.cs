@@ -10,12 +10,12 @@ using Shared.Abstractions;
 
 namespace Ratings.Test.ControllerTests;
 
-public class RatingsControllerTest
+public class UpdateVacancyRatingTest
 {
     private readonly RatingsController _ratingsController;
     private readonly Fixture _fixture;
     
-    public RatingsControllerTest()
+    public UpdateVacancyRatingTest()
     {
         _ratingsController = new RatingsController();
         _fixture = new Fixture();
@@ -31,14 +31,15 @@ public class RatingsControllerTest
             .Create();
         long vacancyId = _fixture.Create<long>();
         
-        // Act
         var expectedResponse = _fixture.Create<Guid>();
+        
         commandHandlerMock
             .Setup(h => h.Handle(
                 It.IsAny<UpdateVacancyRatingCommand>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
         
+        // Act
         var result = (OkObjectResult)await _ratingsController.UpdateVacancyRating(
             commandHandlerMock.Object,
             vacancyId,

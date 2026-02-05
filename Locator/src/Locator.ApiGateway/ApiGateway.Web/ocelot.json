@@ -246,5 +246,11 @@
         }
       ]
     }
-  ]
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:5003",
+    "RateLimitOptions": {
+      "QuotaExceededMessage": "You are overwhelming me with multiple requests."
+    }
+  }
 }

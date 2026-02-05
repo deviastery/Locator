@@ -126,7 +126,7 @@ public class UsersController : ControllerBase
     
     [HttpGet("auth/refresh")]
     [Authorize]
-    public async Task<IActionResult> Refresh(
+    public async Task<IActionResult> RefreshToken(
         [FromServices] ICommandHandler<string, RefreshTokenCommand> commandHandler,
         CancellationToken cancellationToken)
     {
