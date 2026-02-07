@@ -29,7 +29,7 @@ public class KafkaTest : IClassFixture<DockerWebApplicationFactoryFixture>
         long vacancyId = _fixture.Create<long>();
         var dto = _fixture.Build<UpdateVacancyRatingDto>()
             .With(x => x.VacancyId, vacancyId)
-            .With(x => x.AverageMark, () => _fixture.Create<double>() % 5.0)
+            .With(x => x.AverageMark, 3)
             .Create();
         string message = JsonSerializer.Serialize(dto);
         
@@ -59,7 +59,7 @@ public class KafkaTest : IClassFixture<DockerWebApplicationFactoryFixture>
         {
             events.Add(_fixture.Build<UpdateVacancyRatingDto>()
                 .With(x => x.VacancyId, _fixture.Create<long>())
-                .With(x => x.AverageMark, () => _fixture.Create<double>() % 5.0)
+                .With(x => x.AverageMark, 3)
                 .Create());
         }
         
