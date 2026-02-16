@@ -21,10 +21,13 @@ builder.Services.AddControllers();
 builder.Services.AddJWTAuthenticationScheme(builder.Configuration);
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(corsPolicyBuilder =>
-        corsPolicyBuilder.AllowAnyHeader()
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // явно укажи адрес фронтенда
+            .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowAnyOrigin());
+            .AllowCredentials();  // разрешает credentials
+    });
 });
 
 var app = builder.Build();
@@ -40,7 +43,7 @@ app.UseSwaggerForOcelotUI(opt =>
 });
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors("AllowFrontend");
 app.UseMiddleware<AttachSignatureToRequest>();
 
 app.UseOcelot().Wait();

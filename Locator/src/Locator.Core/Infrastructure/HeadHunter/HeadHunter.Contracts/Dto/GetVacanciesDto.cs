@@ -5,10 +5,10 @@ public record GetVacanciesDto(
     string? Experience,
     string? Employment,
     string? Schedule,
-    int? Area,
+    string? Area,
     SalaryQuery? Salary,
     int? PerPage = null,
     int? Pages = null,
     int? Page = null);
 
-public record SalaryQuery(long? Salary, string? Currency);
+public record SalaryQuery(string? Currency, int? From, int? To);

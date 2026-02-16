@@ -1,0 +1,1 @@
+export { VacanciesSearcher } from './VacanciesSearcher.tsx';

@@ -92,7 +92,7 @@ public class UsersController : ControllerBase
         return Ok(result);
     }   
     
-    [HttpGet("auth")]
+    [HttpPost("auth")]
     public IActionResult Auth()
     {
         string url = _authContract.GetAuthorizationUrl();

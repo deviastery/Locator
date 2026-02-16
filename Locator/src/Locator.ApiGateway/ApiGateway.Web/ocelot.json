@@ -63,7 +63,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/users/auth",
-      "UpstreamHttpMethod": ["GET"],
+      "UpstreamHttpMethod": ["POST"],
       "RateLimitOptions": {
         "ClientWhitelist": [],
         "EnableRateLimiting": true,
