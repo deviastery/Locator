@@ -7,7 +7,7 @@ import type { GetVacanciesDto } from "../../contracts/dtos/GetVacanciesDto.ts";
 
 export const VacanciesPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [filters, setFilters] = useState<Partial<GetVacanciesDto>>({});
+    const [filters, setFilters] = useState<GetVacanciesDto>({});
 
     return (
         <Box

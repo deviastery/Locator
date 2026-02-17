@@ -9,7 +9,7 @@ import { ListWithPagination } from "../../components/ListWithPagination";
 
 interface VacanciesListProps {
     searchQuery: string;
-    filters: Partial<GetVacanciesDto>;
+    filters: GetVacanciesDto;
 }
 
 export const VacanciesList = ({ searchQuery, filters }: VacanciesListProps) => {
