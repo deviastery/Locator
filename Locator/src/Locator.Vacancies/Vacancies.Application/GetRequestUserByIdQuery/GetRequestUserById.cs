@@ -19,7 +19,7 @@ public class GetRequestUserById: IQueryHandler<UserResponse, GetRequestUserByIdQ
         // Get User
         var request = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:5000/api/users/{query.UserId}");
+            $"http://users-service:8080/api/users/{query.UserId}");
         request.Headers.Add("User-Agent", "Locator/1.0");
         request.Headers.Add("Api-Gateway", "Signed");
 

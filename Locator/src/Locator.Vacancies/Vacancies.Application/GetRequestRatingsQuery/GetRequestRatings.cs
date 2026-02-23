@@ -17,7 +17,7 @@ public class GetRequestRatings: IQueryHandler<VacancyRatingsResponse, GetRequest
     public async Task<VacancyRatingsResponse> Handle(GetRequestRatingsQuery query, CancellationToken cancellationToken)
     {   
         // Get Ratings of all Vacancies
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5001/api/ratings");
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://ratings-service:8080/api/ratings");
         request.Headers.Add("User-Agent", "Locator/1.0");
         request.Headers.Add("Api-Gateway", "Signed");
 

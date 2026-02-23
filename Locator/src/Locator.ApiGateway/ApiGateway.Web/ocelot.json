@@ -2,11 +2,11 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/users/auth/callback",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost", 
-          "Port": 5000
+          "Host": "users-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/users/auth/callback",
@@ -22,11 +22,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/users/auth/refresh",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5000
+          "Host": "users-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/users/auth/refresh",
@@ -42,11 +42,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/users/auth/logout",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5000
+          "Host": "users-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/users/auth/logout",
@@ -55,11 +55,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/users/auth",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5000
+          "Host": "users-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/users/auth",
@@ -75,11 +75,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/negotiations",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost", 
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/negotiations",
@@ -97,11 +97,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/{vacancyId}/negotiations",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost", 
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/negotiations",
@@ -119,11 +119,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
@@ -137,11 +137,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}/reviews",
@@ -154,11 +154,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies/{vacancyId}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies/{vacancyId}",
@@ -176,11 +176,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/vacancies",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "vacancies-service", 
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/vacancies",
@@ -198,11 +198,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/ratings/vacancies/{vacancyId}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "ratings-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/ratings/vacancies/{vacancyId}",
@@ -222,7 +222,7 @@
         {
           "Name": "Users API",
           "Version": "v1",
-          "Url": "https://localhost:5000/swagger/v1/swagger.json"
+          "Url": "http://users-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
@@ -232,7 +232,7 @@
         {
           "Name": "Vacancies API",
           "Version": "v1",
-          "Url": "https://localhost:5002/swagger/v1/swagger.json"
+          "Url": "http://vacancies-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
@@ -242,13 +242,13 @@
         {
           "Name": "Ratings API",
           "Version": "v1",
-          "Url": "https://localhost:5001/swagger/v1/swagger.json"
+          "Url": "http://ratings-service:8080/swagger/v1/swagger.json"
         }
       ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:5003",
+    "BaseUrl": "http://localhost:5003",
     "RateLimitOptions": {
       "QuotaExceededMessage": "You are overwhelming me with multiple requests."
     }

@@ -31,7 +31,7 @@ public class CreateRequestVacancyRatingCommandHandler: ICommandHandler<Guid, Cre
         
         var request = new HttpRequestMessage(
             HttpMethod.Post, 
-            $"https://localhost:5001/api/ratings/vacancies/{command.Dto.VacancyId}")
+            $"http://ratings-service:8080/api/ratings/vacancies/{command.Dto.VacancyId}")
         {
             Content = content,
         };

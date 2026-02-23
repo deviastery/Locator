@@ -4,7 +4,7 @@ import type { ErrorResponse } from "../../../contracts/responses/ErrorResponse.t
 export const fetchVacancyById = 
     async (vacancyId: number): Promise<VacancyResponse | null> => {
     try {
-        const response = await fetch(`https://localhost:5003/api/vacancies/${vacancyId}`, {
+        const response = await fetch(`http://localhost:5003/api/vacancies/${vacancyId}`, {
             method: 'GET',
             credentials: 'include',
             headers: {

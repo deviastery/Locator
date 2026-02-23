@@ -12,7 +12,7 @@ export const fetchNegotiations =
         if (params.pages) queryParams.append('pages', params.pages.toString());
         if (params.perPage) queryParams.append('perPage', params.perPage.toString());
 
-        const url = `https://localhost:5003/api/vacancies/negotiations?${queryParams.toString()}`;
+        const url = `http://localhost:5003/api/vacancies/negotiations?${queryParams.toString()}`;
 
         const response = await fetch(url, {
             method: 'GET',

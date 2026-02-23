@@ -6,7 +6,7 @@ export const createReview = async (
     reviewData: CreateReviewDto
 ): Promise<{ success: boolean; error?: string; errorCode?: string }> => {
     try {
-        const response = await fetch(`https://localhost:5003/api/vacancies/${vacancyId}/reviews`, {
+        const response = await fetch(`http://localhost:5003/api/vacancies/${vacancyId}/reviews`, {
             method: 'POST',
             credentials: 'include',
             headers: {

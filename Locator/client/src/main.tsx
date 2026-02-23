@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import { AuthPage } from './pages/AuthPage';
 import { VacanciesPage } from "./pages/VacanciesPage";
 import { NegotiationsPage } from "./pages/NegotiationsPage";
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         errorElement: <ErrorFallback />,
         children: [
+            {
+                index: true,
+                element: <Navigate to="/auth" replace />,
+            },
             {
                 path: 'vacancies',
                 element: <VacanciesPage />,

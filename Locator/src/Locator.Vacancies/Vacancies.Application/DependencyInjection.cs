@@ -49,7 +49,7 @@ public static class DependencyInjection
         var kafkaOptions = configuration.GetSection(KafkaOptions.SECTION_NAME).Get<KafkaOptions>();
         var producerConfig = new ProducerConfig
         {
-            BootstrapServers = kafkaOptions?.BootstrapServers ?? "localhost:9092",
+            BootstrapServers = kafkaOptions?.BootstrapServers ?? "kafka:9092",
         };
 
         services.AddSingleton<IProducer<Null, string>>(sp => 
@@ -59,7 +59,7 @@ public static class DependencyInjection
         
         services.AddHttpClient("ModerationClient", o =>
         {
-            o.BaseAddress = new Uri("http://localhost:5005/");
+            o.BaseAddress = new Uri("http://moderator:5005/");
         });
         
         return services;

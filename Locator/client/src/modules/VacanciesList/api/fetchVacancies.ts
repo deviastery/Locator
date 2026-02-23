@@ -20,7 +20,7 @@ export const fetchVacancies =
         if (params.salary?.to) queryParams.append('salary.to', params.salary.to.toString());
         if (params.salary?.currency) queryParams.append('salary.currency', params.salary.currency);
 
-        const url = `https://localhost:5003/api/vacancies?${queryParams.toString()}`;
+        const url = `http://localhost:5003/api/vacancies?${queryParams.toString()}`;
 
         const response = await fetch(url, {
             method: 'GET',

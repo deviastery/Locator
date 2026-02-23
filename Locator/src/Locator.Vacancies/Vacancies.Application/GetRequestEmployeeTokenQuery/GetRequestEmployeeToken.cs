@@ -19,7 +19,7 @@ public class GetRequestEmployeeToken: IQueryHandler<EmployeeTokenResponse, GetRe
         // Get Employee access token
         var tokenRequest = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:5000/api/users/auth/employee_token/{query.UserId}");
+            $"http://users-service:8080/api/users/auth/employee_token/{query.UserId}");
         tokenRequest.Headers.Add("User-Agent", "Locator/1.0");
         tokenRequest.Headers.Add("Api-Gateway", "Signed");
 

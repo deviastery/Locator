@@ -27,7 +27,7 @@ public class GetNegotiationsTest : IClassFixture<WebApplicationFactory<Program>>
         // Arrange
         var request = new HttpRequestMessage(
             HttpMethod.Get, 
-            "https://localhost:5002/api/vacancies/negotiations");
+            "http://vacancies-service:8080/api/vacancies/negotiations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", invalidToken);
         request.Headers.Add("User-Agent", "Locator/1.0");
         request.Headers.Add("Api-Gateway", "Signed");

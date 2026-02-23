@@ -28,7 +28,7 @@ const firstRequestTime = {};
 
 export default function () {
     const vacancyId = vacancyIds[Math.floor(Math.random() * vacancyIds.length)];
-    const url = `https://localhost:5003/api/ratings/vacancies/${vacancyId}`;
+    const url = `http://api-gateway:8080/api/ratings/vacancies/${vacancyId}`;
 
     const params = {
         headers: {

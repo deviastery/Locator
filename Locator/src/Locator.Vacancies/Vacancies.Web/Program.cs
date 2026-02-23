@@ -12,9 +12,9 @@ app.UseCors("AllowAll");
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.None,
+    MinimumSameSitePolicy = SameSiteMode.Strict,
     HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.Always,
+    Secure = CookieSecurePolicy.SameAsRequest,
 });
 
 app.UseAuthentication();

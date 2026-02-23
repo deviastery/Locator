@@ -20,7 +20,7 @@ public class GetRequestRatingByVacancyId: IQueryHandler<RatingByVacancyIdRespons
         // Get a Rating of a Vacancy
         var request = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:5001/api/ratings/vacancies/{query.VacancyId}");
+            $"http://ratings-service:8080/api/ratings/vacancies/{query.VacancyId}");
         request.Headers.Add("User-Agent", "Locator/1.0");
         request.Headers.Add("Api-Gateway", "Signed");
 

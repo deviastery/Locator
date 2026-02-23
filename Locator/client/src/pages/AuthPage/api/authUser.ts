@@ -2,7 +2,7 @@
 
 export const authUser = async (): Promise<boolean> => {
     try {
-        const response = await fetch('https://localhost:5003/api/users/auth', {
+        const response = await fetch('http://localhost:5003/api/users/auth', {
             method: 'POST',
             credentials: 'include',
             headers: {

@@ -2,7 +2,7 @@
 
 export const logout = async (): Promise<{ success: boolean; error?: string }> => {
     try {
-        const response = await fetch('https://localhost:5003/api/users/auth/logout', {
+        const response = await fetch('http://localhost:5003/api/users/auth/logout', {
             method: 'POST',
             credentials: 'include',
             headers: {

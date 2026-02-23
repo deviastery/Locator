@@ -34,7 +34,7 @@ public class DbTest : IClassFixture<DockerWebApplicationFactoryFixture>
         // Act
         var createRequest = new HttpRequestMessage(
             HttpMethod.Post, 
-            $"https://localhost:5000/api/users/{userId}")
+            $"http://users-service:8080/api/users/{userId}")
         {
             Content = content,
         };
@@ -45,7 +45,7 @@ public class DbTest : IClassFixture<DockerWebApplicationFactoryFixture>
         
         var getRequest = new HttpRequestMessage(
             HttpMethod.Get, 
-            $"https://localhost:5000/api/users/{userId}");
+            $"http://users-service:8080/api/users/{userId}");
         getRequest.Headers.Add("User-Agent", "Locator/1.0");
         getRequest.Headers.Add("Api-Gateway", "Signed");
 

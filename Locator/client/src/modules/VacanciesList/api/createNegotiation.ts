@@ -3,7 +3,7 @@
 export const createNegotiation = 
     async (vacancyId: number): Promise<{ success: boolean; error?: string }> => {
     try {
-        const response = await fetch(`https://localhost:5003/api/vacancies/${vacancyId}/negotiations`, {
+        const response = await fetch(`http://localhost:5003/api/vacancies/${vacancyId}/negotiations`, {
             method: 'POST',
             credentials: 'include',
             headers: {

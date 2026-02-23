@@ -30,7 +30,7 @@ public static class DependencyInjection
         var consumerConfig = new ConsumerConfig
         {
             GroupId = "add-review-consumer-group",
-            BootstrapServers = kafkaOptions?.BootstrapServers ?? "localhost:9092",
+            BootstrapServers = kafkaOptions?.BootstrapServers ?? "kafka:9092",
             AutoOffsetReset = AutoOffsetReset.Earliest,
         };
         services.AddSingleton<IConsumer<Null, string>>(sp => 
