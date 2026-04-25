@@ -11,6 +11,9 @@ export interface GetVacanciesDto {
     schedule?: string;
     area?: string;
     salary?: SalaryQuery;
+    minRating?: number;
+    maxRating?: number;
+    onlyWithReviews?: boolean;
     perPage?: number;
     pages?: number;
     page?: number;

@@ -13,12 +13,15 @@ export const fetchVacancies =
         if (params.employment) queryParams.append('employment', params.employment);
         if (params.schedule) queryParams.append('schedule', params.schedule);
         if (params.area) queryParams.append('area', params.area.toString());
-        if (params.perPage) queryParams.append('perPage', params.perPage.toString());
-        if (params.pages) queryParams.append('pages', params.pages.toString());
-        if (params.page) queryParams.append('page', params.page.toString());
         if (params.salary?.from) queryParams.append('salary.from', params.salary.from.toString());
         if (params.salary?.to) queryParams.append('salary.to', params.salary.to.toString());
         if (params.salary?.currency) queryParams.append('salary.currency', params.salary.currency);
+        if (params.minRating) queryParams.append('minRating', params.minRating.toString());
+        if (params.maxRating) queryParams.append('maxRating', params.maxRating.toString());
+        if (params.onlyWithReviews) queryParams.append('onlyWithReviews', params.onlyWithReviews.toString());
+        if (params.perPage) queryParams.append('perPage', params.perPage.toString());
+        if (params.pages) queryParams.append('pages', params.pages.toString());
+        if (params.page) queryParams.append('page', params.page.toString());
 
         const url = `http://localhost:5003/api/vacancies?${queryParams.toString()}`;
 

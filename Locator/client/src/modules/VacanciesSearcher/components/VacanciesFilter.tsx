@@ -8,6 +8,8 @@ import { useSearchParams } from 'react-router-dom';
 import type { GetVacanciesDto } from '../../../contracts/dtos/GetVacanciesDto';
 import { FilterTextField } from '../ui/FilterTextField';
 import { SalarySlider } from '../ui/SalarySlider';
+import { RatingSlider } from '../ui/RatingSlider';
+import { OnlyWithReviewsCheckbox } from '../ui/OnlyWithReviewsCheckbox';
 import { ExperienceRadioGroup } from '../ui/ExperienceRadioGroup';
 import { EmploymentCheckboxGroup } from '../ui/EmploymentCheckboxGroup';
 import { ScheduleCheckboxGroup } from '../ui/ScheduleCheckboxGroup';
@@ -28,6 +30,8 @@ export const VacanciesFilter = ({ open, onClose, onApply }: VacanciesFilterProps
     const [schedule, setSchedule] = useState<string[]>([]);
     const [area, setArea] = useState<string>('');
     const [salaryRange, setSalaryRange] = useState<number[]>([0, 1000000]);
+    const [ratingRange, setRatingRange] = useState<number[]>([0, 5]);
+    const [onlyWithReviews, setOnlyWithReviews] = useState<boolean>(false);
 
     const resetPageToFirst = () => {
         localStorage.setItem('vacanciesPage', '1');
@@ -54,6 +58,10 @@ export const VacanciesFilter = ({ open, onClose, onApply }: VacanciesFilterProps
             };
         }
 
+        if (ratingRange[0] > 0) filters.minRating = ratingRange[0];
+        if (ratingRange[1] < 5) filters.maxRating = ratingRange[1];
+        if (onlyWithReviews) filters.onlyWithReviews = true;
+
         resetPageToFirst();
         onApply(filters);
         onClose();
@@ -66,6 +74,8 @@ export const VacanciesFilter = ({ open, onClose, onApply }: VacanciesFilterProps
         setSchedule([]);
         setArea('');
         setSalaryRange([0, 1000000]);
+        setRatingRange([0, 5]);
+        setOnlyWithReviews(false);
 
         resetPageToFirst();
         onApply({});
@@ -127,6 +137,10 @@ export const VacanciesFilter = ({ open, onClose, onApply }: VacanciesFilterProps
                 />
 
                 <SalarySlider value={salaryRange} onChange={setSalaryRange} />
+
+                <RatingSlider value={ratingRange} onChange={setRatingRange} />
+
+                <OnlyWithReviewsCheckbox checked={onlyWithReviews} onChange={setOnlyWithReviews} />
 
                 <ExperienceRadioGroup value={experience} onChange={setExperience} />
 

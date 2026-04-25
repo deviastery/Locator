@@ -1,4 +1,5 @@
 ﻿using HeadHunter.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions;
 using Shared.Thesauruses;
 using Vacancies.Application.Fails.Exceptions;
@@ -14,17 +15,20 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
     private readonly IQueryHandler<VacancyRatingsResponse, GetRequestRatingsQuery.GetRequestRatingsQuery> 
         _getRequestRatingsQuery;
     private readonly IVacanciesContract _vacanciesContract;
+    private readonly IVacanciesReadDbContext _vacanciesReadDbContext;
     
     public GetVacanciesWithFilters(
         IQueryHandler<EmployeeTokenResponse, GetRequestEmployeeTokenQuery.GetRequestEmployeeTokenQuery> 
             getRequestEmployeeTokenQuery,
         IQueryHandler<VacancyRatingsResponse, GetRequestRatingsQuery.GetRequestRatingsQuery> 
             getRequestRatingsQuery,
-        IVacanciesContract vacanciesContract)
+        IVacanciesContract vacanciesContract,
+        IVacanciesReadDbContext vacanciesReadDbContext)
     {
         _getRequestRatingsQuery = getRequestRatingsQuery;
         _getRequestEmployeeTokenQuery = getRequestEmployeeTokenQuery;
         _vacanciesContract = vacanciesContract;
+        _vacanciesReadDbContext = vacanciesReadDbContext;
     }  
 
     public async Task<VacanciesResponse> Handle(
@@ -68,7 +72,7 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             throw new GetValidResumeNotFoundException("Resumes not found");
         }
         
-        // Get Vacancies that match resume
+        // Get Vacancies that match resume and filters
         var vacanciesResult = await _vacanciesContract
             .GetVacanciesMatchResumeAsync(resume.Id, query.Dto.Query, token, cancellationToken);
 
@@ -116,6 +120,39 @@ public class GetVacanciesWithFilters : IQueryHandler<VacanciesResponse, GetVacan
             v,
             ratingsDict != null && ratingsDict.TryGetValue(long.Parse(v.Id), out double rating) ? rating : null));
         
-        return new VacanciesResponse(count, vacanciesDto, page, pages, perPage);
+        // Rating and Review filters
+        if (query.Dto.Query.OnlyWithReviews == true)
+        {
+            var vacanciesWithReviewsIds = await _vacanciesReadDbContext.ReadReviews
+                .Where(r => vacancyIds.Contains(r.VacancyId))
+                .Select(r => r.VacancyId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            vacanciesDto = vacanciesDto.Where(v => vacanciesWithReviewsIds.Contains(v.Id));
+        }
+        if (query.Dto.Query.MinRating.HasValue)
+        {
+            vacanciesDto = vacanciesDto.Where(v => v.Rating >= query.Dto.Query.MinRating.Value);
+        }
+        if (query.Dto.Query.MaxRating.HasValue)
+        {
+            vacanciesDto = vacanciesDto.Where(v => v.Rating <= query.Dto.Query.MaxRating.Value);
+        }
+
+        var filteredVacancies = vacanciesDto.ToList();
+        
+        bool isLocalFilterApplied = query.Dto.Query.OnlyWithReviews == true || 
+                                    query.Dto.Query.MinRating.HasValue || 
+                                    query.Dto.Query.MaxRating.HasValue;
+
+        if (isLocalFilterApplied)
+        {
+            count = filteredVacancies.Count; 
+            pages = 1;
+            page = 1;
+        }
+        
+        return new VacanciesResponse(count, filteredVacancies, page, pages, perPage);
     }
 }
