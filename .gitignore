@@ -488,3 +488,7 @@ app_settings.txt
 /Locator/db_dumps
 /Locator/pgdata
 /Locator/kafka-data
+Locator/src/Locator.ApiGateway/ApiGateway.Web/appsettings.json
+Locator/src/Locator.Ratings/Ratings.Web/appsettings.json
+Locator/src/Locator.Users/Users.Web/appsettings.json
+Locator/src/Locator.Vacancies/Vacancies.Web/appsettings.json
