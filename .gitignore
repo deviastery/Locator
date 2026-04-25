@@ -485,10 +485,10 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 app_settings.txt
-/Locator/db_dumps
-/Locator/pgdata
-/Locator/kafka-data
-Locator/src/Locator.ApiGateway/ApiGateway.Web/appsettings.json
-Locator/src/Locator.Ratings/Ratings.Web/appsettings.json
-Locator/src/Locator.Users/Users.Web/appsettings.json
-Locator/src/Locator.Vacancies/Vacancies.Web/appsettings.json
+/db_dumps
+/pgdata
+/kafka-data
+src/Locator.ApiGateway/ApiGateway.Web/appsettings.json
+src/Locator.Ratings/Ratings.Web/appsettings.json
+src/Locator.Users/Users.Web/appsettings.json
+src/Locator.Vacancies/Vacancies.Web/appsettings.json
